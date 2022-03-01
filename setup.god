@@ -8,7 +8,7 @@ source ./utils.sh
 
 mkdir -p ~/.flux-capacitor/logs
 curr_tstamp=$(date "+%Y.%m.%d-%H.%M.%S")
-log_file=~/.flux-capacitor/logs/flux-capacitor-$curr_tstamp.log
+log_file=~/.flux-capacitor/logs/$curr_tstamp-flux-capacitor.log
 
 ARCH=""
 case $(uname -m) in
@@ -143,6 +143,11 @@ if [ ! "$(command -v cheat)" ]; then
       echo "cheat already installed!" >> $log_file
 fi
 
+########################
+#         tldr         #
+########################
+
+try_install "tldr"
 
 ########################
 #          exa         #
@@ -159,6 +164,8 @@ fi
 # else  
 #    echo "exa with repo $exa_repo not installed. Please install manually." >> $ERRLOG_FILE
 # fi
+
+ln -s $log_file $(dirname $log_file)/LATEST.log 
 
 
 # spd-say -p 10 -l ES "¡De super puta madre socio!" 
