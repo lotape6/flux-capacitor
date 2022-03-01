@@ -10,13 +10,6 @@ mkdir -p ~/.flux-capacitor/logs
 curr_tstamp=$(date "+%Y.%m.%d-%H.%M.%S")
 log_file=~/.flux-capacitor/logs/$curr_tstamp-flux-capacitor.log
 
-ARCH=""
-case $(uname -m) in
-    i386)   ARCH="386" ;;
-    i686)   ARCH="386" ;;
-    x86_64) ARCH="amd64" ;;
-    arm)    dpkg --print-ARCH | grep -q "arm64" && ARCH="arm64" || ARCH="arm" ;;
-esac
 
 echo " Architecture detected: $ARCH"
 # Add some back to the future's car ASCII art
@@ -165,7 +158,7 @@ try_install "tldr"
 #    echo "exa with repo $exa_repo not installed. Please install manually." >> $ERRLOG_FILE
 # fi
 
-if [ ! -f ~/.flux-capacitor/logs/LATEST.loga ]; rm $(dirname $log_file)/LATEST.log ; fi
+if [ ! -f ~/.flux-capacitor/logs/LATEST.loga ]; then rm $(dirname $log_file)/LATEST.log ; fi
 ln -s $log_file $(dirname $log_file)/LATEST.log 
 
 

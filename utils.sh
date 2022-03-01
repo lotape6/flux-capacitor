@@ -1,5 +1,13 @@
 #!/bin/bash
 
+ARCH=""
+case $(uname -m) in
+    i386)   ARCH="386" ;;
+    i686)   ARCH="386" ;;
+    x86_64) ARCH="amd64" ;;
+    arm)    dpkg --print-ARCH | grep -q "arm64" && ARCH="arm64" || ARCH="arm" ;;
+esac
+
 # install $PACKAGE_NAME 
 # Checks which package manager exist and installs the package using the appropriate one
 install (){
