@@ -1,4 +1,4 @@
- #!/bin/bash
+#!/bin/bash
 
 # Uncredible and fantastyk installation script of best terminal useful tools based on #
 #        ----------> https://github.com/ibraheemdev/modern-unix <----------           #
@@ -165,6 +165,7 @@ try_install "tldr"
 #    echo "exa with repo $exa_repo not installed. Please install manually." >> $ERRLOG_FILE
 # fi
 
+if [ ! -f ~/.flux-capacitor/logs/LATEST.loga ]; rm $(dirname $log_file)/LATEST.log ; fi
 ln -s $log_file $(dirname $log_file)/LATEST.log 
 
 

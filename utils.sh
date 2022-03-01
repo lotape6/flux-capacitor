@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # install $PACKAGE_NAME 
 # Checks which package manager exist and installs the package using the appropriate one
 install (){
