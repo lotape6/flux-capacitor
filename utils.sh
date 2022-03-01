@@ -31,6 +31,8 @@ try_install () {
          if [ $? -gt 0 ]; then echo "$1 with repo $2 not installed. Please install manually." >> $log_file ; fi
          rm $FILE 
       fi
+   else 
+      echo "$1 already installed!" >> $log_file
    fi
    # WRITE TO CONFIG OR LOG
 }

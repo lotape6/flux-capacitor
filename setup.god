@@ -35,29 +35,68 @@ else
 fi
 
 
+########################
+#         omz!         #
+########################
+
 if [ ! -d ~/.oh-my-zsh ]; then
    banner "Oh-My-Zsh!"
    install "zsh curl wget git net-tools"
    wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+   else 
+      echo "Oh-My-ZSH already installed!" >> $log_file
 fi
 
+
+########################
+#         bat          #
+########################
+
 try_install bat https://github.com/sharkdp/bat/releases/download/v0.19.0/bat_0.19.0_$ARCH.deb
+
+
+########################
+#         lsd          #
+########################
+
 try_install lsd https://github.com/Peltoche/lsd/releases/download/0.21.0/lsd_0.21.0_$ARCH.deb
 if [ $(grep ~/.zshrc -e lsd | wc -c) -eq 0 ] ; then echo "alias l='lsd -lah'" >> ~/.zshrc ; fi
 
+
+########################
+#         duf          #
+########################
+
 try_install duf https://github.com/muesli/duf/releases/download/v0.8.1/duf_0.8.1_linux_$ARCH.deb
 
+
+########################
+#        broot         #
+########################
+
 # try_install broot
-if [ ! "$(command -v mcfly)" ]; then
+if [ ! "$(command -v broot)" ]; then
    banner "broot"
    if [ $? -gt 0 ] && [ "$(uname -o)" = "GNU/Linux" ] && [ "$(uname -m)" = "x86_64" ]  ; then 
       wget https://dystroy.org/broot/download/x86_64-linux/broot
       sudo chmod a+x broot
       sudo mv broot /usr/local/bin/
    else echo "broot not installed. Please install manually." >> $ERRLOG_FILE ; fi
+   else 
+      echo "broot already installed!" >> $log_file
 fi
 
+
+########################
+#       fd-find        #
+########################
+
 try_install fd-find https://github.com/sharkdp/fd/releases/download/v8.3.2/fd_8.3.2_$ARCH.deb fd
+
+
+########################
+#        mcfly         #
+########################
 
 if [ ! "$(command -v mcfly)" ]; then
    banner "mcfly"
@@ -70,14 +109,27 @@ if [ ! "$(command -v mcfly)" ]; then
       if [ $(grep ~/.zshrc -e mcfly | wc -c) -eq 0 ] ; then echo 'eval $(mcfly init zsh)' >> ~/.zshrc ; fi
       if [ $(grep ~/.bashrc -e mcfly | wc -c) -eq 0 ] ; then echo 'eval $(mcfly init bash)' >> ~/.bashrc ; fi
    fi 
+   else 
+      echo "mcfly already installed!" >> $log_file
 fi
 
 
-if [ ! -d ~/.fzf ]; then
-   banner "fzf"
-   git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-   ~/.fzf/install --all
-fi
+########################
+#         fzf          #
+########################
+
+# if [ ! -d ~/.fzf ]; then
+#    banner "fzf"
+#    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+#    ~/.fzf/install --all
+#    else 
+#       echo "fzf already installed!" >> $log_file
+# fi
+
+
+########################
+#         cheat        #
+########################
 
 if [ ! "$(command -v cheat)" ]; then
    banner "cheat"
@@ -86,7 +138,15 @@ if [ ! "$(command -v cheat)" ]; then
    wget $repo
    gzip -d $(basename $repo) && rm $(basename $repo)
    sudo chmod a+x cheat* && sudo mv cheat* /usr/local/bin/cheat
+   cd .. && rm -r tmp
+   else 
+      echo "cheat already installed!" >> $log_file
 fi
+
+
+########################
+#          exa         #
+########################
 
 # banner "exa"
 # exa_repo="https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-x86_64-v0.10.1.zip"
