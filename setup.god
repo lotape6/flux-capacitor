@@ -74,7 +74,7 @@ if [ ! "$(command -v broot)" ]; then
       wget https://dystroy.org/broot/download/x86_64-linux/broot
       sudo chmod a+x broot
       sudo mv broot /usr/local/bin/
-   else echo "broot not installed. Please install manually." >> $ERRLOG_FILE ; fi
+   else echo "broot not installed. Please install manually." >> $log_file ; fi
    else 
       echo "broot already installed!" >> $log_file
 fi
@@ -141,6 +141,14 @@ fi
 ########################
 
 try_install "tldr"
+
+
+########################
+#        bottom        #
+########################
+
+try_install "bottom" https://github.com/ClementTsang/bottom/releases/download/0.6.8/bottom_0.6.8_amd64.deb
+
 
 ########################
 #          exa         #
