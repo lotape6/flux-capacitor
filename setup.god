@@ -36,7 +36,11 @@ read -p "Ready to plug the flux capacitor to your computer? [Y/n]" INPUT
 
 echo "   Flux-Capacitor modules summary:"
 for key in "${!enable[@]}"; do
-    echo "      Enable $key? ${enable[$key]}"
+   if [ ${enable[$key]} = "true" ]; then
+      echo -e "Enable \e[4m$key\e[0m \t \e[32m ${enable[$key]} \e[0m"
+   else
+      echo -e "Enable \e[4m$key\e[0m \t \e[31m ${enable[$key]} \e[0m"
+   fi 
 done
 
 
@@ -56,7 +60,7 @@ fi
 #         omz!         #
 ########################
 
-if [ $enable[omz] = "true" ] && [ ! -d ~/.oh-my-zsh ]; then
+if [ ${enable[omz]} = "true" ] && [ ! -d ~/.oh-my-zsh ]; then
    banner "Oh-My-Zsh!"
    install "zsh curl wget git net-tools"
    wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
@@ -78,7 +82,7 @@ try_install bat https://github.com/sharkdp/bat/releases/download/v0.19.0/bat_0.1
 
 try_install lsd https://github.com/Peltoche/lsd/releases/download/0.21.0/lsd_0.21.0_$ARCH.deb
 if [ $(grep ~/.zshrc -e lsd | wc -c) -eq 0 ] ; then echo "alias l='lsd -lah'" >> ~/.zshrc ; fi
-if [ $(grep ~/.bashrc -e lsd | wc -c) -eq 0 ] ; then echo "alias l='lsd -lah'" >> ~/.zshrc ; fi
+if [ $(grep ~/.bashrc -e lsd | wc -c) -eq 0 ] ; then echo "alias l='lsd -lah'" >> ~/.bashrc ; fi
 
 
 ########################
@@ -93,7 +97,7 @@ try_install duf https://github.com/muesli/duf/releases/download/v0.8.1/duf_0.8.1
 ########################
 
 # try_install broot
-if [ $enable[broot] = "true" ] && [ ! "$(command -v broot)" ]; then
+if [ ${enable[broot]} = "true" ] && [ ! "$(command -v broot)" ]; then
    banner "broot"
    if [ $? -gt 0 ] && [ "$(uname -o)" = "GNU/Linux" ] && [ "$(uname -m)" = "x86_64" ]  ; then 
       wget https://dystroy.org/broot/download/x86_64-linux/broot
@@ -116,7 +120,7 @@ try_install fd-find https://github.com/sharkdp/fd/releases/download/v8.3.2/fd_8.
 #        mcfly         #
 ########################
 
-if [ $enable[mcfly] = "true" ] && [ ! "$(command -v mcfly)" ]; then
+if [ ${enable[mcfly]} = "true" ] && [ ! "$(command -v mcfly)" ]enable[omz]; then
    banner "mcfly"
    if [ "$(uname -o)" = "GNU/Linux" ] && [ "$(uname -m)" = "x86_64" ]  ; then 
       repo="https://github.com/cantino/mcfly/releases/download/v0.5.13/mcfly-v0.5.13-x86_64-unknown-linux-musl.tar.gz"
@@ -124,8 +128,16 @@ if [ $enable[mcfly] = "true" ] && [ ! "$(command -v mcfly)" ]; then
       tar -zxvf $(basename $repo)
       sudo chmod a+x mcfly && sudo mv mcfly /usr/local/bin/
       rm -r $(basename $repo)*
-      if [ $(grep ~/.zshrc -e mcfly | wc -c) -eq 0 ] ; then echo 'eval "$(mcfly init zsh)"' >> ~/.zshrc ; fi
-      if [ $(grep ~/.bashrc -e mcfly | wc -c) -eq 0 ] ; then echo 'eval "$(mcfly init bash)"' >> ~/.bashrc ; fi
+      if [ $(grep ~/.zshrc -e mcfly | wc -c) -eq 0 ] ; then
+         echo 'eval "$(mcfly init zsh)"' >> ~/.zshrc 
+         echo 'export MCFLY_FUZZY=2' >> ~/.zshrc
+         echo 'export MCFLY_RESULTS=50' >> ~/.zshrc
+       fi
+      if [ $(grep ~/.bashrc -e mcfly | wc -c) -eq 0 ] ; then 
+         echo 'eval "$(mcfly init bash)"' >> ~/.bashrc 
+         echo 'export MCFLY_FUZZY=2' >> ~/.bashrc
+         echo 'export MCFLY_RESULTS=50' >> ~/.bashrc
+      fi
    fi 
    else 
       echo "mcfly already installed!" >> $log_file
@@ -136,7 +148,7 @@ fi
 #         fzf          #
 ########################
 
-if [ $enable[fzf] = "true" ] && [ ! -d ~/.fzf ]; then
+if [ ${enable[fzf]} = "true" ] && [ ! -d ~/.fzf ]; then
    banner "fzf"
    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
    ~/.fzf/install --all
@@ -149,7 +161,7 @@ fi
 #         cheat        #
 ########################
 
-if [ $enable[cheat] = "true" ] && [ ! "$(command -v cheat)" ]; then
+if [ ${enable[cheat]} = "true" ] && [ ! "$(command -v cheat)" ]; then
    banner "cheat"
    mkdir tmp && cd tmp
    repo="https://github.com/cheat/cheat/releases/download/4.2.3/cheat-linux-$ARCH.gz"
@@ -179,7 +191,7 @@ try_install "bottom" https://github.com/ClementTsang/bottom/releases/download/0.
 #          exa         #
 ########################
 
-if [ $enable[exa] = "true" ] && [ ! "$(command -v exa)" ]; then
+if [ ${enable[exa]} = "true" ] && [ ! "$(command -v exa)" ]; then
    banner "exa"
    exa_repo="https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-x86_64-v0.10.1.zip"
 
