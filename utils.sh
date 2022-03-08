@@ -30,7 +30,7 @@ install_deb (){
 # try_install $PACKAGE_NAME $PACKAGE_URL   [$ARCH flag supported]
 # Checks if the package is already installed, if not, tries to install it from repositories or the given .deb URL
 try_install () {
-   if [ ! "$(command -v ${3:-$1})" ]; then
+   if [ $enable[$1] = "true" ] && [ ! "$(command -v ${3:-$1})" ]; then
       banner $1
       install $1
       if [ $? -gt 0 ]
