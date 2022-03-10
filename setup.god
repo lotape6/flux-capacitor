@@ -20,6 +20,8 @@ declare -A enable=(
 [exa]="false"
 [gtop]="true"
 [sd]="true"
+[hyperfine]="true"
+[gping]="true"
 )
 
 
@@ -111,7 +113,7 @@ if [ ${enable[broot]} = "true" ] && [ ! "$(command -v broot)" ]; then
       wget https://dystroy.org/broot/download/x86_64-linux/broot
       sudo chmod a+x broot
       sudo mv broot /usr/local/bin/
-   else echo "broot not installed. Please install manually." >> $log_file ; fi
+   else echo "broot not installed. Please install it manually." >> $log_file ; fi
    else 
       echo "broot already installed!" >> $log_file
 fi
@@ -192,7 +194,7 @@ try_install "tldr"
 #        bottom        #
 ########################
 
-try_install "bottom" https://github.com/ClementTsang/bottom/releases/download/0.6.8/bottom_0.6.8_amd64.deb
+try_install "bottom" https://github.com/ClementTsang/bottom/releases/download/0.6.8/bottom_0.6.8_$ARCH.deb
 
 
 ########################
@@ -209,7 +211,7 @@ if [ ${enable[exa]} = "true" ] && [ ! "$(command -v exa)" ]; then
       rm -r tmp
       rm -r $(basename $exa_repo)
    else  
-      echo "exa with repo $exa_repo not installed. Please install manually." >> $ERRLOG_FILE
+      echo "exa with repo $exa_repo not installed. Please install it manually." >> $ERRLOG_FILE
    fi
 fi
 
@@ -236,7 +238,7 @@ if [ ${enable[gtop]} = "true" ] && [ ! "$(command -v gtop)" ]; then
                echo "alias gtop='docker run --rm -it --name gtop --net="host" --pid="host" aksakalli/gtop'" >> ~/.bashrc 
             fi
          else
-            echo "gtop not installed. Please install manually or install docker and plug the flux capacitor again" >> $ERRLOG_FILE
+            echo "gtop not installed. Please install it manually or install docker and plug the flux capacitor again" >> $ERRLOG_FILE
          fi
       fi
    else
@@ -256,10 +258,38 @@ if [ ${enable[sd]} = "true" ] && [ ! "$(command -v sd)" ]; then
       cargo install sd
    fi
    if [ ! "$(command -v sd)" ] ; then
-      echo "sd not installed. Please install manually." >> $ERRLOG_FILE
+      echo "sd not installed. Please install it manually." >> $ERRLOG_FILE
    fi
 fi
-   
+
+
+########################
+#       hyperfine      #
+########################
+
+try_install "hyperfine" "https://github.com/sharkdp/hyperfine/releases/download/v1.13.0/hyperfine_1.13.0_$ARCH.deb"
+
+
+########################
+#         gping        #
+########################
+
+
+if [ ${enable[gtop]} = "true" ] && [ ! "$(command -v gping)" ]; then
+   banner "gping"
+
+   install "gping"
+   if [ $? -gt 0 ] && [ -x "$(command -v apt-get)" ]; then
+      echo "deb http://packages.azlux.fr/debian/ buster main" | sudo tee /etc/apt/sources.list.d/azlux.list
+      wget -qO - https://azlux.fr/repo.gpg.key | sudo apt-key add -
+      sudo apt update
+      sudo apt install gping          
+   else 
+      echo "gping not installed. Please install it manually." >> $ERRLOG_FILE
+   fi
+
+fi
+
 
 
 if [ ! -f ~/.flux-capacitor/logs/LATEST.loga ]; then rm $(dirname $log_file)/LATEST.log ; fi

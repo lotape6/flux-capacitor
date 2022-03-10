@@ -38,7 +38,7 @@ try_install () {
          wget $2
          FILE=$(basename $2)
          install_deb $FILE 
-         if [ $? -gt 0 ]; then echo "$1 with repo $2 not installed. Please install manually." >> $log_file ; fi
+         if [ $? -gt 0 ]; then echo "$1 with repo $2 not installed. Please install it manually." >> $log_file ; fi
          rm $FILE 
       fi
    else 
