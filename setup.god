@@ -18,6 +18,7 @@ declare -A enable=(
 [tldr]="true"
 [bottom]="true"
 [exa]="false"
+[gtop]="true"
 )
 
 
@@ -202,6 +203,37 @@ if [ ${enable[exa]} = "true" ] && [ ! "$(command -v exa)" ]; then
       rm -r $(basename $exa_repo)
    else  
       echo "exa with repo $exa_repo not installed. Please install manually." >> $ERRLOG_FILE
+   fi
+fi
+
+if [ ! -f ~/.flux-capacitor/logs/LATEST.loga ]; then rm $(dirname $log_file)/LATEST.log ; fi
+ln -s $log_file $(dirname $log_file)/LATEST.log 
+
+
+########################
+#         gtop         #
+########################
+
+if [ ${enable[gtop]} = "true" ] && [ ! "$(command -v gtop)" ]; then
+   banner "gtop"
+   if [ ! "$(command -v npm)" ] ; then
+      install "nodejs npm"
+      if [ $? -eq 0 ]; then
+         npm install gtop -g
+      else
+         if [ "$(command -v docker)" ]; then
+            if [ $(grep ~/.zshrc -e gtop | wc -c) -eq 0 ] ; then
+               echo "alias gtop='docker run --rm -it --name gtop --net="host" --pid="host" aksakalli/gtop'" >> ~/.zshrc 
+            fi
+            if [ $(grep ~/.bashrc -e gtop | wc -c) -eq 0 ] ; then
+               echo "alias gtop='docker run --rm -it --name gtop --net="host" --pid="host" aksakalli/gtop'" >> ~/.bashrc 
+            fi
+         else
+            echo "gtop not installed. Please install manually or install docker and plug the flux capacitor again" >> $ERRLOG_FILE
+         fi
+      fi
+   else
+      npm install gtop -g
    fi
 fi
 
