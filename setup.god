@@ -52,7 +52,7 @@ if [ "$INPUT" = "y" ] || [ "$INPUT" = "Y" ] || [ "$INPUT" = "" ]; then
    # pip3 install --user gif-for-cli
    install "toilet curl"
 
-   if [ ${enable[sd]} = "true" ] ; then
+   if [ ${enable[sd]} = "true" ] && [ ! "$(command -v cargo)" ]; then
       curl https://sh.rustup.rs -sSf | sh
       source ~/.$(basename $(echo $SHELL))rc
    fi
