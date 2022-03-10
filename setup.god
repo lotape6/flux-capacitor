@@ -19,6 +19,7 @@ declare -A enable=(
 [bottom]="true"
 [exa]="false"
 [gtop]="true"
+[sd]="true"
 )
 
 
@@ -49,7 +50,13 @@ if [ "$INPUT" = "y" ] || [ "$INPUT" = "Y" ] || [ "$INPUT" = "" ]; then
    # TODO: Add fantasy ASCII gif of enabling time travels
    # install "ffmpeg zlib* libjpeg* python3-setuptools"
    # pip3 install --user gif-for-cli
-   install "toilet"
+   install "toilet curl"
+
+   if [ ${enable[sd]} = "true" ] ; then
+      curl https://sh.rustup.rs -sSf | sh
+      source ~/.$(basename $(echo $SHELL))rc
+   fi
+   
    banner "Get Ready!"   
 else
    echo "Ok."
@@ -121,7 +128,7 @@ try_install fd-find https://github.com/sharkdp/fd/releases/download/v8.3.2/fd_8.
 #        mcfly         #
 ########################
 
-if [ ${enable[mcfly]} = "true" ] && [ ! "$(command -v mcfly)" ]enable[omz]; then
+if [ ${enable[mcfly]} = "true" ] && [ ! "$(command -v mcfly)" ]; then
    banner "mcfly"
    if [ "$(uname -o)" = "GNU/Linux" ] && [ "$(uname -m)" = "x86_64" ]  ; then 
       repo="https://github.com/cantino/mcfly/releases/download/v0.5.13/mcfly-v0.5.13-x86_64-unknown-linux-musl.tar.gz"
@@ -237,8 +244,25 @@ if [ ${enable[gtop]} = "true" ] && [ ! "$(command -v gtop)" ]; then
    fi
 fi
 
+
+########################
+#          sd          #
+########################
+
+if [ ${enable[sd]} = "true" ] && [ ! "$(command -v sd)" ]; then
+   banner "sd"
+   install "sd"
+   if [ $? -gt 0 ] && [ "$(command -v cargo)" ] ; then
+      cargo install sd
+   fi
+   if [ ! "$(command -v sd)" ] ; then
+      echo "sd not installed. Please install manually." >> $ERRLOG_FILE
+   fi
+fi
+   
+
+
 if [ ! -f ~/.flux-capacitor/logs/LATEST.loga ]; then rm $(dirname $log_file)/LATEST.log ; fi
 ln -s $log_file $(dirname $log_file)/LATEST.log 
-
 
 # spd-say -p 10 -l ES "¡De super puta madre socio!" 
