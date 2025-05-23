@@ -142,7 +142,7 @@ This project was created with the help of AI code agents as a learning exercise.
 
 ## TODOs
 
-- [ ] Refactor uninstall according to https://github.com/lotape6/flux-capacitor/blob/master/docs/BASH_GUIDELINES.md
+- [ ] Refactor uninstall according to ```docs/BASH_GUIDELINES.md```
 - [ ] WIP
 
 ## References
