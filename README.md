@@ -110,6 +110,7 @@ This project was created with the help of AI code agents as a learning exercise.
 - [ ] Create basic project structure.
 - [ ] Create installation script
 - [x] Update wiki with: Installation, Usage, Disclaimer
+- [x] Add automated issue assignment workflow
 
 ## References
 - [Modern Unix collection of alternative commands](https://github.com/ibraheemdev/modern-unix)
