@@ -142,7 +142,6 @@ This project was created with the help of AI code agents as a learning exercise.
 
 ## TODOs
 
-- [ ] Add the following dependencies. Add them to install.sh script and update README.md. Dependencies: tmux, fzf, bat, delta. Create boilerplate configuration file (.tmux.conf) in conf/ folder for tmux dependency
 - [ ] Refactor uninstall according to https://github.com/lotape6/flux-capacitor/blob/master/docs/BASH_GUIDELINES.md
 - [ ] WIP
 
