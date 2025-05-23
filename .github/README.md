@@ -4,9 +4,6 @@ This directory contains GitHub Actions workflows for automating various tasks in
 
 ## Workflows
 
-### CI (ci.yml)
-Runs continuous integration tests when code is pushed to the master branch or pull requests are created.
-
 ### Auto Issue Assignment (issue-assignment.yml)
 Automatically assigns new GitHub issues to the user 'copilot' if they remain unassigned for 30 seconds after creation.
 
