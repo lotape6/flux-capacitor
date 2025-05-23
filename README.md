@@ -27,6 +27,10 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 ### Prerequisites
 - Git
 - Curl
+- tmux
+- fzf
+- bat
+- delta
 - Basic willpower to continue using terminal
 
 ### Quick Install
@@ -138,10 +142,9 @@ This project was created with the help of AI code agents as a learning exercise.
 
 ## TODOs
 
-- [ ] Create basic project structure.
-- [ ] Create installation script
-- [x] Update wiki with: Installation, Usage, Disclaimer
-- [x] Add automated issue assignment workflow
+- [ ] Add the following dependencies. Add them to install.sh script and update README.md. Dependencies: tmux, fzf, bat, delta. Create boilerplate configuration file (.tmux.conf) in conf/ folder for tmux dependency
+- [ ] Refactor uninstall according to https://github.com/lotape6/flux-capacitor/blob/master/docs/BASH_GUIDELINES.md
+- [ ] WIP
 
 ## References
 - [Modern Unix collection of alternative commands](https://github.com/ibraheemdev/modern-unix)

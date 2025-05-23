@@ -176,7 +176,72 @@ check_dependencies() {
         exit 1
     fi
     
-    log "All dependencies are ${GREEN}installed${RESET}."
+    # Check for additional dependencies
+    local missing_deps=()
+    local optional_deps=()
+    
+    for dep in tmux fzf bat delta; do
+        if ! command -v $dep &> /dev/null; then
+            missing_deps+=("$dep")
+            optional_deps+=("$dep")
+        fi
+    done
+    
+    if [ ${#missing_deps[@]} -gt 0 ] && $VERBOSE; then
+        warn "Some optional dependencies are not installed: ${missing_deps[*]}"
+        
+        # Detect package manager
+        if command -v apt &> /dev/null; then
+            warn "Using apt to install dependencies"
+            # Handle bat package name difference on Ubuntu/Debian
+            for i in "${!optional_deps[@]}"; do
+                if [[ ${optional_deps[$i]} == "bat" ]]; then
+                    optional_deps[$i]="batcat"
+                    break
+                fi
+            done
+            log "Installing: ${optional_deps[*]}"
+            if $VERBOSE; then
+                sudo apt update && sudo apt install -y "${optional_deps[@]}"
+            else
+                sudo apt update &>/dev/null && sudo apt install -y "${optional_deps[@]}" &>/dev/null
+            fi
+        elif command -v dnf &> /dev/null; then
+            warn "Using dnf to install dependencies"
+            if $VERBOSE; then
+                sudo dnf install -y "${optional_deps[@]}"
+            else
+                sudo dnf install -y "${optional_deps[@]}" &>/dev/null
+            fi
+        elif command -v yum &> /dev/null; then
+            warn "Using yum to install dependencies"
+            if $VERBOSE; then
+                sudo yum install -y "${optional_deps[@]}"
+            else
+                sudo yum install -y "${optional_deps[@]}" &>/dev/null
+            fi
+        elif command -v pacman &> /dev/null; then
+            warn "Using pacman to install dependencies"
+            if $VERBOSE; then
+                sudo pacman -S --noconfirm "${optional_deps[@]}"
+            else
+                sudo pacman -S --noconfirm "${optional_deps[@]}" &>/dev/null
+            fi
+        elif command -v brew &> /dev/null; then
+            warn "Using brew to install dependencies"
+            if $VERBOSE; then
+                brew install "${optional_deps[@]}"
+            else
+                brew install "${optional_deps[@]}" &>/dev/null
+            fi
+        else
+            warn "Could not detect package manager. Please install ${missing_deps[*]} manually."
+        fi
+    fi
+    
+    if $VERBOSE; then
+        log "All dependencies are ${GREEN}installed${RESET}."
+    fi
 }
 
 # Create necessary directories
@@ -204,6 +269,19 @@ copy_configs() {
     
     log "Copying configuration files to ${BOLD}${CONFIG_DIR}${RESET}"
     cp "${SCRIPT_DIR}/config/flux.conf" "${CONFIG_DIR}/flux.conf"
+    
+    # Copy tmux configuration if it exists
+    if [ -f "${SCRIPT_DIR}/conf/.tmux.conf" ]; then
+        if $VERBOSE; then
+            log "Copying tmux configuration file to ${BOLD}${HOME}${RESET}"
+        fi
+        cp "${SCRIPT_DIR}/conf/.tmux.conf" "${HOME}/.tmux.conf"
+        if $VERBOSE; then
+            log "tmux configuration file copied ${GREEN}successfully${RESET}."
+        fi
+    elif $VERBOSE; then
+        warn "tmux configuration file not found in ${SCRIPT_DIR}/conf/"
+    fi
     
     # Copy installation files
     log "Copying installation files to ${BOLD}${INSTALLATION_DIR}${RESET}"
