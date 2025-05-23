@@ -178,65 +178,21 @@ check_dependencies() {
     
     # Check for additional dependencies
     local missing_deps=()
-    local optional_deps=()
     
     for dep in tmux fzf bat delta; do
         if ! command -v $dep &> /dev/null; then
             missing_deps+=("$dep")
-            optional_deps+=("$dep")
         fi
     done
     
     if [ ${#missing_deps[@]} -gt 0 ] && $VERBOSE; then
         warn "Some optional dependencies are not installed: ${missing_deps[*]}"
+        log "Installing missing dependencies..."
         
-        # Detect package manager
-        if command -v apt &> /dev/null; then
-            warn "Using apt to install dependencies"
-            # Handle bat package name difference on Ubuntu/Debian
-            for i in "${!optional_deps[@]}"; do
-                if [[ ${optional_deps[$i]} == "bat" ]]; then
-                    optional_deps[$i]="batcat"
-                    break
-                fi
-            done
-            log "Installing: ${optional_deps[*]}"
-            if $VERBOSE; then
-                sudo apt update && sudo apt install -y "${optional_deps[@]}"
-            else
-                sudo apt update &>/dev/null && sudo apt install -y "${optional_deps[@]}" &>/dev/null
-            fi
-        elif command -v dnf &> /dev/null; then
-            warn "Using dnf to install dependencies"
-            if $VERBOSE; then
-                sudo dnf install -y "${optional_deps[@]}"
-            else
-                sudo dnf install -y "${optional_deps[@]}" &>/dev/null
-            fi
-        elif command -v yum &> /dev/null; then
-            warn "Using yum to install dependencies"
-            if $VERBOSE; then
-                sudo yum install -y "${optional_deps[@]}"
-            else
-                sudo yum install -y "${optional_deps[@]}" &>/dev/null
-            fi
-        elif command -v pacman &> /dev/null; then
-            warn "Using pacman to install dependencies"
-            if $VERBOSE; then
-                sudo pacman -S --noconfirm "${optional_deps[@]}"
-            else
-                sudo pacman -S --noconfirm "${optional_deps[@]}" &>/dev/null
-            fi
-        elif command -v brew &> /dev/null; then
-            warn "Using brew to install dependencies"
-            if $VERBOSE; then
-                brew install "${optional_deps[@]}"
-            else
-                brew install "${optional_deps[@]}" &>/dev/null
-            fi
-        else
-            warn "Could not detect package manager. Please install ${missing_deps[*]} manually."
-        fi
+        # Use the install-dependency.sh script for each dependency
+        for dep in "${missing_deps[@]}"; do
+            "${SCRIPT_DIR}/install/install-dependency.sh" "$dep"
+        done
     fi
     
     if $VERBOSE; then
