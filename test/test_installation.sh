@@ -3,7 +3,7 @@ set -e
 
 # Install project
 echo "Running installation script..."
-../install.sh -v
+"${BASH_SOURCE%/*}/../install.sh" -v
 
 # Basic checks
 echo "Checking configuration directory..."
