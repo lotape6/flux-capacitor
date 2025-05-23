@@ -1,12 +1,8 @@
 name: Assign Current Issue
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - master
-    paths:
-      - '.github/workflows/assign-current-issue.yml'
+  issues:
+    types: [opened]
 
 jobs:
   assign-issue:
@@ -17,10 +13,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = 9; // This is the current issue number
+            const issueNumber = context.issue.number;
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            
+
             try {
               // Check if the issue exists and is unassigned
               const issue = await github.rest.issues.get({
@@ -28,10 +24,10 @@ jobs:
                 repo,
                 issue_number: issueNumber,
               });
-              
+
               if (!issue.data.assignee) {
                 console.log(`Assigning issue #${issueNumber} to 'copilot'...`);
-                
+
                 // Assign to 'copilot'
                 await github.rest.issues.addAssignees({
                   owner,
@@ -39,7 +35,7 @@ jobs:
                   issue_number: issueNumber,
                   assignees: ['copilot'],
                 });
-                
+
                 console.log(`Issue #${issueNumber} has been assigned to 'copilot'`);
               } else {
                 console.log(`Issue #${issueNumber} already has an assignee: ${issue.data.assignee.login}`);
