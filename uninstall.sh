@@ -21,8 +21,9 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
-# Verbose mode flag
+# Flags
 VERBOSE=false
+FORCE_REMOVE=false
 
 # Print standard log message
 log() {
@@ -67,6 +68,7 @@ show_help() {
     echo
     echo -e "${BOLD}Options:${RESET}"
     echo "  -v           Enable verbose output"
+    echo "  -f           Force removal without prompts"
     echo "  -c <path>    Override default config directory (default: ${CONFIG_DIR})"
     echo "  -i <path>    Override default installation directory (default: ${INSTALLATION_DIR})"
     echo "  -h           Show this help message"
@@ -74,10 +76,13 @@ show_help() {
 }
 
 # Parse command line arguments
-while getopts ":vc:i:h" opt; do
+while getopts ":vfc:i:h" opt; do
     case ${opt} in
         v)
             VERBOSE=true
+            ;;
+        f)
+            FORCE_REMOVE=true
             ;;
         c)
             CONFIG_DIR="${OPTARG}"
@@ -117,15 +122,17 @@ check_directories() {
     fi
     
     if $missing && [ "${CONFIG_DIR}" != "${HOME}/.config/flux" -o "${INSTALLATION_DIR}" != "${HOME}/.local/share/flux" ]; then
-        warn "Using non-default directories. If you installed with custom paths, please use -c and -i options."
-        echo -e "${YELLOW}${BOLD}You're using non-default directories:${RESET}"
-        echo -e "  Config dir: ${BOLD}${CONFIG_DIR}${RESET}"
-        echo -e "  Install dir: ${BOLD}${INSTALLATION_DIR}${RESET}"
-        
-        read -p "Continue with these directories? (y/N): " continue_custom
-        if [[ ! "${continue_custom}" =~ ^[Yy]$ ]]; then
-            log "Uninstallation cancelled."
-            exit 0
+        if ! $FORCE_REMOVE; then
+            warn "Using non-default directories. If you installed with custom paths, please use -c and -i options."
+            echo -e "${YELLOW}${BOLD}You're using non-default directories:${RESET}"
+            echo -e "  Config dir: ${BOLD}${CONFIG_DIR}${RESET}"
+            echo -e "  Install dir: ${BOLD}${INSTALLATION_DIR}${RESET}"
+            
+            read -p "Continue with these directories? (y/N): " continue_custom
+            if [[ ! "${continue_custom}" =~ ^[Yy]$ ]]; then
+                log "Uninstallation cancelled."
+                exit 0
+            fi
         fi
     fi
 }
@@ -135,10 +142,15 @@ remove_configs() {
     if [ -d "${CONFIG_DIR}" ]; then
         banner "Configuration Files"
         
-        # Ask user about config files
-        echo -e "Do you want to ${YELLOW}delete${RESET} the configuration files at ${BOLD}${CONFIG_DIR}${RESET}?"
-        echo -e "If you choose to keep them, they will ${GREEN}remain in place${RESET} for future use."
-        read -p "Delete configuration files? (y/N): " delete_config
+        delete_config="n"
+        # Ask user about config files unless force mode is enabled
+        if ! $FORCE_REMOVE; then
+            echo -e "Do you want to ${YELLOW}delete${RESET} the configuration files at ${BOLD}${CONFIG_DIR}${RESET}?"
+            echo -e "If you choose to keep them, they will ${GREEN}remain in place${RESET} for future use."
+            read -p "Delete configuration files? (y/N): " delete_config
+        else
+            delete_config="y" # In force mode, always delete configs
+        fi
         
         if [[ "${delete_config}" =~ ^[Yy]$ ]]; then
             log "Backing up and removing configuration files..."
@@ -193,15 +205,20 @@ main() {
     fi
 }
 
-# Confirm uninstallation
-echo -e "${BOLD}${YELLOW}This will uninstall Flux Capacitor.${RESET}"
-echo -e "  • Installation directory will be ${RED}completely removed${RESET}"
-echo -e "  • You will be asked about keeping or removing configuration files"
-read -p "Continue with uninstallation? (y/N): " confirm
-
-if [[ "${confirm}" =~ ^[Yy]$ ]]; then
-    main
+# Confirm uninstallation if not in force mode
+if ! $FORCE_REMOVE; then
+    echo -e "${BOLD}${YELLOW}This will uninstall Flux Capacitor.${RESET}"
+    echo -e "  • Installation directory will be ${RED}completely removed${RESET}"
+    echo -e "  • You will be asked about keeping or removing configuration files"
+    read -p "Continue with uninstallation? (y/N): " confirm
+    
+    if [[ "${confirm}" =~ ^[Yy]$ ]]; then
+        main
+    else
+        echo -e "${YELLOW}Uninstallation cancelled.${RESET}"
+        exit 0
+    fi
 else
-    echo -e "${YELLOW}Uninstallation cancelled.${RESET}"
-    exit 0
+    # In force mode, run main without confirmation
+    main
 fi
