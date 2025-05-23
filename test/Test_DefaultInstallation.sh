@@ -11,7 +11,7 @@ INSTALL_DIR="$HOME/.local/share/flux-capacitor"
 CONFIG_DIR="$HOME/.config/flux-capacitor"
 
 # Run installation script with output redirected to capture any messages
-INSTALL_OUTPUT=$(./install.sh 2>&1)
+INSTALL_OUTPUT=$(../install.sh 2>&1)
 
 # Check if installation script produced any output - it should be empty
 if [ -n "$INSTALL_OUTPUT" ]; then
@@ -40,7 +40,7 @@ fi
 echo "Installation successful, now testing uninstallation..."
 
 # Run uninstallation script and capture output
-UNINSTALL_OUTPUT=$(./uninstall.sh 2>&1)
+UNINSTALL_OUTPUT=$(../uninstall.sh 2>&1)
 
 # Check if uninstallation script produced the expected confirmation messages
 if [ -z "$UNINSTALL_OUTPUT" ]; then

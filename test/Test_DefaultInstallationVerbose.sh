@@ -11,7 +11,7 @@ INSTALL_DIR="$HOME/.local/share/flux-capacitor"
 CONFIG_DIR="$HOME/.config/flux-capacitor"
 
 # Run installation script with verbose flag
-INSTALL_OUTPUT=$(./install.sh -v 2>&1)
+INSTALL_OUTPUT=$(../install.sh -v 2>&1)
 
 # Check if installation script produced output with verbose flag
 if [ -z "$INSTALL_OUTPUT" ]; then
@@ -39,7 +39,7 @@ fi
 echo "Installation successful, now testing uninstallation with verbose flag..."
 
 # Run uninstallation script with verbose flag
-UNINSTALL_OUTPUT=$(./uninstall.sh -v 2>&1)
+UNINSTALL_OUTPUT=$(../uninstall.sh -v 2>&1)
 
 # Check if uninstallation script produced output with verbose flag
 if [ -z "$UNINSTALL_OUTPUT" ]; then

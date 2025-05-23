@@ -11,7 +11,7 @@ CUSTOM_INSTALL_DIR="/tmp/flux-capacitor-install"
 CUSTOM_CONFIG_DIR="/tmp/flux-capacitor-config"
 
 # Run installation script with custom directories
-INSTALL_OUTPUT=$(./install.sh -i "$CUSTOM_INSTALL_DIR" -c "$CUSTOM_CONFIG_DIR" 2>&1)
+INSTALL_OUTPUT=$(../install.sh -i "$CUSTOM_INSTALL_DIR" -c "$CUSTOM_CONFIG_DIR" 2>&1)
 
 # Check if installation script produced any output - it should be empty
 if [ -n "$INSTALL_OUTPUT" ]; then
@@ -40,7 +40,7 @@ fi
 echo "Custom installation successful, now testing uninstallation with force flag..."
 
 # Run uninstallation script with force flag and custom directories
-UNINSTALL_OUTPUT=$(./uninstall.sh -f -i "$CUSTOM_INSTALL_DIR" -c "$CUSTOM_CONFIG_DIR" 2>&1)
+UNINSTALL_OUTPUT=$(../uninstall.sh -f -i "$CUSTOM_INSTALL_DIR" -c "$CUSTOM_CONFIG_DIR" 2>&1)
 
 # Check if uninstallation script produced any output - it should be empty with -f
 if [ -n "$UNINSTALL_OUTPUT" ]; then
