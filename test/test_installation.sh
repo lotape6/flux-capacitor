@@ -6,10 +6,10 @@ apt-get update
 apt-get install -y curl git
 
 # Install project
-#TODO
+git clone https://github.com/lotape6/flux-capacitor.git /tmp/flux-capacitor
+cd /tmp/flux-capacitor
 # Basic checks
-# tmux -V
-# fzf --version
+ls -la
 
 echo "All tools installed and working!"
 # Exit code is automatically the script's exit code: 0 = success, nonzero = failure

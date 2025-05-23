@@ -9,7 +9,7 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 
 | Platform | Status |
 | --- | --- |
-| Ubuntu 22.04 | ![Build Status](https://img.shields.io/badge/build-passing-brightgreen) |
+| Ubuntu 22.04 | ![Build Status](https://github.com/lotape6/flux-capacitor/workflows/CI/badge.svg?branch=master) |
 | macOS | ![Build Status](https://img.shields.io/badge/build-WIP-yellow) |
 | Windows | ![Build Status](https://img.shields.io/badge/build-WIP-yellow) |
 
