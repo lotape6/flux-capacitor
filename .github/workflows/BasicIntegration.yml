@@ -1,6 +1,6 @@
 name: Basic Integration
 
-'on':
+on:
   push:
     branches: [master]
   pull_request:
@@ -11,43 +11,41 @@ name: Basic Integration
 jobs:
   test-installation:
     runs-on: ubuntu-latest
+    # Only run on PR or push events
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for accurate file change detection
 
-      - name: Check if relevant files changed
-        id: check-files
+      - name: Check for changed .sh files
+        id: check-sh-files
         run: |
-          # List changed files (PR or push)
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git fetch origin ${{ github.base_ref }}
-            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          else
-            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-          fi
-
-          echo "Changed files:"
-          echo "$CHANGED_FILES"
-
-          # Check if any match the critical paths
-          echo "$CHANGED_FILES" | grep -E '(^install\.sh$|^uninstall\.sh$|^install/|^config/)' && SHOULD_RUN=true || SHOULD_RUN=false
-          echo "should-run=$SHOULD_RUN" >> $GITHUB_OUTPUT
+          chmod +x .github/scripts/check-changed-sh-files.sh
+          RESULT=$(.github/scripts/check-changed-sh-files.sh "${{ github.event_name }}" "${{ github.base_ref }}" "${{ github.event.before }}")
+          echo "$RESULT"
+          HAS_SH_FILES=$(echo "$RESULT" | tail -n1)
+          echo "has-sh-files=$HAS_SH_FILES" >> $GITHUB_OUTPUT
 
       - name: Build and run Docker test
-        if: steps.check-files.outputs.should-run == 'true'
+        if: steps.check-sh-files.outputs.has-sh-files == 'true'
         run: |
-          echo "Relevant changes detected. Running test-installation job..."
+          echo "Shell files changed. Running Docker test..."
           docker build -f test/Dockerfile.test -t mytools-test .
           docker run --rm mytools-test
 
       - name: Skip message
-        if: steps.check-files.outputs.should-run != 'true'
-        run: echo "No relevant file changes detected. Skipping test-installation."
-  
+        if: steps.check-sh-files.outputs.has-sh-files != 'true'
+        run: echo "No shell files were changed. Skipping Docker test."
+
+  # Run daily check regardless of file changes
   daily-status-check:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule'
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           fetch-depth: 50
 
