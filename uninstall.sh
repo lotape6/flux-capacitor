@@ -4,11 +4,17 @@
 
 set -e
 
+# Get the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR="${HOME}/.config/flux"
-INSTALLATION_DIR="${HOME}/.local/share/flux"
-LOGS_DIR="${SCRIPT_DIR}/.logs"
-UNINSTALL_LOG="${LOGS_DIR}/uninstall_$(date +'%Y%m%d%H%M%S').log"
+
+# Find the config file
+CONFIG_FILE="$(${SCRIPT_DIR}/install/find-config.sh)"
+
+# Set SCRIPT_DIR before sourcing the config file
+export SCRIPT_DIR
+
+# Source the configuration
+source "${CONFIG_FILE}"
 
 # Create logs directory if it doesn't exist
 mkdir -p "${LOGS_DIR}"

@@ -3,11 +3,17 @@
 
 set -e
 
+# Get the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR="${HOME}/.config/flux"
-INSTALLATION_DIR="${HOME}/.local/share/flux"
-LOGS_DIR="${SCRIPT_DIR}/.logs"
-INSTALL_LOG="${LOGS_DIR}/install_$(date +'%Y%m%d%H%M%S').log"
+
+# Find the config file
+CONFIG_FILE="$(${SCRIPT_DIR}/install/find-config.sh)"
+
+# Set SCRIPT_DIR before sourcing the config file
+export SCRIPT_DIR
+
+# Source the configuration
+source "${CONFIG_FILE}"
 
 # Create logs directory if it doesn't exist
 mkdir -p "${LOGS_DIR}"
@@ -187,16 +193,16 @@ copy_configs() {
     cp "${SCRIPT_DIR}/config/flux.conf" "${CONFIG_DIR}/flux.conf"
     
     # Copy tmux configuration if it exists
-    if [ -f "${SCRIPT_DIR}/conf/.tmux.conf" ]; then
+    if [ -f "${SCRIPT_DIR}/config/.tmux.conf" ]; then
         if $VERBOSE; then
             log "Copying tmux configuration file to ${BOLD}${HOME}${RESET}"
         fi
-        cp "${SCRIPT_DIR}/conf/.tmux.conf" "${HOME}/.tmux.conf"
+        cp "${SCRIPT_DIR}/config/.tmux.conf" "${HOME}/.tmux.conf"
         if $VERBOSE; then
             log "tmux configuration file copied ${GREEN}successfully${RESET}."
         fi
     elif $VERBOSE; then
-        warn "tmux configuration file not found in ${SCRIPT_DIR}/conf/"
+        warn "tmux configuration file not found in ${SCRIPT_DIR}/config/"
     fi
     
     # Copy installation files
