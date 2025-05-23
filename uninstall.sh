@@ -54,10 +54,11 @@ error() {
 banner() {
     local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
     echo -e "${timestamp} ${BOLD}${BLUE}$1${RESET}" >> "${UNINSTALL_LOG}"
-    # Always show banners, even without verbose flag
-    echo -e "\n${BLUE}${BOLD}===============================================${RESET}"
-    echo -e "${BLUE}${BOLD} $1 ${RESET}"
-    echo -e "${BLUE}${BOLD}===============================================${RESET}\n"
+    if $VERBOSE; then
+        echo -e "\n${BLUE}${BOLD}===============================================${RESET}"
+        echo -e "${BLUE}${BOLD} $1 ${RESET}"
+        echo -e "${BLUE}${BOLD}===============================================${RESET}\n"
+    fi
 }
 
 # Display help message
