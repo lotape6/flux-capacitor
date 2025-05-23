@@ -1,12 +1,14 @@
 FROM ubuntu:22.04
 
-# Install dependencies for testing
-RUN apt-get update && apt-get install -y curl git sudo
+# Install minimal dependencies
+RUN apt-get update && apt-get install -y sudo
 
 WORKDIR /workspace
 COPY . .
 
-RUN chmod +x test_installation.sh
+# Make all scripts executable
+RUN chmod +x install.sh uninstall.sh
+RUN chmod +x test/*.sh
 
 # Run the test script and ensure the image exits with the script's exit code
-CMD ["bash", "-c", "exec ./test_installation.sh"]
+CMD ["bash", "-c", "cd test && ./test_installation.sh"]

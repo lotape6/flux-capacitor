@@ -1,27 +1,43 @@
 #!/usr/bin/env bash
 set -e
 
-# Install project
-echo "Running installation script..."
-"${BASH_SOURCE%/*}/../install.sh" -v
+# Run all test scripts in the test directory
+echo "Running all installation tests..."
 
-# Basic checks
-echo "Checking configuration directory..."
-if [ -d "${HOME}/.config/flux" ]; then
-    echo "Configuration directory exists."
+# Path to the test directory (relative to this script)
+TEST_DIR="$(dirname "$0")"
+
+# Function to run all test scripts
+run_all_tests() {
+    local exit_code=0
+    
+    # Run each test script
+    for test_script in "$TEST_DIR"/Test_*.sh; do
+        echo "Running test: $(basename "$test_script")"
+        if ! "$test_script"; then
+            echo "FAILED: $(basename "$test_script")"
+            exit_code=1
+        else
+            echo "PASSED: $(basename "$test_script")"
+        fi
+        
+        # Clean up any leftover directories
+        rm -rf "$HOME/.local/share/flux-capacitor" 
+        rm -rf "$HOME/.config/flux-capacitor"
+        rm -rf "/tmp/flux-capacitor-install"
+        rm -rf "/tmp/flux-capacitor-config"
+        rm -rf "/tmp/flux-capacitor-both"
+    done
+    
+    return $exit_code
+}
+
+# Run the tests
+if run_all_tests; then
+    echo "All tests passed!"
+    exit 0
 else
-    echo "Configuration directory does not exist. Installation failed."
+    echo "Some tests failed!"
     exit 1
 fi
 
-echo "Checking installation directory..."
-if [ -d "${HOME}/.local/share/flux" ]; then
-    echo "Installation directory exists."
-else
-    echo "Installation directory does not exist. Installation failed."
-    exit 1
-fi
-
-echo "All tools installed and working!"
-# Exit code is automatically the script's exit code: 0 = success, nonzero = failure
-exit 0
