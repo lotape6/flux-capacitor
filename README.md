@@ -102,6 +102,14 @@ We welcome contributions to make Flux Capacitor even more awesome! 🚀
 - **Testing**: Test your changes before submitting (and maybe test them twice, just like the flux capacitor needs)
 - **Style**: Maintain the existing humorous but helpful tone
 
+### Guidelines for Code Agents
+
+- PRs must include a detailed description of changes and rationale.
+- All code must pass linting and tests.
+- PRs should reference related issues or feature requests.
+- Auto-generated code must be clearly marked.
+- Large changes should be broken down into smaller PRs.
+
 ### Getting Started
 
 1. Fork the repository
