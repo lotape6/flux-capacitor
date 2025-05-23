@@ -5,8 +5,6 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
-  schedule:
-    - cron: '0 6 * * *'  # Daily at 6:00 AM UTC
 
 jobs:
   test-installation:
@@ -36,34 +34,6 @@ jobs:
           docker run --rm mytools-test
 
       - name: Skip message
-        if: steps.check-sh-files.outputs.has-sh-files != 'true'
-        run: echo "No shell files were changed. Skipping Docker test."
-
-  # Run daily check regardless of file changes
-  daily-status-check:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 50
-
-      - name: Check for recent commits
-        id: check-commits
-        run: |
-          RECENT_COMMITS=$(git log --since="24 hours ago" --oneline master)
-          if [ -n "$RECENT_COMMITS" ]; then
-            echo "Recent commits found:"
-            echo "$RECENT_COMMITS"
-            echo "has-commits=true" >> $GITHUB_OUTPUT
-          else
-            echo "No commits in the last 24 hours"
-            echo "has-commits=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Run tests if commits exist
-        if: steps.check-commits.outputs.has-commits == 'true'
-        run: |
-          echo "Running tests due to recent commits..."
-          ./test/run.sh
+        if: steps.check-files.outputs.should-run != 'true'
+        run: echo "No relevant file changes detected. Skipping test-installation."
+        
