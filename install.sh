@@ -3,67 +3,6 @@
 
 set -e
 
-# Default directories
-INSTALL_DIR="$HOME/.local/share/flux-capacitor"
-CONFIG_DIR="$HOME/.config/flux-capacitor"
-VERBOSE=false
-
-# Parse command line arguments
-while getopts "i:c:vf" opt; do
-  case $opt in
-    i)
-      INSTALL_DIR="$OPTARG"
-      ;;
-    c)
-      CONFIG_DIR="$OPTARG"
-      ;;
-    v)
-      VERBOSE=true
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-  esac
-done
-
-# Create directories
-if $VERBOSE; then
-  echo "Creating installation directory: $INSTALL_DIR"
-  mkdir -p "$INSTALL_DIR"
-  echo "Creating configuration directory: $CONFIG_DIR"
-  mkdir -p "$CONFIG_DIR"
-else
-  mkdir -p "$INSTALL_DIR"
-  mkdir -p "$CONFIG_DIR"
-fi
-
-# Create placeholder files for testing
-if $VERBOSE; then
-  echo "Installing files..."
-  echo "Installing flux-capacitor to $INSTALL_DIR/flux-capacitor"
-  echo "#!/bin/sh" > "$INSTALL_DIR/flux-capacitor"
-  echo "echo 'Flux Capacitor v1.0'" >> "$INSTALL_DIR/flux-capacitor"
-  chmod +x "$INSTALL_DIR/flux-capacitor"
-  
-  echo "Installing configuration to $CONFIG_DIR/flux.conf"
-  echo "# Flux Capacitor Configuration" > "$CONFIG_DIR/flux.conf"
-  echo "POWER_LEVEL=1.21" >> "$CONFIG_DIR/flux.conf"
-else
-  echo "#!/bin/sh" > "$INSTALL_DIR/flux-capacitor"
-  echo "echo 'Flux Capacitor v1.0'" >> "$INSTALL_DIR/flux-capacitor"
-  chmod +x "$INSTALL_DIR/flux-capacitor"
-  
-  echo "# Flux Capacitor Configuration" > "$CONFIG_DIR/flux.conf"
-  echo "POWER_LEVEL=1.21" >> "$CONFIG_DIR/flux.conf"
-fi
-
-if $VERBOSE; then
-  echo "Installation completed successfully!"
-fi
-
-exit 0
-=======
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="${HOME}/.config/flux"
 INSTALLATION_DIR="${HOME}/.local/share/flux"
@@ -82,7 +21,28 @@ BOLD='\033[1m'
 RESET='\033[0m'
 
 # Verbose mode flag
-VERBOSE=false
+VERBOSE=true
+
+# Display ASCII art banner
+show_ascii_banner() {
+    if $VERBOSE || ! $FORCE_REMOVE; then
+        echo -e "${BLUE}${BOLD}"
+        echo '   _______________________'
+        echo '  /                       \'
+        echo ' /   ___________________   \'
+        echo '|   |                   |   |'
+        echo '|   |    _     _        |   |'
+        echo '|   |   | |   | |       |   |'
+        echo '|   |   | |___| |       |   |'
+        echo '|   |   |  ___  |  ⚡   |   |'
+        echo '|   |   | |   | |       |   |'
+        echo '|   |   |_|   |_|       |   |'
+        echo '|   |___________________|   |'
+        echo ' \   F L U X - C A P      /'
+        echo '  \_______________________/'
+        echo -e "${RESET}"
+    fi
+}
 
 # Print standard log message
 log() {
@@ -126,7 +86,7 @@ show_help() {
     echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
     echo
     echo -e "${BOLD}Options:${RESET}"
-    echo "  -v           Enable verbose output"
+    echo "  -q           Disable verbose output"
     echo "  -c <path>    Override default config directory (default: ${CONFIG_DIR})"
     echo "  -i <path>    Override default installation directory (default: ${INSTALLATION_DIR})"
     echo "  -h           Show this help message"
@@ -134,10 +94,10 @@ show_help() {
 }
 
 # Parse command line arguments
-while getopts ":vc:i:h" opt; do
+while getopts ":qfc:i:h" opt; do
     case ${opt} in
-        v)
-            VERBOSE=true
+        q)
+            VERBOSE=false
             ;;
         c)
             CONFIG_DIR="${OPTARG}"
@@ -249,7 +209,8 @@ copy_configs() {
 # Main installation process
 main() {
     banner "Flux Capacitor Installation"
-    
+    show_ascii_banner
+     
     log "Starting installation process..."
     
     check_dependencies

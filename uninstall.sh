@@ -42,7 +42,7 @@ show_ascii_banner() {
     fi
 }
 # Flags
-VERBOSE=false
+VERBOSE=true
 FORCE_REMOVE=false
 
 # Print standard log message
@@ -87,7 +87,7 @@ show_help() {
     echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
     echo
     echo -e "${BOLD}Options:${RESET}"
-    echo "  -v           Enable verbose output"
+    echo "  -q           Disable verbose output"
     echo "  -f           Force removal without prompts"
     echo "  -c <path>    Override default config directory (default: ${CONFIG_DIR})"
     echo "  -i <path>    Override default installation directory (default: ${INSTALLATION_DIR})"
@@ -96,10 +96,10 @@ show_help() {
 }
 
 # Parse command line arguments
-while getopts ":vfc:i:h" opt; do
+while getopts ":qfc:i:h" opt; do
     case ${opt} in
-        v)
-            VERBOSE=true
+        q)
+            VERBOSE=false
             ;;
         f)
             FORCE_REMOVE=true
@@ -127,35 +127,7 @@ while getopts ":vfc:i:h" opt; do
     esac
 done
 
-# Check if directories exist
-check_directories() {
-    local missing=false
-    
-    if [ ! -d "${INSTALLATION_DIR}" ]; then
-        warn "Installation directory not found at ${BOLD}${INSTALLATION_DIR}${RESET}"
-        missing=true
-    fi
-    
-    if [ ! -d "${CONFIG_DIR}" ]; then
-        warn "Configuration directory not found at ${BOLD}${CONFIG_DIR}${RESET}"
-        missing=true
-    fi
-    
-    if $missing && [ "${CONFIG_DIR}" != "${HOME}/.config/flux" -o "${INSTALLATION_DIR}" != "${HOME}/.local/share/flux" ]; then
-        if ! $FORCE_REMOVE; then
-            warn "Using non-default directories. If you installed with custom paths, please use -c and -i options."
-            echo -e "${YELLOW}${BOLD}You're using non-default directories:${RESET}"
-            echo -e "  Config dir: ${BOLD}${CONFIG_DIR}${RESET}"
-            echo -e "  Install dir: ${BOLD}${INSTALLATION_DIR}${RESET}"
-            
-            read -p "Continue with these directories? (y/N): " continue_custom
-            if [[ ! "${continue_custom}" =~ ^[Yy]$ ]]; then
-                log "Uninstallation cancelled."
-                exit 0
-            fi
-        fi
-    fi
-}
+
 
 # Remove configuration files
 remove_configs() {
@@ -212,18 +184,22 @@ main() {
     
     log "Starting uninstallation process..."
     
-    check_directories
-    remove_installation
-    remove_configs
+    # Only remove installation if directory exists
+    if [ -d "${INSTALLATION_DIR}" ]; then
+      remove_installation
+    else
+      log "Skipping removal of installation directory; not found at ${INSTALLATION_DIR}."
+    fi
+
+    # Only remove configs if directory exists
+    if [ -d "${CONFIG_DIR}" ]; then
+      remove_configs
+    else
+      log "Skipping removal of configuration directory; not found at ${CONFIG_DIR}."
+    fi
     
     banner "Uninstallation Complete"
     log "${GREEN}Flux Capacitor has been uninstalled successfully!${RESET}"
-    
-    if [[ "${delete_config}" =~ ^[Yy]$ ]]; then
-        log "Your configuration files have been backed up to: ${BOLD}${BACKUP_DIR}${RESET}"
-    else
-        log "Your configuration files remain at: ${BOLD}${CONFIG_DIR}${RESET}"
-    fi
 }
 
 # Confirm uninstallation if not in force mode
