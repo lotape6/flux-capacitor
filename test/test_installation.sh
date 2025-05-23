@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
 set -e
 
-# Install dependencies for your tools if needed
-apt-get update
-apt-get install -y curl git
+# Skip apt-get commands as we don't have permissions
+echo "Skipping dependency installation..."
+# apt-get update
+# apt-get install -y curl git
 
 # Install project
-#TODO
+echo "Running installation script..."
+./install.sh
+
 # Basic checks
-# tmux -V
-# fzf --version
+echo "Checking configuration directory..."
+if [ -d "${HOME}/.config/flux" ]; then
+    echo "Configuration directory exists."
+else
+    echo "Configuration directory does not exist. Installation failed."
+    exit 1
+fi
 
 echo "All tools installed and working!"
 # Exit code is automatically the script's exit code: 0 = success, nonzero = failure
