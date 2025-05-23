@@ -15,12 +15,11 @@ jobs:
       - name: Check if relevant files changed
         id: check-files
         run: |
-          # List changed files (PR or push)
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             git fetch origin ${{ github.base_ref }}
-            CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.sha }})
+            CHANGED_FILES=$(git diff --name-only ${{ github.base_ref }}...HEAD)
           elif [ "${{ github.event_name }}" = "push" ]; then
-            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})        
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
           else
             CHANGED_FILES=""
           fi
@@ -28,7 +27,6 @@ jobs:
           echo "Changed files:"
           echo "$CHANGED_FILES"
 
-          # Check if any match the critical paths
           echo "$CHANGED_FILES" | grep -E '(^install\.sh$|^uninstall\.sh$|^install/|^config/)' && SHOULD_RUN=true || SHOULD_RUN=false
           echo "should-run=$SHOULD_RUN" >> $GITHUB_OUTPUT
 
