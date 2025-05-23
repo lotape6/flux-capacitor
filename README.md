@@ -17,6 +17,7 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 - [Installation](#installation)
 - [Overview](#overview)
 - [Configuration](#configuration)
+- [Contributing](#contributing)
 - [Disclaimer](#disclaimer)
 - [TODOs](#todos)
 - [References](#references)
@@ -89,6 +90,28 @@ cp config/flux.conf ~/.config/flux/
 <p align="center">
   <img src="https://media.giphy.com/media/xsF1FSDbjguis/giphy.gif" alt="configuration" width="300px"/>
 </p>
+
+## Contributing
+
+We welcome contributions to make Flux Capacitor even more awesome! 🚀
+
+### Development Guidelines
+
+- **Bash Scripting**: Follow our comprehensive [Bash Scripting Guidelines](docs/BASH_GUIDELINES.md) for writing maintainable and robust scripts
+- **Documentation**: Keep docs up-to-date and write clear, helpful comments
+- **Testing**: Test your changes before submitting (and maybe test them twice, just like the flux capacitor needs)
+- **Style**: Maintain the existing humorous but helpful tone
+
+### Getting Started
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/awesome-new-thing`
+3. Read the [Bash Guidelines](docs/BASH_GUIDELINES.md) for coding standards
+4. Make your changes (with great power comes great responsibility)
+5. Test thoroughly with the existing test suite
+6. Submit a pull request
+
+Whether you're fixing bugs, adding features, or improving documentation, every contribution helps make terminal life better for everyone!
 
 ## Disclaimer
 
