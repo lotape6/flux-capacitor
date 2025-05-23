@@ -20,28 +20,30 @@ check_dependencies() {
     fi
 }
 
-# Function to get changed files
-get_changed_files() {
-    local event_name="$1"
-    local base_ref="$2"
-    local head_sha="$3"
-    local before_sha="$4"
+# Function to get changed files in a PR
+get_pr_changed_files() {
+    local base_ref="$1"
     
-    if [[ "${event_name}" == "pull_request" ]]; then
-        # For pull requests
-        git fetch origin "${base_ref}" --depth=1
-        git diff --name-only "origin/${base_ref}...${head_sha}"
-    elif [[ "${event_name}" == "push" ]]; then
-        # For pushes
-        if [[ -n "${before_sha}" && "${before_sha}" != "0000000000000000000000000000000000000000" ]]; then
-            git diff --name-only "${before_sha}" "${head_sha}"
-        else
-            # If this is a fresh branch or if before_sha is not provided, list all files
-            git ls-files
-        fi
+    # Safely fetch the base branch
+    if [[ -n "${base_ref}" ]]; then
+        git fetch origin "${base_ref}" --depth=1 || true
+        git diff --name-only "origin/${base_ref}" HEAD || git ls-files
     else
-        echo "Error: Unsupported event type: ${event_name}" >&2
-        exit 1
+        # Fallback to listing all files if base_ref is not available
+        git ls-files
+    fi
+}
+
+# Function to get changed files in a push
+get_push_changed_files() {
+    local before_sha="$1"
+    
+    # If before_sha is available and valid, use it to find changed files
+    if [[ -n "${before_sha}" && "${before_sha}" != "0000000000000000000000000000000000000000" ]]; then
+        git diff --name-only "${before_sha}" HEAD || git ls-files
+    else
+        # Fallback to listing all files
+        git ls-files
     fi
 }
 
@@ -52,17 +54,21 @@ main() {
     # Get parameters from environment or arguments
     local event_name="${GITHUB_EVENT_NAME:-$1}"
     local base_ref="${GITHUB_BASE_REF:-$2}"
-    local head_sha="${GITHUB_SHA:-$3}"
-    local before_sha="${GITHUB_EVENT_BEFORE:-$4}"
+    local before_sha="${GITHUB_EVENT_BEFORE:-$3}"
     
-    if [[ -z "${event_name}" ]]; then
-        echo "Error: Event name not provided" >&2
-        exit 1
-    fi
+    echo "Event: ${event_name}"
     
-    # Get changed files
+    # Get changed files based on event type
     local changed_files
-    changed_files=$(get_changed_files "${event_name}" "${base_ref}" "${head_sha}" "${before_sha}")
+    if [[ "${event_name}" == "pull_request" ]]; then
+        changed_files=$(get_pr_changed_files "${base_ref}")
+    elif [[ "${event_name}" == "push" ]]; then
+        changed_files=$(get_push_changed_files "${before_sha}")
+    else
+        echo "Warning: Unsupported event type: ${event_name}" >&2
+        # Default to listing all files as a fallback
+        changed_files=$(git ls-files)
+    fi
     
     echo "Changed files:"
     echo "${changed_files}"
