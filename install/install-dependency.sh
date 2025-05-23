@@ -20,50 +20,34 @@ if [[ "$DEPENDENCY" == "bat" && $(command -v apt &> /dev/null && echo "apt" || e
   DEPENDENCY="batcat"
 fi
 
-# Detect package manager and install
+# Detect package manager and prepare install command
+PACKAGE_MANAGER=""
 if command -v apt &> /dev/null; then
+  PACKAGE_MANAGER="apt"
   CMD="sudo apt update && sudo apt install -y $DEPENDENCY"
-  if $VERBOSE; then
-    echo "Using apt to install $DEPENDENCY"
-    eval $CMD
-  else
-    eval $CMD &>/dev/null
-  fi
 elif command -v dnf &> /dev/null; then
+  PACKAGE_MANAGER="dnf"
   CMD="sudo dnf install -y $DEPENDENCY"
-  if $VERBOSE; then
-    echo "Using dnf to install $DEPENDENCY"
-    eval $CMD
-  else
-    eval $CMD &>/dev/null
-  fi
 elif command -v yum &> /dev/null; then
+  PACKAGE_MANAGER="yum"
   CMD="sudo yum install -y $DEPENDENCY"
-  if $VERBOSE; then
-    echo "Using yum to install $DEPENDENCY"
-    eval $CMD
-  else
-    eval $CMD &>/dev/null
-  fi
 elif command -v pacman &> /dev/null; then
+  PACKAGE_MANAGER="pacman"
   CMD="sudo pacman -S --noconfirm $DEPENDENCY"
-  if $VERBOSE; then
-    echo "Using pacman to install $DEPENDENCY"
-    eval $CMD
-  else
-    eval $CMD &>/dev/null
-  fi
 elif command -v brew &> /dev/null; then
+  PACKAGE_MANAGER="brew"
   CMD="brew install $DEPENDENCY"
-  if $VERBOSE; then
-    echo "Using brew to install $DEPENDENCY"
-    eval $CMD
-  else
-    eval $CMD &>/dev/null
-  fi
 else
   echo "Could not detect package manager. Please install $DEPENDENCY manually."
   exit 1
+fi
+
+# Execute the command with or without verbose output
+if $VERBOSE; then
+  echo "Using $PACKAGE_MANAGER to install $DEPENDENCY"
+  eval $CMD
+else
+  eval $CMD &>/dev/null
 fi
 
 exit 0

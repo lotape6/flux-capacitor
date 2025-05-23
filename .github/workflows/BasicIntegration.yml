@@ -68,5 +68,4 @@ jobs:
         if: steps.check-commits.outputs.has-commits == 'true'
         run: |
           echo "Running tests due to recent commits..."
-          docker build -f test/Dockerfile.test -t mytools-test .
-          docker run --rm mytools-test
+          ./test/run.sh
