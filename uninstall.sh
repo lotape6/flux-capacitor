@@ -21,6 +21,26 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
+# Display ASCII art banner
+show_ascii_banner() {
+    if $VERBOSE || ! $FORCE_REMOVE; then
+        echo -e "${BLUE}${BOLD}"
+        echo '   _______________________'
+        echo '  /                       \'
+        echo ' /   ___________________   \'
+        echo '|   |                   |   |'
+        echo '|   |    _     _        |   |'
+        echo '|   |   | |   | |       |   |'
+        echo '|   |   | |___| |       |   |'
+        echo '|   |   |  ___  |  ⚡   |   |'
+        echo '|   |   | |   | |       |   |'
+        echo '|   |   |_|   |_|       |   |'
+        echo '|   |___________________|   |'
+        echo ' \   F L U X - C A P      /'
+        echo '  \_______________________/'
+        echo -e "${RESET}"
+    fi
+}
 # Flags
 VERBOSE=false
 FORCE_REMOVE=false
@@ -207,15 +227,16 @@ main() {
 
 # Confirm uninstallation if not in force mode
 if ! $FORCE_REMOVE; then
+    show_ascii_banner
     echo -e "${BOLD}${YELLOW}This will uninstall Flux Capacitor.${RESET}"
     echo -e "  • Installation directory will be ${RED}completely removed${RESET}"
-    echo -e "  • You will be asked about keeping or removing configuration files"
-    read -p "Continue with uninstallation? (y/N): " confirm
+    read -p "Are you absolutely sure you want to disrupt the space-time continuum? (y/N): " confirm
     
     if [[ "${confirm}" =~ ^[Yy]$ ]]; then
+        echo -e "${YELLOW}Your timeline will never be the same... proceeding anyway.${RESET}"
         main
     else
-        echo -e "${YELLOW}Uninstallation cancelled.${RESET}"
+        echo -e "${GREEN}Phew! The universe is safe for now.${RESET}"
         exit 0
     fi
 else
