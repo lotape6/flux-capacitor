@@ -19,7 +19,7 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             git fetch origin ${{ github.base_ref }}
             CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...${{ github.sha }})
-          if [ "${{ github.event_name }}" = "push" ]; then
+          elif [ "${{ github.event_name }}" = "push" ]; then
             CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})        
           else
             CHANGED_FILES=""
