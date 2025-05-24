@@ -99,8 +99,8 @@ check_dependencies() {
             # If fzf is missing, install it from GitHub
             if [ "$dep" == "fzf" ]; then
                 echo "Installing fzf from GitHub..."
-                git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf"
-                "${HOME}/.fzf/install"
+                git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf" 2>/dev/null
+                "${HOME}/.fzf/install" 2>/dev/null || true
             else
                 "${SCRIPT_DIR}/install/install-dependency.sh" "$dep"
             fi
@@ -189,7 +189,14 @@ main() {
     log "${GREEN}Flux Capacitor has been installed successfully!${RESET}"
     log "Configuration directory: ${BOLD}${FLUX_CONFIG_DIR}${RESET}"
     log "Installation directory: ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}"
-    log "You can update your .zsh|bash|fishrc now to use Flux Capacitor. Enjoy!"
+    # 🎉 Fancy ASCII Art Celebration 🎉
+    echo -e "${GREEN}"
+    echo -e "${RESET}"
+    echo -e "🚀 ${BOLD}${GREEN}Flux Capacitor has been installed!${RESET} 🚀"
+    echo
+    log "${BOLD}Do not forget to update your shell configuration files!${RESET}"
+    echo
+    echo -e "${GREEN}✨ Enjoy your new productivity superpowers! ✨${RESET}"
 }
 
 # Run the installation

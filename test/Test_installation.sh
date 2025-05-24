@@ -17,7 +17,7 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Run installation script with VERBOSE_MODE flag
-INSTALL_OUTPUT=$(${SCRIPT_DIR}/../install.sh)
+INSTALL_OUTPUT=$(yes | ${SCRIPT_DIR}/../install.sh)
 echo $INSTALL_OUTPUT
 # Check if installation script produced output with VERBOSE_MODE flag
 if [ -z "$INSTALL_OUTPUT" ]; then
