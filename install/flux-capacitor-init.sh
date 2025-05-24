@@ -160,6 +160,11 @@ if [ -f "${FLUX_CONFIG_DIR}/.tmux.conf" ] && command -v tmux >/dev/null 2>&1; th
     ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\${HOME}/.tmux.conf"
 fi
 
+# Create flux alias
+if [ -f "${FLUX_INSTALLATION_DIR}/flux.sh" ]; then
+    alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
+fi
+
 # FZF initialization (if installed)
 if command -v fzf >/dev/null 2>&1; then
     eval "$(fzf --bash)"
@@ -179,6 +184,11 @@ ${SNIPPET_START}
 # Set up tmux configuration
 if [ -f "${FLUX_CONFIG_DIR}/.tmux.conf" ] && command -v tmux >/dev/null 2>&1; then
     ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\${HOME}/.tmux.conf"
+fi
+
+# Create flux alias
+if [ -f "${FLUX_INSTALLATION_DIR}/flux.sh" ]; then
+    alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
 fi
 
 # FZF initialization (if installed)
@@ -201,6 +211,11 @@ set -x FLUX_INSTALLATION_DIR "${SCRIPT_DIR}"
 # Set up tmux configuration
 if test -f "${FLUX_CONFIG_DIR}/.tmux.conf"; and command -v tmux >/dev/null 2>&1
     ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\$HOME/.tmux.conf"
+end
+
+# Create flux alias
+if test -f "${FLUX_INSTALLATION_DIR}/flux.sh"
+    alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
 end
 
 # FZF initialization (if installed)
