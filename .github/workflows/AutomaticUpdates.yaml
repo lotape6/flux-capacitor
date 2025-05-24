@@ -3,6 +3,7 @@ name: Project Automation
 on:
   issues:
     types:
+      - created
       - opened
       - edited
       - deleted
@@ -19,6 +20,7 @@ on:
       - demilestoned
   pull_request:
     types:
+      - created
       - opened
       - edited
       - closed
@@ -35,60 +37,25 @@ on:
       - auto_merge_disabled
 
 jobs:
-  link-to-project:
+  run:
     runs-on: ubuntu-latest
-    if: github.actor == 'lotape6' || github.actor == 'copilot'
     steps:
-      - name: Add to GitHub Project
-        uses: github/add-to-project@v0.5.0
+      - name: Automatic assign
+      - uses: wow-actions/auto-assign@v3
         with:
-          project-url: https://github.com/users/lotape6/projects/1
-          github-token: ${{ secrets.PERSONAL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # using the `org/team_slug` or `/team_slug` syntax to add git team as reviewers
+          reviewers: lotape6
+          assignees: copilot
+          skipKeywords: wip, draft
 
-  update-copilot-status:
+  assign_one_project:
     runs-on: ubuntu-latest
     needs: link-to-project
+    name: Assign to One Project
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up GitHub CLI
-        uses: cli/gh-action@v2
-
-      - name: Update status for Copilot assignments
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
-        run: |
-          # Get all issues and PRs assigned to copilot in the project
-          gh issue list --assignee copilot --state all --json number,state,title \
-            | jq -c '.[]' | while read item; do
-              number=$(echo $item | jq -r .number)
-              state=$(echo $item | jq -r .state)
-              # Default status
-              project_status="backlog"
-              
-              # Map state to project status
-              if [[ "$state" == "OPEN" ]]; then
-                # Check if it's a PR and if it's in review or in progress
-                is_pr=$(gh pr view $number --json state --jq .state 2>/dev/null || echo "")
-                if [[ "$is_pr" == "OPEN" ]]; then
-                  # Check review state
-                  reviews=$(gh pr view $number --json reviews --jq '.reviews[].state' 2>/dev/null || echo "")
-                  if echo "$reviews" | grep -q "APPROVED"; then
-                    project_status="in review"
-                  else
-                    project_status="in progress"
-                  fi
-                else
-                  # Issue is open, pending review
-                  project_status="in review"
-                fi
-              elif [[ "$state" == "MERGED" ]]; then
-                project_status="done"
-              elif [[ "$state" == "CLOSED" ]]; then
-                project_status="backlog"
-              fi
-              
-              # Set status field (replace FIELD_NAME with actual field)
-              gh project item-edit 1 --id $number --field "Status" --value "$project_status" || true
-            done
+    - name: Assign NEW issues and NEW pull requests to project 2
+      uses: srggrs/assign-one-project-github-action@1.2.1
+      if: github.event.action == 'opened'
+      with:
+        project: 'https://github.com/users/lotape6/projects/1'
