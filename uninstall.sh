@@ -35,8 +35,6 @@ while getopts ":qfr:h" opt; do
             FLUX_ROOT="${OPTARG}"
             # Update derived paths
             FLUX_LOGS_DIR="${FLUX_ROOT}/logs"
-            FLUX_INSTALL_LOG="${FLUX_LOGS_DIR}/install_$(date +'%Y%m%d%H%M%S').log"
-            FLUX_UNINSTALL_LOG="${FLUX_LOGS_DIR}/uninstall_$(date +'%Y%m%d%H%M%S').log"
             ;;
         h)
             show_help
@@ -57,6 +55,9 @@ done
 
 # Create logs directory if it doesn't exist
 mkdir -p "${FLUX_LOGS_DIR}"
+
+# Define log file path locally
+FLUX_UNINSTALL_LOG="${FLUX_LOGS_DIR}/uninstall_$(date +'%Y%m%d%H%M%S').log"
 
 # Source the error code definitions
 if [ -f "${CONFIG_DIR}/err.codes" ]; then
