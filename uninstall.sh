@@ -21,6 +21,14 @@ source "${CONFIG_FILE}"
 # Create logs directory if it doesn't exist
 mkdir -p "${LOGS_DIR}"
 
+# Source the error code definitions
+if [ -f "${CONFIG_DIR}/err_codes" ]; then
+    source "${CONFIG_DIR}/err_codes"
+else
+    # If the file doesn't exist yet, source from script dir
+    source "${SCRIPT_DIR}/config/err_codes"
+fi
+
 # Flags
 FORCE_REMOVE=false
 
@@ -62,17 +70,17 @@ while getopts ":qfc:i:h" opt; do
             ;;
         h)
             show_help
-            exit 0
+            exit ${EXIT_SUCCESS}
             ;;
         \?)
             error "Invalid option: -${OPTARG}"
             show_help
-            exit 1
+            exit ${EXIT_INVALID_OPTION}
             ;;
         :)
             error "Option -${OPTARG} requires an argument"
             show_help
-            exit 1
+            exit ${EXIT_INVALID_OPTION}
             ;;
     esac
 done
@@ -173,7 +181,7 @@ if ! $FORCE_REMOVE; then
         main
     else
         echo -e "${GREEN}Phew! The universe is safe for now.${RESET}"
-        exit 0
+        exit ${EXIT_SUCCESS}
     fi
 else
     # In force mode, run main without confirmation
