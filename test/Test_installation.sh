@@ -4,7 +4,7 @@ set -e
 
 echo "Running default installation ..."
 
-CONFIG_FILE="$(./install/find-config.sh)"
+CONFIG_FILE="$(../install/find-config.sh)"
 # Source the configuration
 source "${CONFIG_FILE}"
 
@@ -12,7 +12,7 @@ source "${CONFIG_FILE}"
 if [ -f "${CONFIG_DIR}/err_codes" ]; then
     source "${CONFIG_DIR}/err_codes"
 else
-    source "$(dirname "$(dirname "$0")")/config/err_codes"
+    source "../config/err_codes"
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
