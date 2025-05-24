@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 # Install minimal dependencies
 RUN apt-get update && apt-get install -y sudo git curl wget
 
-WORKDIR /workspace
+WORKDIR /tmp
 COPY . .
 
 # Make all scripts executable

@@ -153,7 +153,7 @@ install_files() {
             log "Keeping existing tmux configuration."
         fi
     else
-        log "Installing $(BOLD)flux-capacitor${RESET} in ${GREEN}${FLUX_ROOT}${RESET}..."
+        log "Installing ${BOLD}flux-capacitor${RESET} in ${GREEN}${FLUX_ROOT}${RESET}..."
         mkdir -p "${FLUX_ROOT}"
         cp -r "${SCRIPT_DIR}/"* "${FLUX_ROOT}/"
     fi

@@ -44,9 +44,8 @@ log_impl() {
     local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
     local log_file="${2}"
     local verbose="${3:-$VERBOSE}"
-    
     echo -e "${timestamp} $1" >> "${log_file}"
-    if $VERBOSE; then
+    if $verbose; then
         echo -e " ${BLUE}[LOG]${RESET} $1"
     fi
 }

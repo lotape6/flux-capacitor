@@ -6,7 +6,7 @@ echo "Running default installation ..."
 
 echo "Step 1: Setting up variables"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$(dirname "${SCRIPT_DIR}")"
+REPO_DIR="$(dirname ${SCRIPT_DIR})"
 CONFIG_FILE="${REPO_DIR}/config/flux.conf"
 
 echo "Step 2: Sourcing configuration file: ${CONFIG_FILE}"
@@ -53,7 +53,8 @@ UNINSTALL_OUTPUT=$(${REPO_DIR}/uninstall.sh -q -f)
 echo "Step 10: Checking for output"
 # Check if uninstallation script produced output with -f flag
 if [ "$UNINSTALL_OUTPUT" ]; then
-    echo "ERROR: Uninstallation produced no output when it should be VERBOSE_MODE"
+    echo "ERROR: Uninstallation produced some output when it should be in silent mode"
+    echo "Output: $UNINSTALL_OUTPUT"
     exit ${EXIT_UNEXPECTED_OUTPUT}
 fi
 

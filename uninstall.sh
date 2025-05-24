@@ -93,8 +93,8 @@ remove_flux_root() {
         keep_config="y"
         # Ask user about config files unless force mode is enabled
         if ! $FORCE_REMOVE; then
-            echo -e "Do you want to ${GREEN}keep${RESET} the flux root directory at ${BOLD}${FLUX_ROOT}${RESET} just in case? 🤔🗃️"
-            echo -e "If you choose to keep it, it will ${GREEN}remain in place${RESET} for future use."
+            log "Do you want to ${GREEN}keep${RESET} the flux root directory at ${BOLD}${FLUX_ROOT}${RESET} just in case? 🤔🗃️"
+            log "If you choose to keep it, it will ${GREEN}remain in place${RESET} for future use."
             read -p "Keep flux root directory? (Y/n): " keep_config
         else
             keep_config="n" # In force mode, always delete
@@ -156,15 +156,15 @@ main() {
 # Confirm uninstallation if not in force mode
 if ! $FORCE_REMOVE; then
     show_ascii_banner
-    echo -e "${BOLD}${YELLOW}This will uninstall Flux Capacitor.${RESET}"
-    echo -e "  • Flux root directory will be ${RED}completely removed${RESET}"
+    log "${BOLD}${YELLOW}This will uninstall Flux Capacitor.${RESET}"
+    log "  • Flux root directory will be ${RED}completely removed${RESET}"
     read -p "Are you absolutely sure you want to disrupt the space-time continuum? (y/N): " confirm
     
     if [[ "${confirm}" =~ ^[Yy]$ ]]; then
-        echo -e "${YELLOW}Your timeline will never be the same... proceeding anyway.${RESET}"
+        log "${YELLOW}Your timeline will never be the same... proceeding anyway.${RESET}"
         main
     else
-        echo -e "${GREEN}Phew! The universe is safe for now.${RESET}"
+        log "${GREEN}Phew! The universe is safe for now.${RESET}"
         exit ${EXIT_SUCCESS}
     fi
 else
