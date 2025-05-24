@@ -47,12 +47,12 @@ cd flux-capacitor
 ./install.sh  
 ```
 <p align="center">
-  <img src="https://media.giphy.com/media/3o7btNhMBytxAM6YBa/giphy.gif" alt="installing"/>
+  <img src="https://media.giphy.com/media/k6Vbs4FyOEbZK/giphy.gif" alt="installing"/>
 </p>
 
 ## Post-Installation
-You can tune your flux-capacitor settings by modifying the configuration file.
 
+You can tune your flux-capacitor settings by modifying the configuration file.
 
 <p align="center">
   <img src="resources/tune.gif" alt="post-installation"/>
@@ -61,14 +61,14 @@ You can tune your flux-capacitor settings by modifying the configuration file.
 ```bash
 nano ~/.config/flux/flux.conf
 ```
-## Uninstall:
+## Uninstall
 
 ```bash
 ~/.local/share/flux/uninstall.sh 
 ```
 <p align="center">
-  <img src="https://media.giphy.com/media/3o7btNq2Y0x5v1j4gI/giphy.gif" alt="uninstalling"/>
-
+  <img src="https://media.giphy.com/media/yvcLAZqb1gQco/giphy.gif" alt="uninstalling"/>
+</p>
 
 ## Overview
 
@@ -123,7 +123,7 @@ cp config/flux.conf ~/.config/flux/
 | `CUSTOM_CONFIG_PATH` | Custom config path (optional) | - |
 
 <p align="center">
-  <img src="https://media.giphy.com/media/xsF1FSDbjguis/giphy.gif" alt="configuration"/>
+  <img src="https://media.giphy.com/media/JpMPqN9nHOAc4lGhvh/giphy.gif" alt="configuration"/>
 </p>
 
 ## Contributing
