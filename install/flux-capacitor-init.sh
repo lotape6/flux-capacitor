@@ -70,12 +70,13 @@ is_string_in_file() {
 }
 
 # Detect the user's shell
+# Only supporting bash, zsh, and fish (same as fzf)
 detect_shell() {
     # Try to use the SHELL environment variable first
     if [ -n "${SHELL}" ]; then
         SHELL_NAME=$(basename "${SHELL}")
         case "${SHELL_NAME}" in
-            bash|zsh|fish|tcsh|ksh|dash)
+            bash|zsh|fish)
                 echo "${SHELL_NAME}"
                 return
                 ;;
@@ -89,7 +90,7 @@ detect_shell() {
         PARENT_BASE=$(basename "${PARENT_CMD}" 2>/dev/null || echo "unknown")
         
         case "${PARENT_BASE}" in
-            bash|zsh|fish|tcsh|ksh|dash)
+            bash|zsh|fish)
                 echo "${PARENT_BASE}"
                 return
                 ;;
@@ -101,6 +102,7 @@ detect_shell() {
 }
 
 # Get config file path for the specified shell
+# Only supporting bash, zsh, and fish (same as fzf)
 get_config_file() {
     SHELL_TYPE=$1
     
@@ -120,27 +122,15 @@ get_config_file() {
         fish)
             echo "${HOME}/.config/fish/config.fish"
             ;;
-        tcsh)
-            if [ -f "${HOME}/.tcshrc" ]; then
-                echo "${HOME}/.tcshrc"
-            else
-                echo "${HOME}/.cshrc"  # Fall back to cshrc
-            fi
-            ;;
-        ksh)
-            echo "${HOME}/.kshrc"
-            ;;
-        dash)
-            # Dash usually doesn't have a user-specific config, use .profile
-            echo "${HOME}/.profile"
-            ;;
         *)
-            echo "${HOME}/.profile"  # Default
+            # Default to bash
+            echo "${HOME}/.bashrc"
             ;;
     esac
 }
 
 # Generate init snippet for the specified shell
+# Only supporting bash, zsh, and fish (same as fzf)
 create_snippet() {
     SHELL_TYPE=$1
     CONFIG_FILE=$("${REPO_DIR}/install/find-config.sh" 2>/dev/null || echo "${REPO_DIR}/config/flux.conf")
@@ -150,6 +140,58 @@ create_snippet() {
     SNIPPET_END="# <<< flux-capacitor initialization <<<"
     
     case "${SHELL_TYPE}" in
+        bash)
+            cat <<EOF
+${SNIPPET_START}
+# Flux-capacitor configuration
+export FLUX_CONFIG_FILE="${CONFIG_FILE}"
+export FLUX_INSTALLATION_DIR="${SCRIPT_DIR}"
+
+# Add keybindings here
+# Example: bind '\\C-g:flux-command'
+
+# Load any custom functions
+if [ -d "${REPO_DIR}/functions" ]; then
+    for file in "${REPO_DIR}/functions/"*.sh; do
+        if [ -f "\$file" ]; then
+            . "\$file"
+        fi
+    done
+fi
+
+# FZF initialization (if installed)
+if command -v fzf >/dev/null 2>&1; then
+    eval "$(fzf --bash)"
+fi
+${SNIPPET_END}
+EOF
+            ;;
+        zsh)
+            cat <<EOF
+${SNIPPET_START}
+# Flux-capacitor configuration
+export FLUX_CONFIG_FILE="${CONFIG_FILE}"
+export FLUX_INSTALLATION_DIR="${SCRIPT_DIR}"
+
+# Add keybindings here
+# Example: bindkey '^G' flux-command
+
+# Load any custom functions
+if [ -d "${REPO_DIR}/functions" ]; then
+    for file in "${REPO_DIR}/functions/"*.sh; do
+        if [ -f "\$file" ]; then
+            . "\$file"
+        fi
+    done
+fi
+
+# FZF initialization (if installed)
+if command -v fzf >/dev/null 2>&1; then
+    source <(fzf --zsh)
+fi
+${SNIPPET_END}
+EOF
+            ;;
         fish)
             cat <<EOF
 ${SNIPPET_START}
@@ -168,51 +210,17 @@ if test -d "${REPO_DIR}/functions"
         end
     end
 end
-${SNIPPET_END}
-EOF
-            ;;
-        tcsh)
-            cat <<EOF
-${SNIPPET_START}
-# Flux-capacitor configuration
-setenv FLUX_CONFIG_FILE "${CONFIG_FILE}"
-setenv FLUX_INSTALLATION_DIR "${SCRIPT_DIR}"
 
-# Add keybindings here
-# Example: bindkey "^G" flux-command
-
-# Load any custom scripts
-if (-d "${REPO_DIR}/functions") then
-    foreach file (${REPO_DIR}/functions/*.tcsh)
-        if (-f "\$file") then
-            source "\$file"
-        endif
-    end
-endif
+# FZF initialization (if installed)
+if command -v fzf >/dev/null 2>&1
+    fzf --fish | source
+end
 ${SNIPPET_END}
 EOF
             ;;
         *)
-            # POSIX shell syntax (works for bash, zsh, ksh, dash)
-            cat <<EOF
-${SNIPPET_START}
-# Flux-capacitor configuration
-export FLUX_CONFIG_FILE="${CONFIG_FILE}"
-export FLUX_INSTALLATION_DIR="${SCRIPT_DIR}"
-
-# Add keybindings here
-# Example (for bash/zsh): bind '\\C-g:flux-command'
-
-# Load any custom functions
-if [ -d "${REPO_DIR}/functions" ]; then
-    for file in "${REPO_DIR}/functions/"*.sh; do
-        if [ -f "\$file" ]; then
-            . "\$file"
-        fi
-    done
-fi
-${SNIPPET_END}
-EOF
+            # Default to bash
+            create_snippet "bash"
             ;;
     esac
 }
