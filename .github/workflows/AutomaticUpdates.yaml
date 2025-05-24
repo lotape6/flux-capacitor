@@ -40,7 +40,7 @@ jobs:
     if: github.actor == 'lotape6' || github.actor == 'copilot'
     steps:
       - name: Add to GitHub Project
-        uses: actions/add-to-project@v1
+        uses: github/add-to-project@v0.5.0
         with:
           project-url: https://github.com/users/lotape6/projects/1
           github-token: ${{ secrets.PERSONAL_TOKEN }}
