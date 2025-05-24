@@ -9,6 +9,7 @@ This directory contains documentation for the Flux Capacitor project.
 - API references
 - Troubleshooting guides
 - [Bash Scripting Guidelines](BASH_GUIDELINES.md) - Comprehensive guidelines for writing maintainable Bash scripts
+- [Shell Support](SHELL_SUPPORT.md) - Information about supported shells and shell integration
 
 ## Contributing to Documentation
 
