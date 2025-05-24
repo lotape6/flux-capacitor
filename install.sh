@@ -99,8 +99,8 @@ check_dependencies() {
             # If fzf is missing, install it from GitHub
             if [ "$dep" == "fzf" ]; then
                 echo "Installing fzf from GitHub..."
-                git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf" 2>/dev/null
-                "${HOME}/.fzf/install" 2>/dev/null || true
+                git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf" 2>/dev/null || true
+                "${HOME}/.fzf/install" --all 2>/dev/null || true
             else
                 "${SCRIPT_DIR}/src/install-dependency.sh" "$dep"
             fi
