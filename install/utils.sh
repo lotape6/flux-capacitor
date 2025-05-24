@@ -40,6 +40,7 @@ show_ascii_banner() {
 log_impl() {
     local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
     local log_file="${2}"
+    local verbose="${3:-$VERBOSE}"
     
     echo -e "${timestamp} $1" >> "${log_file}"
     if $VERBOSE; then
@@ -53,9 +54,10 @@ log_impl() {
 warn_impl() {
     local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
     local log_file="${2}"
-    
+    local verbose="${3:-$VERBOSE}"
+
     echo -e "${timestamp} ${YELLOW}WARNING:${RESET} $1" >> "${log_file}"
-    if $VERBOSE; then
+    if $verbose; then
         echo -e "${timestamp} ${YELLOW}WARNING:${RESET} $1"
     fi
 }
@@ -66,7 +68,7 @@ warn_impl() {
 error_impl() {
     local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
     local log_file="${2}"
-    
+
     echo -e "${timestamp} ${RED}ERROR:${RESET} $1" >> "${log_file}"
     # Always show errors, even without verbose flag
     echo -e "${timestamp} ${RED}ERROR:${RESET} $1"
@@ -78,9 +80,10 @@ error_impl() {
 banner_impl() {
     local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
     local log_file="${2}"
+    local verbose="${3:-$VERBOSE}"
     
     echo -e "${timestamp} ${BOLD}${BLUE}$1${RESET}" >> "${log_file}"
-    if $VERBOSE; then
+    if $verbose; then
         echo -e "\n${BLUE}${BOLD}===============================================${RESET}"
         echo -e "${BLUE}${BOLD} $1 ${RESET}"
         echo -e "${BLUE}${BOLD}===============================================${RESET}\n"

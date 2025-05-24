@@ -73,13 +73,13 @@ validate() { ... }
 
 ```bash
 # Good
-if [[ "${verbose}" == "true" ]]; then
+if [[ "${VERBOSE_MODE}" == "true" ]]; then
     log_message "Starting operation..."
     process_files "${input_dir}" "${output_dir}"
 fi
 
 # Avoid
-if [[ "$verbose"=="true" ]];then
+if [[ "$VERBOSE_MODE"=="true" ]];then
 log_message "Starting operation..."
 process_files "$input_dir" "$output_dir"
 fi
@@ -100,7 +100,7 @@ fi
 #
 # Options:
 #   -h, --help     Show this help message
-#   -v, --verbose  Enable verbose output
+#   -v, --VERBOSE_MODE  Enable VERBOSE_MODE output
 #   -c, --config   Configuration file path
 #
 # Examples:
@@ -123,7 +123,7 @@ readonly DEFAULT_LOG_LEVEL="INFO"
 
 # Global variables (initialize with defaults)
 config_dir="${DEFAULT_CONFIG_DIR}"
-verbose=false
+VERBOSE_MODE=false
 log_level="${DEFAULT_LOG_LEVEL}"
 
 # Function definitions...
@@ -291,7 +291,7 @@ Description:
 
 Options:
     -h, --help              Show this help message and exit
-    -v, --verbose           Enable verbose output
+    -v, --VERBOSE_MODE           Enable VERBOSE_MODE output
     -c, --config FILE       Use specified configuration file
     -o, --output DIR        Set output directory (default: current directory)
     -n, --dry-run          Show what would be done without executing

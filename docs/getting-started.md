@@ -28,14 +28,14 @@ You can customize the installation using these options:
 
 | Option | Description |
 |--------|-------------|
-| `-v` | Enable verbose output |
+| `-v` | Enable VERBOSE_MODE output |
 | `-c <path>` | Override default config directory (default: `$HOME/.config/flux`) |
 | `-i <path>` | Override default installation directory (default: `$HOME/.local/share/flux`) |
 | `-h` | Show help message |
 
 Examples:
 ```bash
-# Install with verbose output
+# Install with VERBOSE_MODE output
 ./install.sh -v
 
 # Install with custom directories
@@ -65,7 +65,7 @@ You can customize the uninstallation using these options:
 
 | Option | Description |
 |--------|-------------|
-| `-v` | Enable verbose output |
+| `-v` | Enable VERBOSE_MODE output |
 | `-f` | Force removal without prompts |
 | `-c <path>` | Override default config directory (default: `$HOME/.config/flux`) |
 | `-i <path>` | Override default installation directory (default: `$HOME/.local/share/flux`) |
@@ -73,7 +73,7 @@ You can customize the uninstallation using these options:
 
 Examples:
 ```bash
-# Uninstall with verbose output
+# Uninstall with VERBOSE_MODE output
 ./uninstall.sh -v
 
 # Force uninstall without confirmation prompts

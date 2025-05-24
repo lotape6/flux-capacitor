@@ -9,7 +9,7 @@ CYAN='\033[1;36m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
-echo -e "${CYAN}${BOLD}Running all installation tests...${RESET}"
+echo -e "${CYAN}${BOLD}Running all tests...${RESET}"
 
 # Path to the test directory (relative to this script)
 TEST_DIR="$(dirname "$0")"
@@ -35,12 +35,7 @@ run_all_tests() {
         fi
         rm -f "$output_file"
 
-        # Clean up any leftover directories
-        rm -rf "$HOME/.local/share/flux-capacitor"
-        rm -rf "$HOME/.config/flux-capacitor"
-        rm -rf "/tmp/flux-capacitor-install"
-        rm -rf "/tmp/flux-capacitor-config"
-        rm -rf "/tmp/flux-capacitor-both"
+
     done
 
     echo -e "${YELLOW}----------------------------------------${RESET}"

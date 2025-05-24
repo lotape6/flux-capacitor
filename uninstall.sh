@@ -25,17 +25,17 @@ mkdir -p "${LOGS_DIR}"
 FORCE_REMOVE=false
 
 # Define wrapper functions specific to uninstall.sh
-log() { log_impl "$1" "${UNINSTALL_LOG}"; }
-warn() { warn_impl "$1" "${UNINSTALL_LOG}"; }
-error() { error_impl "$1" "${UNINSTALL_LOG}"; }
-banner() { banner_impl "$1" "${UNINSTALL_LOG}"; }
+log() { log_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
+warn() { warn_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
+error() { error_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
+banner() { banner_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
 
 # Display help message
 show_help() {
     echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
     echo
     echo -e "${BOLD}Options:${RESET}"
-    echo "  -q           Disable verbose output"
+    echo "  -q           Disable VERBOSE_MODE output"
     echo "  -f           Force removal without prompts"
     echo "  -c <path>    Override default config directory (default: ${CONFIG_DIR})"
     echo "  -i <path>    Override default installation directory (default: ${INSTALLATION_DIR})"
@@ -49,7 +49,7 @@ show_help() {
 while getopts ":qfc:i:h" opt; do
     case ${opt} in
         q)
-            VERBOSE=false
+            VERBOSE_MODE=false
             ;;
         f)
             FORCE_REMOVE=true
@@ -100,7 +100,7 @@ remove_configs() {
             log "Backing up and removing configuration files..."
             
             # Create backup
-            BACKUP_DIR="${HOME}/.config/flux_backup_$(date +'%Y%m%d%H%M%S')"
+            BACKUP_DIR="${HOME}/.config/flux_backup_$(date +'%Y-%m-%d_%H:%M:%S')"
             mkdir -p "${BACKUP_DIR}"
             cp -r "${CONFIG_DIR}"/* "${BACKUP_DIR}" 2>/dev/null || true
             
@@ -121,8 +121,10 @@ remove_installation() {
         banner "Installation Directory"
         
         log "Removing installation files from ${BOLD}${INSTALLATION_DIR}${RESET}..."
-        rm -rf "${INSTALLATION_DIR}"
-        log "Installation files have been ${RED}removed${RESET}."
+        cp ${UNINSTALL_LOG} .
+        UNINSTALL_LOG="$(basename ${UNINSTALL_LOG})"
+        rm -rf "${INSTALLATION_DIR}" 
+        log "Installation files have been ${RED}removed${RESET}. Logs can be found at ${BOLD}${UNINSTALL_LOG}${RESET}."
     else
         log "No installation directory found at ${BOLD}${INSTALLATION_DIR}${RESET}. Skipping..."
     fi
