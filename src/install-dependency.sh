@@ -6,10 +6,10 @@
 FLUX_VERBOSE_MODE=${FLUX_VERBOSE_MODE:-false}
 
 # Try to find and source the error codes file
-if [ -n "$CONFIG_DIR" ] && [ -f "${CONFIG_DIR}/err_codes" ]; then
-    source "${CONFIG_DIR}/err_codes"
-elif [ -f "$(dirname "$(dirname "$0")")/config/err_codes" ]; then
-    source "$(dirname "$(dirname "$0")")/config/err_codes"
+if [ -n "$CONFIG_DIR" ] && [ -f "${CONFIG_DIR}/err.codes" ]; then
+    source "${CONFIG_DIR}/err.codes"
+elif [ -f "$(dirname "$(dirname "$0")")/config/err.codes" ]; then
+    source "$(dirname "$(dirname "$0")")/config/err.codes"
 else
     # Define minimal error codes if we can't find the file
     readonly EXIT_SUCCESS=0

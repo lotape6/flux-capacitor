@@ -3,6 +3,9 @@
 
 set -e
 
+# Flags
+FORCE_REMOVE=false
+
 # Get the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -17,39 +20,6 @@ export SCRIPT_DIR
 
 # Source the configuration
 source "${CONFIG_FILE}"
-
-# Create logs directory if it doesn't exist
-mkdir -p "${FLUX_LOGS_DIR}"
-
-# Source the error code definitions
-if [ -f "${CONFIG_DIR}/err_codes" ]; then
-    source "${CONFIG_DIR}/err_codes"
-else
-    # If the file doesn't exist yet, source from script dir
-    source "${SCRIPT_DIR}/config/err_codes"
-fi
-
-# Flags
-FORCE_REMOVE=false
-
-# Define wrapper functions specific to uninstall.sh
-log() { log_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-warn() { warn_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-error() { error_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-banner() { banner_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-
-# Display help message
-show_help() {
-    echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
-    echo
-    echo -e "${BOLD}Options:${RESET}"
-    echo "  -q           Disable verbose output"
-    echo "  -f           Force removal without prompts"
-    echo "  -r <path>    Override default root directory (default: ${FLUX_ROOT})"
-    echo "  -h           Show this help message"
-    echo
-}
-
 
 
 # Parse command line arguments
@@ -85,6 +55,34 @@ while getopts ":qfr:h" opt; do
     esac
 done
 
+# Create logs directory if it doesn't exist
+mkdir -p "${FLUX_LOGS_DIR}"
+
+# Source the error code definitions
+if [ -f "${CONFIG_DIR}/err.codes" ]; then
+    source "${CONFIG_DIR}/err.codes"
+else
+    # If the file doesn't exist yet, source from script dir
+    source "${SCRIPT_DIR}/config/err.codes"
+fi
+
+# Define wrapper functions specific to uninstall.sh
+log() { log_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+warn() { warn_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+error() { error_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+banner() { banner_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+
+# Display help message
+show_help() {
+    echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
+    echo
+    echo -e "${BOLD}Options:${RESET}"
+    echo "  -q           Disable verbose output"
+    echo "  -f           Force removal without prompts"
+    echo "  -r <path>    Override default root directory (default: ${FLUX_ROOT})"
+    echo "  -h           Show this help message"
+    echo
+}
 
 
 # Remove flux root directory and all its contents
@@ -136,22 +134,23 @@ main() {
     
     log "Starting uninstallation process..."
     
-    # Remove shell initialization snippets
-    if [ -f "${SCRIPT_DIR}/src/flux-capacitor-init.sh" ]; then
-        log "Removing shell initialization snippets..."
-        "${SCRIPT_DIR}/src/flux-capacitor-init.sh" -u
+    log "Removing shell initialization snippets..."
+    if [ -f "${FLUX_ROOT}/src/flux-capacitor-init.sh" ]; then
+        "${FLUX_ROOT}/src/flux-capacitor-init.sh" -u
         log "Shell initialization snippets removed ${GREEN}successfully${RESET}."
+    else
+        log "No shell initialization script found at ${FLUX_ROOT}/src/flux-capacitor-init.sh."
+        warn "Do not forget to remove any manual entries in your shell config files!"
     fi
-    
+
     # Only remove flux root if directory exists
     if [ -d "${FLUX_ROOT}" ]; then
       remove_flux_root
+       banner "Uninstallation Complete"
+       log "${GREEN}Flux Capacitor has been uninstalled successfully!${RESET}"
     else
-      log "Skipping removal of flux root directory; not found at ${FLUX_ROOT}."
+      warn "Skipping removal of flux root directory; not found at ${FLUX_ROOT}."
     fi
-    
-    banner "Uninstallation Complete"
-    log "${GREEN}Flux Capacitor has been uninstalled successfully!${RESET}"
 }
 
 # Confirm uninstallation if not in force mode

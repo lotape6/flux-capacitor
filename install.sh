@@ -3,6 +3,9 @@
 
 set -e
 
+# Flags
+FORCE_INSTALL=false
+
 # Get the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -18,42 +21,14 @@ export SCRIPT_DIR
 # Source the configuration
 source "${CONFIG_FILE}"
 
-# Create logs directory if it doesn't exist
-mkdir -p "${FLUX_LOGS_DIR}"
-
-# Source the error code definitions
-if [ -f "${CONFIG_DIR}/err_codes" ]; then
-    source "${CONFIG_DIR}/err_codes"
-else
-    # If the file doesn't exist yet (first install), copy it first
-    cp "${SCRIPT_DIR}/config/err_codes" "${CONFIG_DIR}/" 2>/dev/null || true
-    source "${SCRIPT_DIR}/config/err_codes"
-fi
-
-# Define wrapper functions specific to install.sh
-log() { log_impl "$1" "${FLUX_INSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-warn() { warn_impl "$1" "${FLUX_INSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-error() { error_impl "$1" "${FLUX_INSTALL_LOG}"; }
-banner() { banner_impl "$1" "${FLUX_INSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-
-# Display help message
-show_help() {
-    echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
-    echo
-    echo -e "${BOLD}Options:${RESET}"
-    echo "  -q           Disable verbose output"
-    echo "  -r <path>    Override default root directory (default: ${FLUX_ROOT})"
-    echo "  -h           Show this help message"
-    echo
-}
-
-
-
 # Parse command line arguments
-while getopts ":qr:h" opt; do
+while getopts ":qfr:h" opt; do
     case ${opt} in
         q)
             FLUX_VERBOSE_MODE=false
+            ;;
+        f)
+            FORCE_INSTALL=true
             ;;
         r)
             FLUX_ROOT="${OPTARG}"
@@ -78,6 +53,37 @@ while getopts ":qr:h" opt; do
             ;;
     esac
 done
+
+# Create logs directory if it doesn't exist
+mkdir -p "${FLUX_LOGS_DIR}"
+
+
+# Source the error code definitions
+if [ -f "${CONFIG_DIR}/err.codes" ]; then
+    source "${CONFIG_DIR}/err.codes"
+else
+    # If the file doesn't exist yet (first install), copy it first
+    cp "${SCRIPT_DIR}/config/err.codes" "${CONFIG_DIR}/" 2>/dev/null || true
+    source "${SCRIPT_DIR}/config/err.codes"
+fi
+
+# Define wrapper functions specific to install.sh
+log() { log_impl "$1" "${FLUX_INSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+warn() { warn_impl "$1" "${FLUX_INSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+error() { error_impl "$1" "${FLUX_INSTALL_LOG}"; }
+banner() { banner_impl "$1" "${FLUX_INSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+
+# Display help message
+show_help() {
+    echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
+    echo
+    echo -e "${BOLD}Options:${RESET}"
+    echo "  -q           Disable verbose output"
+    echo "  -r <path>    Override default root directory (default: ${FLUX_ROOT})"
+    echo "  -h           Show this help message"
+    echo
+}
+
 
 # Check for dependencies
 check_dependencies() {
@@ -131,53 +137,27 @@ install_tpm() {
     fi
 }
 
-# Create necessary directories
-create_dirs() {
-    banner "Creating Directories"
-    
-    log "Creating root directory at ${BOLD}${FLUX_ROOT}${RESET}"
-    mkdir -p "$FLUX_ROOT"
-    mkdir -p "$FLUX_ROOT/config"
-    mkdir -p "$FLUX_ROOT/src"
-    mkdir -p "$FLUX_ROOT/src/completion"
-    mkdir -p "$FLUX_LOGS_DIR"
-    
-    log "Directories created ${GREEN}successfully${RESET}."
-}
-
 # Copy configuration files
-copy_configs() {
+install_files() {
     banner "Copying Project Files"
     
     # Handle configuration files
     shopt -s dotglob nullglob
-    
-    log "Copying configuration files to ${BOLD}${FLUX_ROOT}/config${RESET}"
-    cp -r "${SCRIPT_DIR}/config/"* "${FLUX_ROOT}/config/"
-    
-    # Copy src files (former installation files)
-    log "Copying source files to ${BOLD}${FLUX_ROOT}/src${RESET}"
-    cp -r "${SCRIPT_DIR}/src/"* "${FLUX_ROOT}/src/"
-    
-    # Copy other directories
-    if [ -d "${SCRIPT_DIR}/docs" ]; then
-        log "Copying documentation to ${BOLD}${FLUX_ROOT}/docs${RESET}"
-        mkdir -p "${FLUX_ROOT}/docs"
-        cp -r "${SCRIPT_DIR}/docs/"* "${FLUX_ROOT}/docs/" 2>/dev/null || true
+    if [ -d "${HOME}/.tmux.conf" ] && [ "$FORCE_INSTALL" == "false" ]; then
+        warn "Tmux configuration found in ${HOME}. Not copying."
+        read -p "Do you want to overwrite it? (y/n) " choice
+        if [[ "$choice" =~ ^[Yy]$ ]]; then
+            log "Overwriting tmux configuration..."
+            cp -r "${SCRIPT_DIR}/"* "${FLUX_ROOT}/"
+        else
+            log "Keeping existing tmux configuration."
+        fi
+    else
+        log "Installing $(BOLD)flux-capacitor${RESET} in ${GREEN}${FLUX_ROOT}${RESET}..."
+        mkdir -p "${FLUX_ROOT}"
+        cp -r "${SCRIPT_DIR}/"* "${FLUX_ROOT}/"
     fi
-    
-    if [ -d "${SCRIPT_DIR}/resources" ]; then
-        log "Copying resources to ${BOLD}${FLUX_ROOT}/resources${RESET}"
-        mkdir -p "${FLUX_ROOT}/resources"
-        cp -r "${SCRIPT_DIR}/resources/"* "${FLUX_ROOT}/resources/" 2>/dev/null || true
-    fi
-    
-    if [ -d "${SCRIPT_DIR}/test" ]; then
-        log "Copying tests to ${BOLD}${FLUX_ROOT}/test${RESET}"
-        mkdir -p "${FLUX_ROOT}/test"
-        cp -r "${SCRIPT_DIR}/test/"* "${FLUX_ROOT}/test/" 2>/dev/null || true
-    fi
-    
+        
     shopt -u dotglob nullglob
     
     log "Project files copied ${GREEN}successfully${RESET}."
@@ -187,7 +167,7 @@ copy_configs() {
 config_shell_support() {
 
     # Set up tmux configuration
-    if [ -f "${FLUX_ROOT}/config/.tmux.conf" ]; then
+    if [ -d "${HOME}/.tmux.conf" ] && [ "$FORCE_INSTALL" == "false" ]; then
         warn "Tmux configuration found."
         read -p "Do you want to overwrite it? (y/n) " choice
         if [[ "$choice" =~ ^[Yy]$ ]]; then
@@ -217,8 +197,7 @@ main() {
     log "Starting installation process..."
     
     check_dependencies
-    create_dirs
-    copy_configs
+    install_files
     config_shell_support
     install_tpm
 

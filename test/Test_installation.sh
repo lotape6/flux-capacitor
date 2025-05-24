@@ -15,7 +15,7 @@ source "${CONFIG_FILE}"
 
 echo "Step 3: Sourcing error codes"
 # Source the error codes
-source "${REPO_DIR}/config/err_codes"
+source "${REPO_DIR}/config/err.codes"
 
 echo "Step 4: Running installation script"
 # Run installation script with VERBOSE_MODE flag

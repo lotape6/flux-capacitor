@@ -8,8 +8,8 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-if [ -f "${REPO_ROOT}/config/err_codes" ]; then
-    source "${REPO_ROOT}/config/err_codes"
+if [ -f "${REPO_ROOT}/config/err.codes" ]; then
+    source "${REPO_ROOT}/config/err.codes"
 else
     # Define minimal error codes if we can't find the file
     readonly EXIT_SUCCESS=0
