@@ -15,7 +15,7 @@ FORCE_REMOVE=false # Only used in uninstall.sh
 
 # Display ASCII art banner
 show_ascii_banner() {
-    if $VERBOSE || ! $FORCE_REMOVE; then
+    if $VERBOSE; then
         echo -e "${BLUE}${BOLD}"
         echo '   _______________________'
         echo '  /                       \'
@@ -56,7 +56,7 @@ warn_impl() {
     local log_file="${2}"
     local verbose="${3:-$VERBOSE}"
 
-    echo -e "${timestamp} ${YELLOW}WARNING:${RESET} $1" >> "${log_file}"
+    echo -e "${timestamp} WARNING: $1" >> "${log_file}"
     if $verbose; then
         echo -e "${timestamp} ${YELLOW}WARNING:${RESET} $1"
     fi
@@ -69,7 +69,7 @@ error_impl() {
     local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
     local log_file="${2}"
 
-    echo -e "${timestamp} ${RED}ERROR:${RESET} $1" >> "${log_file}"
+    echo -e "${timestamp} ERROR: $1" >> "${log_file}"
     # Always show errors, even without verbose flag
     echo -e "${timestamp} ${RED}ERROR:${RESET} $1"
 }
@@ -82,7 +82,7 @@ banner_impl() {
     local log_file="${2}"
     local verbose="${3:-$VERBOSE}"
     
-    echo -e "${timestamp} ${BOLD}${BLUE}$1${RESET}" >> "${log_file}"
+    echo -e "${timestamp} $1" >> "${log_file}"
     if $verbose; then
         echo -e "\n${BLUE}${BOLD}===============================================${RESET}"
         echo -e "${BLUE}${BOLD} $1 ${RESET}"
