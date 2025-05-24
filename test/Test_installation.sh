@@ -4,20 +4,18 @@ set -e
 
 echo "Running default installation ..."
 
-CONFIG_FILE="$(../src/find-config.sh)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(dirname "${SCRIPT_DIR}")"
+CONFIG_FILE="${REPO_DIR}/config/flux.conf"
+
 # Source the configuration
 source "${CONFIG_FILE}"
 
 # Source the error codes
-if [ -f "${CONFIG_DIR}/err_codes" ]; then
-    source "${CONFIG_DIR}/err_codes"
-else
-    source "../config/err_codes"
-fi
+source "${REPO_DIR}/config/err_codes"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Run installation script with VERBOSE_MODE flag
-INSTALL_OUTPUT=$(yes | ${SCRIPT_DIR}/../install.sh)
+INSTALL_OUTPUT=$(yes | ${REPO_DIR}/install.sh)
 echo $INSTALL_OUTPUT
 # Check if installation script produced output with VERBOSE_MODE flag
 if [ -z "$INSTALL_OUTPUT" ]; then
@@ -40,7 +38,7 @@ fi
 echo "Installation successful, now testing uninstallation with VERBOSE_MODE flag..."
 
 # Run uninstallation script with -f
-INSTALL_OUTPUT=$(${SCRIPT_DIR}/../uninstall.sh -q -f)
+INSTALL_OUTPUT=$(${REPO_DIR}/uninstall.sh -q -f)
 
 # Check if uninstallation script produced output with -f flag
 if [ "$UNINSTALL_OUTPUT" ]; then

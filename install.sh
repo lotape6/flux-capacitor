@@ -102,7 +102,7 @@ check_dependencies() {
                 git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf" 2>/dev/null
                 "${HOME}/.fzf/install" 2>/dev/null || true
             else
-                "${SCRIPT_DIR}/install/install-dependency.sh" "$dep"
+                "${SCRIPT_DIR}/src/install-dependency.sh" "$dep"
             fi
         done
     fi
