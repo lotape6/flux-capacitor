@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 # flux-capacitor-init.sh - Shell initialization script for flux-capacitor
 #
+# Supports only bash, zsh, and fish shells (same as fzf)
+#
 # Usage:
 #   ./flux-capacitor-init.sh        - Init mode: Output shell-specific initialization snippet
 #   ./flux-capacitor-init.sh -i     - Install mode: Add init snippet to shell config
