@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# err_codes - Standardized exit codes for flux-capacitor scripts
+# 
+# This file contains standardized exit codes to be used across all scripts
+# in the flux-capacitor project. Source this file in your scripts to ensure
+# consistency in error reporting.
+
+# Success
+readonly EXIT_SUCCESS=0
+
+# General errors
+readonly EXIT_GENERAL_ERROR=1
+readonly EXIT_MISUSE=2
+readonly EXIT_NO_PERMISSION=3
+readonly EXIT_DEPENDENCY_MISSING=4
+
+# Installation and configuration errors
+readonly EXIT_INVALID_OPTION=2  # Same as EXIT_MISUSE for invalid command line options
+readonly EXIT_CONFIG_ERROR=5
+readonly EXIT_INSTALL_ERROR=6
+
+# Test-related errors
+readonly EXIT_TEST_FAILURE=10
+readonly EXIT_DIR_NOT_CREATED=11
+readonly EXIT_FILE_NOT_INSTALLED=12
+readonly EXIT_UNEXPECTED_OUTPUT=13
+
+# Dependency-related errors
+readonly EXIT_NO_DEPENDENCY=20
+readonly EXIT_NO_PACKAGE_MANAGER=21
+readonly EXIT_INSTALL_DEPENDENCY_FAILED=22

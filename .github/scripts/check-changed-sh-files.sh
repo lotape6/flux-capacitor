@@ -4,6 +4,18 @@
 
 set -e
 
+# Try to find and source the error codes file
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+
+if [ -f "${REPO_ROOT}/config/err_codes" ]; then
+    source "${REPO_ROOT}/config/err_codes"
+else
+    # Define minimal error codes if we can't find the file
+    readonly EXIT_SUCCESS=0
+    readonly EXIT_DEPENDENCY_MISSING=4
+fi
+
 # Function to check for dependencies
 check_dependencies() {
     local missing_commands=()
@@ -16,7 +28,7 @@ check_dependencies() {
     
     if [[ ${#missing_commands[@]} -gt 0 ]]; then
         echo "Error: Missing required commands: ${missing_commands[*]}" >&2
-        exit 1
+        exit ${EXIT_DEPENDENCY_MISSING}
     fi
 }
 
@@ -77,10 +89,10 @@ main() {
     # Check if any .sh files were changed
     if echo "${changed_files}" | grep -q '\.sh$'; then
         echo "true"  # At least one .sh file was found
-        exit 0
+        exit ${EXIT_SUCCESS}
     else
         echo "false" # No .sh files were changed
-        exit 0
+        exit ${EXIT_SUCCESS}
     fi
 }
 

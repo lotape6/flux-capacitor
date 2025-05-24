@@ -1,18 +1,28 @@
 #!/bin/bash
-
-# Install dependency using the appropriate package manager
-# Usage: install-dependency.sh [dependency]
+# install-dependency.sh - Install a dependency using the appropriate package manager
 
 # Detect if we're running in VERBOSE_MODE mode (inherited from parent script)
 # If VERBOSE_MODE is not set, default to false
 VERBOSE_MODE=${VERBOSE_MODE:-false}
+
+# Try to find and source the error codes file
+if [ -n "$CONFIG_DIR" ] && [ -f "${CONFIG_DIR}/err_codes" ]; then
+    source "${CONFIG_DIR}/err_codes"
+elif [ -f "$(dirname "$(dirname "$0")")/config/err_codes" ]; then
+    source "$(dirname "$(dirname "$0")")/config/err_codes"
+else
+    # Define minimal error codes if we can't find the file
+    readonly EXIT_SUCCESS=0
+    readonly EXIT_NO_DEPENDENCY=20
+    readonly EXIT_NO_PACKAGE_MANAGER=21
+fi
 
 # Get the dependency name from arguments
 DEPENDENCY=$1
 
 if [ -z "$DEPENDENCY" ]; then
   echo "Error: No dependency specified"
-  exit 1
+  exit ${EXIT_NO_DEPENDENCY}
 fi
 
 # Handle special cases for package names
@@ -39,7 +49,7 @@ elif command -v brew &> /dev/null; then
   CMD="brew install $DEPENDENCY"
 else
   echo "Could not detect package manager. Please install $DEPENDENCY manually."
-  exit 1
+  exit ${EXIT_NO_PACKAGE_MANAGER}
 fi
 
 # Execute the command with or without VERBOSE_MODE output
@@ -50,4 +60,4 @@ else
   eval $CMD &>/dev/null
 fi
 
-exit 0
+exit ${EXIT_SUCCESS}
