@@ -4,7 +4,7 @@ set -e
 
 echo "Running default installation ..."
 
-CONFIG_FILE="$(../install/find-config.sh)"
+CONFIG_FILE="$(../src/find-config.sh)"
 # Source the configuration
 source "${CONFIG_FILE}"
 
@@ -26,19 +26,13 @@ if [ -z "$INSTALL_OUTPUT" ]; then
 fi
 
 # Check if files were properly installed
-
-if [ ! -d "${FLUX_INSTALLATION_DIR}" ]; then
-    echo "ERROR: Installation directory was not created: ${FLUX_INSTALLATION_DIR}"
-    exit ${EXIT_DIR_NOT_CREATED}
-fi
-
-if [ ! -d "${FLUX_CONFIG_DIR}" ]; then
-    echo "ERROR: Configuration directory was not created: ${FLUX_CONFIG_DIR}"
+if [ ! -d "${FLUX_ROOT}" ]; then
+    echo "ERROR: Flux root directory was not created: ${FLUX_ROOT}"
     exit ${EXIT_DIR_NOT_CREATED}
 fi
 
 # Check for essential files (adjust these based on actual expected files)
-if [ ! -f "$FLUX_CONFIG_DIR/flux.conf" ]; then
+if [ ! -f "$FLUX_ROOT/config/flux.conf" ]; then
     echo "ERROR: Configuration file was not installed"
     exit ${EXIT_FILE_NOT_INSTALLED}
 fi
@@ -55,13 +49,8 @@ if [ "$UNINSTALL_OUTPUT" ]; then
 fi
 
 # Check if directories were properly removed
-if [ -d "$FLUX_INSTALLATION_DIR" ]; then
-    echo "ERROR: Installation directory was not removed: $FLUX_INSTALLATION_DIR"
-    exit ${EXIT_DIR_NOT_CREATED}
-fi
-
-if [ -d "$FLUX_CONFIG_DIR" ]; then
-    echo "ERROR: Configuration directory was not removed: $FLUX_CONFIG_DIR"
+if [ -d "$FLUX_ROOT" ]; then
+    echo "ERROR: Flux root directory was not removed: $FLUX_ROOT"
     exit ${EXIT_DIR_NOT_CREATED}
 fi
 
