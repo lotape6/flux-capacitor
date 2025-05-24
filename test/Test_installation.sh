@@ -26,18 +26,19 @@ if [ -z "$INSTALL_OUTPUT" ]; then
 fi
 
 # Check if files were properly installed
-if [ ! -d "${INSTALLATION_DIR}" ]; then
-    echo "ERROR: Installation directory was not created: ${INSTALLATION_DIR}"
+
+if [ ! -d "${FLUX_INSTALLATION_DIR}" ]; then
+    echo "ERROR: Installation directory was not created: ${FLUX_INSTALLATION_DIR}"
     exit ${EXIT_DIR_NOT_CREATED}
 fi
 
-if [ ! -d "${CONFIG_DIR}" ]; then
-    echo "ERROR: Configuration directory was not created: ${CONFIG_DIR}"
+if [ ! -d "${FLUX_CONFIG_DIR}" ]; then
+    echo "ERROR: Configuration directory was not created: ${FLUX_CONFIG_DIR}"
     exit ${EXIT_DIR_NOT_CREATED}
 fi
 
 # Check for essential files (adjust these based on actual expected files)
-if [ ! -f "$CONFIG_DIR/flux.conf" ]; then
+if [ ! -f "$FLUX_CONFIG_DIR/flux.conf" ]; then
     echo "ERROR: Configuration file was not installed"
     exit ${EXIT_FILE_NOT_INSTALLED}
 fi
@@ -54,13 +55,13 @@ if [ "$UNINSTALL_OUTPUT" ]; then
 fi
 
 # Check if directories were properly removed
-if [ -d "$INSTALLATION_DIR" ]; then
-    echo "ERROR: Installation directory was not removed: $INSTALLATION_DIR"
+if [ -d "$FLUX_INSTALLATION_DIR" ]; then
+    echo "ERROR: Installation directory was not removed: $FLUX_INSTALLATION_DIR"
     exit ${EXIT_DIR_NOT_CREATED}
 fi
 
-if [ -d "$CONFIG_DIR" ]; then
-    echo "ERROR: Configuration directory was not removed: $CONFIG_DIR"
+if [ -d "$FLUX_CONFIG_DIR" ]; then
+    echo "ERROR: Configuration directory was not removed: $FLUX_CONFIG_DIR"
     exit ${EXIT_DIR_NOT_CREATED}
 fi
 
