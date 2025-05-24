@@ -18,7 +18,6 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 - [Disclaimer](#disclaimer)
-- [TODOs](#todos)
 - [References](#references)
 
 ## Installation
@@ -38,17 +37,30 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 git clone https://github.com/lotape6/flux-capacitor.git
 cd flux-capacitor
 ./install.sh  
-
-# For further configuration modify the config file
-nano ~/.config/flux/flux.conf
-
-# Uninstall with:
-./uninstall.sh 
 ```
-
 <p align="center">
   <img src="https://media.giphy.com/media/3o7btNhMBytxAM6YBa/giphy.gif" alt="installing"/>
 </p>
+
+## Post-Installation
+You can tune your flux-capacitor settings by modifying the configuration file.
+
+
+<p align="center">
+  <img src="https://media.giphy.com/media/3o7btNq2Y0x5v1j4gI/giphy.gif" alt="post-installation"/>
+</p>
+
+```bash
+nano ~/.config/flux/flux.conf
+```
+## Uninstall:
+
+```bash
+~/.local/share/flux/uninstall.sh 
+```
+<p align="center">
+  <img src="https://media.giphy.com/media/3o7btNq2Y0x5v1j4gI/giphy.gif" alt="uninstalling"/>
+
 
 ## Overview
 
