@@ -136,6 +136,13 @@ main() {
     
     log "Starting uninstallation process..."
     
+    # Remove shell initialization snippets
+    if [ -f "${SCRIPT_DIR}/install/flux-capacitor-init.sh" ]; then
+        log "Removing shell initialization snippets..."
+        "${SCRIPT_DIR}/install/flux-capacitor-init.sh" -u
+        log "Shell initialization snippets removed ${GREEN}successfully${RESET}."
+    fi
+    
     # Only remove installation if directory exists
     if [ -d "${INSTALLATION_DIR}" ]; then
       remove_installation

@@ -140,6 +140,13 @@ main() {
     create_dirs
     copy_configs
     
+    # Run flux-capacitor-init.sh in install mode
+    if [ -f "${SCRIPT_DIR}/install/flux-capacitor-init.sh" ]; then
+        log "Adding shell initialization snippets..."
+        "${SCRIPT_DIR}/install/flux-capacitor-init.sh" -i
+        log "Shell initialization snippets added ${GREEN}successfully${RESET}."
+    fi
+    
     banner "Installation Complete"
     log "${GREEN}Flux Capacitor has been installed successfully!${RESET}"
     log "Configuration directory: ${BOLD}${CONFIG_DIR}${RESET}"
