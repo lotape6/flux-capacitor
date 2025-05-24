@@ -112,6 +112,25 @@ check_dependencies() {
     
 }
 
+# Install Tmux Plugin Manager
+install_tpm() {
+    log "Installing Tmux Plugin Manager (TPM)..."
+    
+    TPM_DIR="${HOME}/.tmux/plugins/tpm"
+    
+    if [ -d "${TPM_DIR}" ]; then
+        log "TPM is already installed at ${GREEN}${TPM_DIR}${RESET}."
+    else
+        log "Cloning TPM repository to ${GREEN}${TPM_DIR}${RESET}..."
+        mkdir -p "${HOME}/.tmux/plugins"
+        git clone https://github.com/tmux-plugins/tpm "${TPM_DIR}" 2>/dev/null || {
+            error "Failed to clone TPM repository."
+            return 1
+        }
+        log "TPM installed ${GREEN}successfully${RESET}."
+    fi
+}
+
 # Create necessary directories
 create_dirs() {
     banner "Creating Directories"
@@ -184,6 +203,7 @@ main() {
     create_dirs
     copy_configs
     config_shell_support
+    install_tpm
 
     banner "Installation Complete"
     log "${GREEN}Flux Capacitor has been installed successfully!${RESET}"
