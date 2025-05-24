@@ -7,11 +7,10 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 
 ## Build Status
 
-| Platform | Status |
-| --- | --- |
-| Ubuntu 22.04 | ![Build Status](https://github.com/lotape6/flux-capacitor/workflows/Basic%20Integration/badge.svg?branch=master) |
-| macOS | ![Build Status](https://img.shields.io/badge/build-WIP-yellow) |
-| Windows | ![Build Status](https://img.shields.io/badge/build-WIP-yellow) |
+| Workflow           | Status (master) |
+|--------------------|-----------------|
+| Basic Integration  | ![Basic Integration](https://github.com/lotape6/flux-capacitor/actions/workflows/BasicIntegration.yml/badge.svg?branch=master) |
+| Daily Integration  | ![Daily Integration](https://github.com/lotape6/flux-capacitor/actions/workflows/DailyIntegration.yml/badge.svg?branch=master) |
 
 ## Table of Contents
 - [Installation](#installation)
@@ -35,10 +34,16 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 
 ### Quick Install
 ```bash
-# Soon there will be a fancy install.sh script. For now:
+# Installation
 git clone https://github.com/lotape6/flux-capacitor.git
 cd flux-capacitor
-# More steps to come when the installation script exists!
+# Install with default options
+./install.sh  
+
+# ./install.sh -h for more options
+
+# Uninstall with:
+./uninstall.sh 
 ```
 
 <p align="center">
@@ -87,9 +92,15 @@ cp config/flux.conf ~/.config/flux/
 
 | Option | Description | Default |
 | --- | --- | --- |
-| `FLUX_SPEED` | Controls the speed of operation (1-88) | `42` |
-| `FLUX_THEME` | UI theme for the tools | `"neon"` |
-| `FLUX_POWER` | Power level in gigawatts | `1.21` |
+| `ENABLE_COLOR` | Enable colorized output | `true` |
+| `VERBOSE_MODE` | Enable verbose logging | `true` |
+| `CONFIG_DIR` | Configuration directory | `${HOME}/.config/flux` |
+| `INSTALLATION_DIR` | Installation directory | `${HOME}/.local/share/flux` |
+| `LOGS_DIR` | Logs directory | `${SCRIPT_DIR}/.logs` |
+| `INSTALL_LOG` | Install log file | `${LOGS_DIR}/install_$(date +'%Y%m%d%H%M%S').log` |
+| `UNINSTALL_LOG` | Uninstall log file | `${LOGS_DIR}/uninstall_$(date +'%Y%m%d%H%M%S').log` |
+| `CUSTOM_TOOLS_PATH` | Custom tools path (optional) | - |
+| `CUSTOM_CONFIG_PATH` | Custom config path (optional) | - |
 
 <p align="center">
   <img src="https://media.giphy.com/media/xsF1FSDbjguis/giphy.gif" alt="configuration" width="300px"/>
@@ -97,33 +108,15 @@ cp config/flux.conf ~/.config/flux/
 
 ## Contributing
 
-We welcome contributions to make Flux Capacitor even more awesome! 🚀
+Found a bug? Think you can make this better? Well, hop in your DeLorean and contribute at 88mph! 
 
-### Development Guidelines
+Whether you're a human developer with too much caffeine or an AI with excessive compute, we welcome your pull requests! Just remember:
 
-- **Bash Scripting**: Follow our comprehensive [Bash Scripting Guidelines](docs/BASH_GUIDELINES.md) for writing maintainable and robust scripts
-- **Documentation**: Keep docs up-to-date and write clear, helpful comments
-- **Testing**: Test your changes before submitting (and maybe test them twice, just like the flux capacitor needs)
-- **Style**: Maintain the existing humorous but helpful tone
+* Bugs aren't features, they're time paradoxes waiting to be resolved
+* Code doesn't have to be perfect, just 1.21 gigawatts better than before
+* Even HAL 9000 had to start somewhere (though please don't lock us out of the airlock)
 
-### Guidelines for Code Agents
-
-- PRs must include a detailed description of changes and rationale.
-- All code must pass linting and tests.
-- PRs should reference related issues or feature requests.
-- Auto-generated code must be clearly marked.
-- Large changes should be broken down into smaller PRs.
-
-### Getting Started
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/awesome-new-thing`
-3. Read the [Bash Guidelines](docs/BASH_GUIDELINES.md) for coding standards
-4. Make your changes (with great power comes great responsibility)
-5. Test thoroughly with the existing test suite
-6. Submit a pull request
-
-Whether you're fixing bugs, adding features, or improving documentation, every contribution helps make terminal life better for everyone!
+So go ahead, fork this repo faster than you can say "Great Scott!" and help us make terminal life so good, mice will become collectibles!
 
 ## Disclaimer
 
