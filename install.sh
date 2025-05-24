@@ -21,6 +21,15 @@ source "${CONFIG_FILE}"
 # Create logs directory if it doesn't exist
 mkdir -p "${FLUX_LOGS_DIR}"
 
+# Source the error code definitions
+if [ -f "${CONFIG_DIR}/err_codes" ]; then
+    source "${CONFIG_DIR}/err_codes"
+else
+    # If the file doesn't exist yet (first install), copy it first
+    cp "${SCRIPT_DIR}/config/err_codes" "${CONFIG_DIR}/" 2>/dev/null || true
+    source "${SCRIPT_DIR}/config/err_codes"
+fi
+
 # Define wrapper functions specific to install.sh
 log() { log_impl "$1" "${FLUX_INSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
 warn() { warn_impl "$1" "${FLUX_INSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
@@ -55,17 +64,17 @@ while getopts ":qfc:i:h" opt; do
             ;;
         h)
             show_help
-            exit 0
+            exit ${EXIT_SUCCESS}
             ;;
         \?)
             error "Invalid option: -${OPTARG}"
             show_help
-            exit 1
+            exit ${EXIT_INVALID_OPTION}
             ;;
         :)
             error "Option -${OPTARG} requires an argument"
             show_help
-            exit 1
+            exit ${EXIT_INVALID_OPTION}
             ;;
     esac
 done
