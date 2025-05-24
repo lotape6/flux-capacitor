@@ -81,7 +81,7 @@ check_dependencies() {
             missing_deps+=("$dep")
         fi
     done
-    if [ ${#missing_deps[@]} -gt 0 ] && $VERBOSE_MODE; then
+    if [ ${#missing_deps[@]} -gt 0 ] && $FLUX_VERBOSE_MODE; then
         warn "Some optional dependencies are not installed: ${missing_deps[*]}"
         log "Installing missing dependencies..."
         
@@ -91,7 +91,7 @@ check_dependencies() {
         done
     fi
     
-    if $VERBOSE_MODE; then
+    if $FLUX_VERBOSE_MODE; then
         log "All dependencies are ${GREEN}installed${RESET}."
     fi
 }
