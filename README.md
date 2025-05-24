@@ -7,7 +7,10 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 
 ## Build Status
 
-![Build Status](https://github.com/lotape6/flux-capacitor/actions/workflows/checks.yml/badge.svg?branch=master)
+| Workflow           | Status (master) |
+|--------------------|-----------------|
+| Basic Integration  | ![Basic Integration](https://github.com/lotape6/flux-capacitor/actions/workflows/BasicIntegration.yml/badge.svg?branch=master) |
+| Daily Integration  | ![Daily Integration](https://github.com/lotape6/flux-capacitor/actions/workflows/DailyIntegration.yml/badge.svg?branch=master) |
 
 ## Table of Contents
 - [Installation](#installation)
@@ -34,11 +37,13 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 # Installation
 git clone https://github.com/lotape6/flux-capacitor.git
 cd flux-capacitor
-mkdir -p ~/.config/flux
-cp config/flux.conf ~/.config/flux/
+# Install with default options
+./install.sh  
 
-# Uninstallation
-rm -rf ~/.config/flux ~/.local/share/flux
+# ./install.sh -h for more options
+
+# Uninstall with:
+./uninstall.sh 
 ```
 
 <p align="center">
