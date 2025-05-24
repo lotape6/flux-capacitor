@@ -209,6 +209,14 @@ main() {
     log "${GREEN}Flux Capacitor has been installed successfully!${RESET}"
     log "Configuration directory: ${BOLD}${FLUX_CONFIG_DIR}${RESET}"
     log "Installation directory: ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}"
+    
+    # Shell completion information
+    echo
+    log "${BOLD}Shell Completion:${RESET}"
+    log "To enable shell completion in your current session, run:"
+    log "  ${GREEN}source ${HOME}/.$(basename $SHELL)rc${RESET}"
+    echo
+    
     # 🎉 Fancy ASCII Art Celebration 🎉
     echo -e "${GREEN}"
     echo -e "${RESET}"

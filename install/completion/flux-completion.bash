@@ -63,5 +63,15 @@ _flux_completions() {
     esac
 }
 
-# Register the completion function
+# Register the completion function for both the 'flux' command and the full path to the script
 complete -F _flux_completions flux
+# The script could also be called with the full path, so register for that too
+if [ -n "${BASH_SOURCE[0]}" ]; then
+    # Get the directory of this script
+    _flux_completion_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # Get the parent directory (which should contain flux.sh)
+    _flux_install_dir="$(dirname "${_flux_completion_dir}")"
+    if [ -f "${_flux_install_dir}/flux.sh" ]; then
+        complete -F _flux_completions "${_flux_install_dir}/flux.sh"
+    fi
+fi

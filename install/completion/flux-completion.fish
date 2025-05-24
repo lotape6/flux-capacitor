@@ -27,4 +27,17 @@ end
 
 complete -c flux -f -n "__fish_seen_subcommand_from launch; and not __fish_is_switch" -a "(__flux_yaml_files)"
 
+# Complete both 'flux' and the full path to flux.sh if available
+set -l current_script_path (status filename)
+if test -n "$current_script_path"
+    set -l script_dir (dirname $current_script_path)
+    set -l installation_dir (dirname $script_dir)
+    if test -f "$installation_dir/flux.sh"
+        # Apply the same completions to the full path of flux.sh
+        for cmd in (complete -c flux | string match -r '.*' | string replace -r '^complete (.*)' '$1')
+            complete -c "$installation_dir/flux.sh" $cmd
+        end
+    end
+end
+
 # No additional completions for 'clean' and 'help' as they don't take arguments

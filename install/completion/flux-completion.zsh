@@ -119,7 +119,16 @@ EOF
     echo "plugins=(... flux ...)"
 fi
 
-# If not using the oh-my-zsh plugin, register the completion function
+# If not using the oh-my-zsh plugin, register the completion function directly
 if [[ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/flux" ]]; then
-    _flux "$@"
+    # Make the _flux function available for completion
+    compdef _flux flux
+    # Also support completing when called via the full path
+    if [[ -n "${(%):-%x}" ]]; then
+        _flux_completion_dir="${(%):-%x:h}"
+        _flux_install_dir="${_flux_completion_dir:h}"
+        if [[ -f "${_flux_install_dir}/flux.sh" ]]; then
+            compdef _flux "${_flux_install_dir}/flux.sh"
+        fi
+    fi
 fi
