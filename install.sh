@@ -90,19 +90,26 @@ check_dependencies() {
             missing_deps+=("$dep")
         fi
     done
-    if [ ${#missing_deps[@]} -gt 0 ] && $FLUX_VERBOSE_MODE; then
+    if [ ${#missing_deps[@]} -gt 0 ]; then
         warn "Some optional dependencies are not installed: ${missing_deps[*]}"
         log "Installing missing dependencies..."
         
         # Use the install-dependency.sh script for each dependency
         for dep in "${missing_deps[@]}"; do
-            "${SCRIPT_DIR}/install/install-dependency.sh" "$dep"
+            # If fzf is missing, install it from GitHub
+            if [ "$dep" == "fzf" ]; then
+                echo "Installing fzf from GitHub..."
+                git clone --depth 1 https://github.com/junegunn/fzf.git "${HOME}/.fzf"
+                "${HOME}/.fzf/install"
+            else
+                "${SCRIPT_DIR}/install/install-dependency.sh" "$dep"
+            fi
         done
     fi
     
-    if $FLUX_VERBOSE_MODE; then
-        log "All dependencies are ${GREEN}installed${RESET}."
-    fi
+    
+    log "All dependencies are ${GREEN}installed${RESET}."
+    
 }
 
 # Create necessary directories
