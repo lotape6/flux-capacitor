@@ -19,7 +19,7 @@ export SCRIPT_DIR
 source "${CONFIG_FILE}"
 
 # Create logs directory if it doesn't exist
-mkdir -p "${LOGS_DIR}"
+mkdir -p "${FLUX_LOGS_DIR}"
 
 # Source the error code definitions
 if [ -f "${CONFIG_DIR}/err_codes" ]; then
@@ -33,20 +33,20 @@ fi
 FORCE_REMOVE=false
 
 # Define wrapper functions specific to uninstall.sh
-log() { log_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
-warn() { warn_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
-error() { error_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
-banner() { banner_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
+log() { log_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+warn() { warn_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+error() { error_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+banner() { banner_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
 
 # Display help message
 show_help() {
     echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
     echo
     echo -e "${BOLD}Options:${RESET}"
-    echo "  -q           Disable VERBOSE_MODE output"
+    echo "  -q           Disable verbose output"
     echo "  -f           Force removal without prompts"
-    echo "  -c <path>    Override default config directory (default: ${CONFIG_DIR})"
-    echo "  -i <path>    Override default installation directory (default: ${INSTALLATION_DIR})"
+    echo "  -c <path>    Override default config directory (default: ${FLUX_CONFIG_DIR})"
+    echo "  -i <path>    Override default installation directory (default: ${FLUX_INSTALLATION_DIR})"
     echo "  -h           Show this help message"
     echo
 }
@@ -57,16 +57,16 @@ show_help() {
 while getopts ":qfc:i:h" opt; do
     case ${opt} in
         q)
-            VERBOSE_MODE=false
+            FLUX_VERBOSE_MODE=false
             ;;
         f)
             FORCE_REMOVE=true
             ;;
         c)
-            CONFIG_DIR="${OPTARG}"
+            FLUX_CONFIG_DIR="${OPTARG}"
             ;;
         i)
-            INSTALLATION_DIR="${OPTARG}"
+            FLUX_INSTALLATION_DIR="${OPTARG}"
             ;;
         h)
             show_help
@@ -89,13 +89,13 @@ done
 
 # Remove configuration files
 remove_configs() {
-    if [ -d "${CONFIG_DIR}" ]; then
+    if [ -d "${FLUX_CONFIG_DIR}" ]; then
         banner "Configuration Files"
         
         keep_config="y"
         # Ask user about config files unless force mode is enabled
         if ! $FORCE_REMOVE; then
-            echo -e "Do you want to ${GREEN}keep${RESET} the configuration files at ${BOLD}${CONFIG_DIR}${RESET} just in case? 🤔🗃️"
+            echo -e "Do you want to ${GREEN}keep${RESET} the configuration files at ${BOLD}${FLUX_CONFIG_DIR}${RESET} just in case? 🤔🗃️"
             echo -e "If you choose to keep them, they will ${GREEN}remain in place${RESET} for future use."
             read -p "Keep configuration files? (Y/n): " keep_config
         else
@@ -110,31 +110,31 @@ remove_configs() {
             # Create backup
             BACKUP_DIR="${HOME}/.config/flux_backup_$(date +'%Y-%m-%d_%H:%M:%S')"
             mkdir -p "${BACKUP_DIR}"
-            cp -r "${CONFIG_DIR}"/* "${BACKUP_DIR}" 2>/dev/null || true
+            cp -r "${FLUX_CONFIG_DIR}"/* "${BACKUP_DIR}" 2>/dev/null || true
             
             # Remove configuration
-            rm -rf "${CONFIG_DIR}"
+            rm -rf "${FLUX_CONFIG_DIR}"
             
             log "Configuration files have been ${GREEN}backed up${RESET} to ${BOLD}${BACKUP_DIR}${RESET} and ${RED}removed${RESET}."
         fi
 
     else
-        log "No configuration directory found at ${BOLD}${CONFIG_DIR}${RESET}. Skipping..."
+        log "No configuration directory found at ${BOLD}${FLUX_CONFIG_DIR}${RESET}. Skipping..."
     fi
 }
 
 # Remove installation files
 remove_installation() {
-    if [ -d "${INSTALLATION_DIR}" ]; then
+    if [ -d "${FLUX_INSTALLATION_DIR}" ]; then
         banner "Installation Directory"
         
-        log "Removing installation files from ${BOLD}${INSTALLATION_DIR}${RESET}..."
-        cp ${UNINSTALL_LOG} .
-        UNINSTALL_LOG="$(basename ${UNINSTALL_LOG})"
-        rm -rf "${INSTALLATION_DIR}" 
-        log "Installation files have been ${RED}removed${RESET}. Logs can be found at ${BOLD}${UNINSTALL_LOG}${RESET}."
+        log "Removing installation files from ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}..."
+        cp ${FLUX_UNINSTALL_LOG} .
+        FLUX_UNINSTALL_LOG="$(basename ${FLUX_UNINSTALL_LOG})"
+        rm -rf "${FLUX_INSTALLATION_DIR}" 
+        log "Installation files have been ${RED}removed${RESET}. Logs can be found at ${BOLD}${FLUX_UNINSTALL_LOG}${RESET}."
     else
-        log "No installation directory found at ${BOLD}${INSTALLATION_DIR}${RESET}. Skipping..."
+        log "No installation directory found at ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}. Skipping..."
     fi
 }
 
@@ -152,17 +152,17 @@ main() {
     fi
     
     # Only remove installation if directory exists
-    if [ -d "${INSTALLATION_DIR}" ]; then
+    if [ -d "${FLUX_INSTALLATION_DIR}" ]; then
       remove_installation
     else
-      log "Skipping removal of installation directory; not found at ${INSTALLATION_DIR}."
+      log "Skipping removal of installation directory; not found at ${FLUX_INSTALLATION_DIR}."
     fi
 
     # Only remove configs if directory exists
-    if [ -d "${CONFIG_DIR}" ]; then
+    if [ -d "${FLUX_CONFIG_DIR}" ]; then
       remove_configs
     else
-      log "Skipping removal of configuration directory; not found at ${CONFIG_DIR}."
+      log "Skipping removal of configuration directory; not found at ${FLUX_CONFIG_DIR}."
     fi
     
     banner "Uninstallation Complete"

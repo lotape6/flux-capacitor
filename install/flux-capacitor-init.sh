@@ -146,8 +146,7 @@ create_snippet() {
             cat <<EOF
 ${SNIPPET_START}
 # Flux-capacitor configuration
-export FLUX_CONFIG_FILE="${CONFIG_FILE}"
-export FLUX_INSTALLATION_DIR="${SCRIPT_DIR}"
+source "${CONFIG_FILE}"
 
 # Add keybindings here
 # Example: bind '\\C-g:flux-command'
@@ -172,8 +171,7 @@ EOF
             cat <<EOF
 ${SNIPPET_START}
 # Flux-capacitor configuration
-export FLUX_CONFIG_FILE="${CONFIG_FILE}"
-export FLUX_INSTALLATION_DIR="${SCRIPT_DIR}"
+. "${CONFIG_FILE}"
 
 # Add keybindings here
 # Example: bindkey '^G' flux-command

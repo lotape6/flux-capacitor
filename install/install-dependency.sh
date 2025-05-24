@@ -1,9 +1,9 @@
 #!/bin/bash
 # install-dependency.sh - Install a dependency using the appropriate package manager
 
-# Detect if we're running in VERBOSE_MODE mode (inherited from parent script)
-# If VERBOSE_MODE is not set, default to false
-VERBOSE_MODE=${VERBOSE_MODE:-false}
+# Detect if we're running in verbose mode (inherited from parent script)
+# If FLUX_VERBOSE_MODE is not set, default to false
+FLUX_VERBOSE_MODE=${FLUX_VERBOSE_MODE:-false}
 
 # Try to find and source the error codes file
 if [ -n "$CONFIG_DIR" ] && [ -f "${CONFIG_DIR}/err_codes" ]; then
@@ -52,8 +52,8 @@ else
   exit ${EXIT_NO_PACKAGE_MANAGER}
 fi
 
-# Execute the command with or without VERBOSE_MODE output
-if $VERBOSE_MODE; then
+# Execute the command with or without verbose output
+if $FLUX_VERBOSE_MODE; then
   echo "Using $PACKAGE_MANAGER to install $DEPENDENCY"
   eval $CMD
 else
