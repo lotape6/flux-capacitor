@@ -86,7 +86,9 @@ if command -v tmux >/dev/null 2>&1; then
     # Set default-command to execute cd and pre_cmd for each new pane/window
     cmd_string="cd \"$target_dir\"; "
     if [ -n "$pre_cmd" ]; then
-        cmd_string="$pre_cmd; $cmd_string"
+        # Escape any double quotes in the pre_cmd
+        escaped_pre_cmd="${pre_cmd//\"/\\\"}"
+        cmd_string="$escaped_pre_cmd; $cmd_string"
     fi
     cmd_string="${cmd_string}exec \$SHELL"
     
@@ -95,6 +97,7 @@ if command -v tmux >/dev/null 2>&1; then
     
     # Run the pre_cmd in the initial pane
     if [ -n "$pre_cmd" ]; then
+        # No need to escape here as send-keys handles raw commands
         tmux send-keys -t "$session_name" "$pre_cmd" C-m
     fi
     
