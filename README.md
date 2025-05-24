@@ -37,17 +37,17 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 # Installation
 git clone https://github.com/lotape6/flux-capacitor.git
 cd flux-capacitor
-# Install with default options
 ./install.sh  
 
-# ./install.sh -h for more options
+# For further configuration modify the config file
+nano ~/.config/flux/flux.conf
 
 # Uninstall with:
 ./uninstall.sh 
 ```
 
 <p align="center">
-  <img src="https://media.giphy.com/media/3o7btNhMBytxAM6YBa/giphy.gif" alt="installing" width="300px"/>
+  <img src="https://media.giphy.com/media/3o7btNhMBytxAM6YBa/giphy.gif" alt="installing"/>
 </p>
 
 ## Overview
@@ -103,7 +103,7 @@ cp config/flux.conf ~/.config/flux/
 | `CUSTOM_CONFIG_PATH` | Custom config path (optional) | - |
 
 <p align="center">
-  <img src="https://media.giphy.com/media/xsF1FSDbjguis/giphy.gif" alt="configuration" width="300px"/>
+  <img src="https://media.giphy.com/media/xsF1FSDbjguis/giphy.gif" alt="configuration"/>
 </p>
 
 ## Contributing
@@ -130,13 +130,9 @@ This project was created with the help of AI code agents as a learning exercise.
 * Never trust nobody, especially this disclaimer
 
 <p align="center">
-  <img src="https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif" alt="warning" width="300px"/>
+  <img src="https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif" alt="warning"/>
 </p>
 
-## TODOs
-
-- [ ] Refactor uninstall according to https://github.com/lotape6/flux-capacitor/blob/master/docs/BASH_GUIDELINES.md
-- [ ] WIP
 
 ## References
 - [Modern Unix collection of alternative commands](https://github.com/ibraheemdev/modern-unix)
