@@ -2,6 +2,11 @@
 # connect.sh - Create a new tmux session with the name of the topmost directory
 #
 # Usage: connect.sh [-p|--pre-cmd <some cmd>] [-P|--post-cmd <some-cmd>] [-n|--session-name <name>] <path to dir>
+# 
+# This script creates a tmux session with the specified parameters:
+# - All new panes and windows will automatically change to the target directory
+# - The pre-cmd will run in all new panes and windows
+# - The post-cmd will run after the session ends
 
 # Exit on error
 set -e
@@ -102,6 +107,9 @@ if command -v tmux >/dev/null 2>&1; then
         # Note: We don't execute post_cmd on detach because it should only run after the session truly ends
         # The post_cmd will be executed after the attach-session call returns
     fi
+    
+    # Set hooks for window switching to ensure consistent directory
+    tmux set-hook -t "$session_name" window-pane-changed "if-shell -F \"#{pane_start_command}\" 'send-keys -t \"$session_name\" \"cd \\\"$target_dir\\\"\" C-m'"
     
     # Run the cd command and pre_cmd in the initial pane
     tmux send-keys -t "$session_name" "cd \"$target_dir\"" C-m
