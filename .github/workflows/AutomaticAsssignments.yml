@@ -7,20 +7,12 @@ on:
     types: [opened]
 
 jobs:
-  link-to-project:
+  assign_one_project:
     runs-on: ubuntu-latest
-    if: |
-      github.actor == 'lotape6' || github.actor == 'copilot'
+    name: Assign to One Project
     steps:
-      - name: Link to project
-        uses: actions/add-to-project@v1
-        with:
-          project-url: https://github.com/users/lotape6/projects/1
-          github-token: ${{ secrets.PERSONAL_TOKEN }}
-
-      - name: Assign Copilot (if possible)
-        if: github.actor == 'lotape6'
-        run: |
-          gh issue edit ${{ github.event.issue.number || github.event.pull_request.number }} --add-assignee copilot --add-label "status: ready" 
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+    - name: Assign NEW issues and NEW pull requests to project 2
+      uses: srggrs/assign-one-project-github-action@1.2.1
+      if: github.event.action == 'opened'
+      with:
+        project: 'https://github.com/users/lotape6/projects/1'
