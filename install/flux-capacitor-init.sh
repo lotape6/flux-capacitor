@@ -155,11 +155,6 @@ source "${CONFIG_FILE}"
 # Add keybindings here
 # Example: bind '\\C-g:flux-command'
 
-# Set up tmux configuration
-if [ -f "${FLUX_CONFIG_DIR}/.tmux.conf" ] && command -v tmux >/dev/null 2>&1; then
-    ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\${HOME}/.tmux.conf"
-fi
-
 # Create flux alias
 if [ -f "${FLUX_INSTALLATION_DIR}/flux.sh" ]; then
     alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
@@ -185,11 +180,6 @@ ${SNIPPET_START}
 
 # Add keybindings here
 # Example: bindkey '^G' flux-command
-
-# Set up tmux configuration
-if [ -f "${FLUX_CONFIG_DIR}/.tmux.conf" ] && command -v tmux >/dev/null 2>&1; then
-    ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\${HOME}/.tmux.conf"
-fi
 
 # Create flux alias
 if [ -f "${FLUX_INSTALLATION_DIR}/flux.sh" ]; then
@@ -217,11 +207,6 @@ set -x FLUX_INSTALLATION_DIR "${SCRIPT_DIR}"
 
 # Add keybindings here
 # Example: bind \\cg 'flux-command'
-
-# Set up tmux configuration
-if test -f "${FLUX_CONFIG_DIR}/.tmux.conf"; and command -v tmux >/dev/null 2>&1
-    ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\$HOME/.tmux.conf"
-end
 
 # Create flux alias
 if test -f "${FLUX_INSTALLATION_DIR}/flux.sh"
@@ -275,7 +260,7 @@ add_snippet_to_config() {
     echo "Adding flux-capacitor initialization snippet to ${CONFIG_FILE}"
     
     # Add snippet to the end of the file
-    create_snippet "${SHELL_TYPE}" >> "${CONFIG_FILE}"
+    create_snippet "${SHELL_TYPE}" >> "${CONFIG_FILE}"    
     
     echo "Flux-capacitor initialization snippet added to ${CONFIG_FILE}"
 }

@@ -130,19 +130,47 @@ copy_configs() {
     banner "Copying Configuration Files"
     log $FLUX_CONFIG_DIR
     # Handle configuration files
-    if [ -f "${FLUX_CONFIG_DIR}/tmux.conf" ]; then
+    shopt -s dotglob nullglob
+    if [ -f "${FLUX_CONFIG_DIR}/.tmux.conf" ]; then
         warn "Existing configuration found. Skipping..."
     
     else
         log "Copying configuration files to ${BOLD}${FLUX_CONFIG_DIR}${RESET}"
-        cp "${SCRIPT_DIR}/config/"* "${FLUX_CONFIG_DIR}/"
+        cp "${SCRIPT_DIR}/config/"*  "${FLUX_CONFIG_DIR}/"
     fi
         
         # Copy installation files
-        log "Copying installation files to ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}"
-        cp -r "${SCRIPT_DIR}/install/"* "${FLUX_INSTALLATION_DIR}/"
-        
-        log "Configuration and installation files copied ${GREEN}successfully${RESET}."
+    log "Copying installation files to ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}"
+    cp -r "${SCRIPT_DIR}/install/"* "${FLUX_INSTALLATION_DIR}/"
+    shopt -u dotglob nullglob
+    
+    log "Configuration and installation files copied ${GREEN}successfully${RESET}."
+}
+
+# Run flux-capacitor-init.sh in install mode
+config_shell_support() {
+
+    # Set up tmux configuration
+    if [ -f "${FLUX_CONFIG_DIR}/.tmux.conf" ]; then
+        warn "Tmux configuration found."
+        read -p "Do you want to overwrite it? (y/n) " choice
+        if [[ "$choice" =~ ^[Yy]$ ]]; then
+            log "Overwriting tmux configuration..."
+            ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
+        else
+            log "Keeping existing tmux configuration."
+        fi
+    else
+        log "Symlink created from ${GREEN}${FLUX_CONFIG_DIR}/.tmux.conf${RESET} to ${GREEN}${HOME}/.tmux.conf${RESET}"
+        ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "${HOME}/.tmux.conf"
+    fi
+
+
+    if [ -f "${SCRIPT_DIR}/install/flux-capacitor-init.sh" ]; then
+        log "Adding shell initialization snippets..."
+        "${SCRIPT_DIR}/install/flux-capacitor-init.sh" -i
+        log "Shell initialization snippets added ${GREEN}successfully${RESET}."
+    fi
 }
 
 # Main installation process
@@ -155,19 +183,13 @@ main() {
     check_dependencies
     create_dirs
     copy_configs
-    
-    # Run flux-capacitor-init.sh in install mode
-    if [ -f "${SCRIPT_DIR}/install/flux-capacitor-init.sh" ]; then
-        log "Adding shell initialization snippets..."
-        "${SCRIPT_DIR}/install/flux-capacitor-init.sh" -i
-        log "Shell initialization snippets added ${GREEN}successfully${RESET}."
-    fi
-    
+    config_shell_support
+
     banner "Installation Complete"
     log "${GREEN}Flux Capacitor has been installed successfully!${RESET}"
     log "Configuration directory: ${BOLD}${FLUX_CONFIG_DIR}${RESET}"
     log "Installation directory: ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}"
-    log "You can now use Flux Capacitor. Enjoy!"
+    log "You can update your .zsh|bash|fishrc now to use Flux Capacitor. Enjoy!"
 }
 
 # Run the installation
