@@ -37,9 +37,11 @@ on:
       - auto_merge_disabled
 
 jobs:
-  run:
+  automatic_assignation:
     runs-on: ubuntu-latest
+    name: Automatic Assignation
     steps:
+      - name: Automatic assign
       - uses: wow-actions/auto-assign@v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,6 +52,7 @@ jobs:
 
   assign_one_project:
     runs-on: ubuntu-latest
+    needs: link-to-project
     name: Assign to One Project
     steps:
     - name: Assign NEW issues and NEW pull requests to project 2
