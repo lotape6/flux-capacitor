@@ -20,6 +20,7 @@ jobs:
 
       - name: Assign Copilot (if possible)
         if: github.actor == 'lotape6'
-        run: gh issue edit ${{ github.event.issue.number || github.event.pull_request.number }} --add-assignee copilot
+        run: |
+          gh issue edit ${{ github.event.issue.number || github.event.pull_request.number }} --add-assignee copilot --add-label "status: ready" 
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
