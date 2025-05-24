@@ -167,7 +167,7 @@ fi
 
 # FZF initialization (if installed)
 if command -v fzf >/dev/null 2>&1; then
-    eval "$(fzf --bash)"
+    eval "$(fzf --bash 2>/dev/null || echo "")"
 fi
 ${SNIPPET_END}
 EOF
@@ -193,7 +193,7 @@ fi
 
 # FZF initialization (if installed)
 if command -v fzf >/dev/null 2>&1; then
-    source <(fzf --zsh)
+    source <(fzf --zsh 2>/dev/null || echo "")
 fi
 ${SNIPPET_END}
 EOF
@@ -220,7 +220,7 @@ end
 
 # FZF initialization (if installed)
 if command -v fzf >/dev/null 2>&1
-    fzf --fish | source
+    fzf --fish 2>/dev/null | source || true
 end
 ${SNIPPET_END}
 EOF
