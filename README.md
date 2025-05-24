@@ -13,9 +13,17 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 | Daily Integration  | ![Daily Integration](https://github.com/lotape6/flux-capacitor/actions/workflows/DailyIntegration.yml/badge.svg?branch=master) |
 
 ## Table of Contents
+- [Build Status](#build-status)
 - [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Quick Install](#quick-install)
+  - [Post-Installation](#post-installation)
+  - [Uninstall](#uninstall)
 - [Overview](#overview)
+  - [Features](#features)
 - [Configuration](#configuration)
+  - [Basic Configuration](#basic-configuration)
+  - [Advanced Options](#advanced-options)
 - [Contributing](#contributing)
 - [Disclaimer](#disclaimer)
 - [References](#references)
@@ -47,7 +55,7 @@ You can tune your flux-capacitor settings by modifying the configuration file.
 
 
 <p align="center">
-  <img src="https://media.giphy.com/media/3o7btNq2Y0x5v1j4gI/giphy.gif" alt="post-installation"/>
+  <img src="resources/tune.gif" alt="post-installation"/>
 </p>
 
 ```bash
