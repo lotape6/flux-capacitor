@@ -15,7 +15,11 @@ complete -c flux -n "__fish_seen_subcommand_from connect; and not __fish_is_swit
 # Completions for 'launch' subcommand
 function __flux_yaml_files
     if command -v fzf >/dev/null 2>&1
-        find . -type f \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null | sed 's|^\./||' | sort | fzf --height 40% --reverse --multi --prompt="Select YAML files: "
+        if command -v bat >/dev/null 2>&1
+            find . -type f \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null | sed 's|^\./||' | sort | fzf --height 40% --reverse --multi --preview 'bat --color=always --style=numbers {} 2>/dev/null || cat {}' --preview-window=right:60% --prompt="Select YAML files: "
+        else
+            find . -type f \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null | sed 's|^\./||' | sort | fzf --height 40% --reverse --multi --prompt="Select YAML files: "
+        end
     else
         find . -type f \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null | sed 's|^\./||'
     end

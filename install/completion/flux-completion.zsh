@@ -67,7 +67,7 @@ _flux_yaml_files_fzf() {
     fi
     
     local selected
-    selected=$(print -l $files | fzf --height 40% --reverse --multi --prompt="Select YAML files: ")
+    selected=$(print -l $files | fzf --height 40% --reverse --multi --preview 'bat --color=always --style=numbers {} 2>/dev/null || cat {}' --preview-window=right:60% --prompt="Select YAML files: ")
     
     if [[ -n "$selected" ]]; then
         reply=($selected)

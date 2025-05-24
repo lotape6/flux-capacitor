@@ -42,7 +42,12 @@ _flux_completions() {
                     # When user presses Tab, a file selector will be shown with fzf
                     # We'll add a message to inform the user
                     echo -e "\nPress Tab again to see YAML files or enter path:"
-                    COMPREPLY=( $(find . -type f \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null | sed 's|^\./||' | grep -i "${cur}" | sort | fzf --height 40% --reverse 2>/dev/null) )
+                    # Use 'bat' for preview if available, otherwise fall back to cat
+                    if command -v bat >/dev/null 2>&1; then
+                        COMPREPLY=( $(find . -type f \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null | sed 's|^\./||' | grep -i "${cur}" | sort | fzf --height 40% --reverse --preview 'bat --color=always --style=numbers {} 2>/dev/null || cat {}' --preview-window=right:60% 2>/dev/null) )
+                    else
+                        COMPREPLY=( $(find . -type f \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null | sed 's|^\./||' | grep -i "${cur}" | sort | fzf --height 40% --reverse 2>/dev/null) )
+                    fi
                 else
                     # Without fzf, use regular bash completion for files with yml or yaml extension
                     local yaml_files=$(find . -type f \( -name "*.yml" -o -name "*.yaml" \) 2>/dev/null | sed 's|^\./||' | grep -i "${cur}" | sort)

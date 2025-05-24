@@ -58,3 +58,5 @@ The plugin provides:
 ## Using FZF for Enhanced Completion
 
 When [fzf](https://github.com/junegunn/fzf) is installed, Flux Capacitor will use it to provide enhanced file completion for the `launch` command, allowing you to interactively select YAML files with a fuzzy finder.
+
+Additionally, if [bat](https://github.com/sharkdp/bat) is installed, Flux Capacitor will show syntax-highlighted previews of YAML files when using fzf for file selection, making it easier to identify the correct file.
