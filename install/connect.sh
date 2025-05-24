@@ -52,23 +52,53 @@ if [ ! -d "$target_dir" ]; then
     exit 1
 fi
 
-# Change to the target directory
-cd "$target_dir"
+# Convert target_dir to absolute path
+target_dir=$(cd "$target_dir" && pwd)
 
 # If session name is not provided, use the name of the topmost directory
 if [ -z "$session_name" ]; then
-    session_name=$(basename "$PWD")
+    session_name=$(basename "$target_dir")
 fi
 
 # Create a new tmux session
 if command -v tmux >/dev/null 2>&1; then
-    # Check if pre_cmd is set and execute it
-    if [ -n "$pre_cmd" ]; then
-        eval "$pre_cmd"
+    # Check if session already exists
+    if tmux has-session -t "$session_name" 2>/dev/null; then
+        # If session exists, attach to it
+        tmux switch-client -t "$session_name" 2>/dev/null || tmux attach-session -t "$session_name"
+        exit 0
     fi
-
+    
     # Create a new tmux session with the session name
-    tmux new-session -d -s "$session_name" 2>/dev/null || true
+    tmux new-session -d -s "$session_name" -c "$target_dir" 2>/dev/null || true
+    
+    # Store the commands in tmux environment variables for this session
+    tmux set-environment -t "$session_name" FLUX_TARGET_DIR "$target_dir"
+    if [ -n "$pre_cmd" ]; then
+        tmux set-environment -t "$session_name" FLUX_PRE_CMD "$pre_cmd"
+    fi
+    if [ -n "$post_cmd" ]; then
+        tmux set-environment -t "$session_name" FLUX_POST_CMD "$post_cmd"
+    fi
+    
+    # Create custom tmux commands for this session
+    
+    # Set default-command to execute cd and pre_cmd for each new pane/window
+    cmd_string="cd \"$target_dir\"; "
+    if [ -n "$pre_cmd" ]; then
+        cmd_string="$pre_cmd; $cmd_string"
+    fi
+    cmd_string="${cmd_string}exec \$SHELL"
+    
+    # Set the default-command for all panes in this session
+    tmux set-option -t "$session_name" default-command "$cmd_string"
+    
+    # Run the pre_cmd in the initial pane
+    if [ -n "$pre_cmd" ]; then
+        tmux send-keys -t "$session_name" "$pre_cmd" C-m
+    fi
+    
+    # Attach to the session
     tmux switch-client -t "$session_name" 2>/dev/null || tmux attach-session -t "$session_name"
     
     # Check if post_cmd is set and execute it after the session ends
