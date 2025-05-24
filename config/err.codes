@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# err_codes - Standardized exit codes for flux-capacitor scripts
+# err.codes - Standardized exit codes for flux-capacitor scripts
 # 
 # This file contains standardized exit codes to be used across all scripts
 # in the flux-capacitor project. Source this file in your scripts to ensure

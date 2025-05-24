@@ -43,7 +43,7 @@ jobs:
           echo "$CHANGED_FILES"
 
           # Check if any match the critical paths
-          echo "$CHANGED_FILES" | grep -E '(^install\.sh$|^uninstall\.sh$|^install/|^config/)' && SHOULD_RUN=true || SHOULD_RUN=false
+          echo "$CHANGED_FILES" | grep -E '(^install\.sh$|^uninstall\.sh$|^src/|^config/)' && SHOULD_RUN=true || SHOULD_RUN=false
           echo "should-run=$SHOULD_RUN" >> $GITHUB_OUTPUT
 
       - name: Run tests if commits exist

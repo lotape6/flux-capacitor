@@ -13,13 +13,13 @@ RESET='\033[0m'
 SCRIPT_DIR="$(dirname "$0")"
 CONFIG_FILE=""
 
-if [ -f "${SCRIPT_DIR}/../install/find-config.sh" ]; then
-    CONFIG_FILE="$(${SCRIPT_DIR}/../install/find-config.sh)"
+if [ -f "${SCRIPT_DIR}/../src/find-config.sh" ]; then
+    CONFIG_FILE="$(${SCRIPT_DIR}/../src/find-config.sh)"
     source "${CONFIG_FILE}"
-    if [ -f "${CONFIG_DIR}/err_codes" ]; then
-        source "${CONFIG_DIR}/err_codes"
-    elif [ -f "${SCRIPT_DIR}/../config/err_codes" ]; then
-        source "${SCRIPT_DIR}/../config/err_codes"
+    if [ -f "${CONFIG_DIR}/err.codes" ]; then
+        source "${CONFIG_DIR}/err.codes"
+    elif [ -f "${SCRIPT_DIR}/../config/err.codes" ]; then
+        source "${SCRIPT_DIR}/../config/err.codes"
     fi
 else
     # Define minimal error codes if we can't find the file

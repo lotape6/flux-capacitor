@@ -8,8 +8,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "${SCRIPT_DIR}")"
 
 # Default installation path (1st priority)
-INSTALLATION_PATH="${HOME}/.local/share/flux"
-DEFAULT_CONFIG_PATH="${HOME}/.config/flux/flux.conf"
+FLUX_ROOT="${HOME}/.flux"
+DEFAULT_CONFIG_PATH="${FLUX_ROOT}/config/flux.conf"
 
 # Home directory path (2nd priority)
 HOME_CONFIG_PATH="${HOME}/flux.conf"

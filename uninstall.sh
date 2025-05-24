@@ -3,14 +3,17 @@
 
 set -e
 
+# Flags
+FORCE_REMOVE=false
+
 # Get the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source shared utilities
-source "${SCRIPT_DIR}/install/utils.sh"
+source "${SCRIPT_DIR}/src/utils.sh"
 
 # Find the config file
-CONFIG_FILE="$(${SCRIPT_DIR}/install/find-config.sh)"
+CONFIG_FILE="$(${SCRIPT_DIR}/src/find-config.sh)"
 
 # Set SCRIPT_DIR before sourcing the config file
 export SCRIPT_DIR
@@ -18,43 +21,9 @@ export SCRIPT_DIR
 # Source the configuration
 source "${CONFIG_FILE}"
 
-# Create logs directory if it doesn't exist
-mkdir -p "${FLUX_LOGS_DIR}"
-
-# Source the error code definitions
-if [ -f "${CONFIG_DIR}/err_codes" ]; then
-    source "${CONFIG_DIR}/err_codes"
-else
-    # If the file doesn't exist yet, source from script dir
-    source "${SCRIPT_DIR}/config/err_codes"
-fi
-
-# Flags
-FORCE_REMOVE=false
-
-# Define wrapper functions specific to uninstall.sh
-log() { log_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-warn() { warn_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-error() { error_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-banner() { banner_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-
-# Display help message
-show_help() {
-    echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
-    echo
-    echo -e "${BOLD}Options:${RESET}"
-    echo "  -q           Disable verbose output"
-    echo "  -f           Force removal without prompts"
-    echo "  -c <path>    Override default config directory (default: ${FLUX_CONFIG_DIR})"
-    echo "  -i <path>    Override default installation directory (default: ${FLUX_INSTALLATION_DIR})"
-    echo "  -h           Show this help message"
-    echo
-}
-
-
 
 # Parse command line arguments
-while getopts ":qfc:i:h" opt; do
+while getopts ":qfr:h" opt; do
     case ${opt} in
         q)
             FLUX_VERBOSE_MODE=false
@@ -62,11 +31,12 @@ while getopts ":qfc:i:h" opt; do
         f)
             FORCE_REMOVE=true
             ;;
-        c)
-            FLUX_CONFIG_DIR="${OPTARG}"
-            ;;
-        i)
-            FLUX_INSTALLATION_DIR="${OPTARG}"
+        r)
+            FLUX_ROOT="${OPTARG}"
+            # Update derived paths
+            FLUX_LOGS_DIR="${FLUX_ROOT}/logs"
+            FLUX_INSTALL_LOG="${FLUX_LOGS_DIR}/install_$(date +'%Y%m%d%H%M%S').log"
+            FLUX_UNINSTALL_LOG="${FLUX_LOGS_DIR}/uninstall_$(date +'%Y%m%d%H%M%S').log"
             ;;
         h)
             show_help
@@ -85,56 +55,76 @@ while getopts ":qfc:i:h" opt; do
     esac
 done
 
+# Create logs directory if it doesn't exist
+mkdir -p "${FLUX_LOGS_DIR}"
+
+# Source the error code definitions
+if [ -f "${CONFIG_DIR}/err.codes" ]; then
+    source "${CONFIG_DIR}/err.codes"
+else
+    # If the file doesn't exist yet, source from script dir
+    source "${SCRIPT_DIR}/config/err.codes"
+fi
+
+# Define wrapper functions specific to uninstall.sh
+log() { log_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+warn() { warn_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+error() { error_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+banner() { banner_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+
+# Display help message
+show_help() {
+    echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
+    echo
+    echo -e "${BOLD}Options:${RESET}"
+    echo "  -q           Disable verbose output"
+    echo "  -f           Force removal without prompts"
+    echo "  -r <path>    Override default root directory (default: ${FLUX_ROOT})"
+    echo "  -h           Show this help message"
+    echo
+}
 
 
-# Remove configuration files
-remove_configs() {
-    if [ -d "${FLUX_CONFIG_DIR}" ]; then
-        banner "Configuration Files"
+# Remove flux root directory and all its contents
+remove_flux_root() {
+    if [ -d "${FLUX_ROOT}" ]; then
+        banner "Flux Root Directory"
         
         keep_config="y"
         # Ask user about config files unless force mode is enabled
         if ! $FORCE_REMOVE; then
-            echo -e "Do you want to ${GREEN}keep${RESET} the configuration files at ${BOLD}${FLUX_CONFIG_DIR}${RESET} just in case? 🤔🗃️"
-            echo -e "If you choose to keep them, they will ${GREEN}remain in place${RESET} for future use."
-            read -p "Keep configuration files? (Y/n): " keep_config
+            log "Do you want to ${GREEN}keep${RESET} the flux root directory at ${BOLD}${FLUX_ROOT}${RESET} just in case? 🤔🗃️"
+            log "If you choose to keep it, it will ${GREEN}remain in place${RESET} for future use."
+            read -p "Keep flux root directory? (Y/n): " keep_config
         else
-            keep_config="n" # In force mode, always delete configs
+            keep_config="n" # In force mode, always delete
         fi
 
         if [[ ! "${keep_config}" =~ ^[Nn]$ ]]; then
-            log "Configuration files will be ${GREEN}preserved${RESET}."
+            log "Flux root directory will be ${GREEN}preserved${RESET}."
         else
-            log "Backing up and removing configuration files..."
+            log "Backing up and removing flux root directory..."
             
             # Create backup
-            BACKUP_DIR="${HOME}/.config/flux_backup_$(date +'%Y-%m-%d_%H:%M:%S')"
+            BACKUP_DIR="${HOME}/.flux_backup_$(date +'%Y-%m-%d_%H:%M:%S')"
             mkdir -p "${BACKUP_DIR}"
-            cp -r "${FLUX_CONFIG_DIR}"/* "${BACKUP_DIR}" 2>/dev/null || true
+            cp -r "${FLUX_ROOT}"/* "${BACKUP_DIR}" 2>/dev/null || true
             
-            # Remove configuration
-            rm -rf "${FLUX_CONFIG_DIR}"
+            # Save the log file before removing the directory
+            if [ -f "${FLUX_UNINSTALL_LOG}" ]; then
+                cp "${FLUX_UNINSTALL_LOG}" .
+                FLUX_UNINSTALL_LOG="$(basename ${FLUX_UNINSTALL_LOG})"
+            fi
             
-            log "Configuration files have been ${GREEN}backed up${RESET} to ${BOLD}${BACKUP_DIR}${RESET} and ${RED}removed${RESET}."
+            # Remove flux root
+            rm -rf "${FLUX_ROOT}"
+            
+            log "Flux root has been ${GREEN}backed up${RESET} to ${BOLD}${BACKUP_DIR}${RESET} and ${RED}removed${RESET}."
+            log "Logs can be found at ${BOLD}${FLUX_UNINSTALL_LOG}${RESET}."
         fi
 
     else
-        log "No configuration directory found at ${BOLD}${FLUX_CONFIG_DIR}${RESET}. Skipping..."
-    fi
-}
-
-# Remove installation files
-remove_installation() {
-    if [ -d "${FLUX_INSTALLATION_DIR}" ]; then
-        banner "Installation Directory"
-        
-        log "Removing installation files from ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}..."
-        cp ${FLUX_UNINSTALL_LOG} .
-        FLUX_UNINSTALL_LOG="$(basename ${FLUX_UNINSTALL_LOG})"
-        rm -rf "${FLUX_INSTALLATION_DIR}" 
-        log "Installation files have been ${RED}removed${RESET}. Logs can be found at ${BOLD}${FLUX_UNINSTALL_LOG}${RESET}."
-    else
-        log "No installation directory found at ${BOLD}${FLUX_INSTALLATION_DIR}${RESET}. Skipping..."
+        log "No flux root directory found at ${BOLD}${FLUX_ROOT}${RESET}. Skipping..."
     fi
 }
 
@@ -144,43 +134,37 @@ main() {
     
     log "Starting uninstallation process..."
     
-    # Remove shell initialization snippets
-    if [ -f "${SCRIPT_DIR}/install/flux-capacitor-init.sh" ]; then
-        log "Removing shell initialization snippets..."
-        "${SCRIPT_DIR}/install/flux-capacitor-init.sh" -u
+    log "Removing shell initialization snippets..."
+    if [ -f "${FLUX_ROOT}/src/flux-capacitor-init.sh" ]; then
+        "${FLUX_ROOT}/src/flux-capacitor-init.sh" -u
         log "Shell initialization snippets removed ${GREEN}successfully${RESET}."
-    fi
-    
-    # Only remove installation if directory exists
-    if [ -d "${FLUX_INSTALLATION_DIR}" ]; then
-      remove_installation
     else
-      log "Skipping removal of installation directory; not found at ${FLUX_INSTALLATION_DIR}."
+        log "No shell initialization script found at ${FLUX_ROOT}/src/flux-capacitor-init.sh."
+        warn "Do not forget to remove any manual entries in your shell config files!"
     fi
 
-    # Only remove configs if directory exists
-    if [ -d "${FLUX_CONFIG_DIR}" ]; then
-      remove_configs
+    # Only remove flux root if directory exists
+    if [ -d "${FLUX_ROOT}" ]; then
+      remove_flux_root
+       banner "Uninstallation Complete"
+       log "${GREEN}Flux Capacitor has been uninstalled successfully!${RESET}"
     else
-      log "Skipping removal of configuration directory; not found at ${FLUX_CONFIG_DIR}."
+      warn "Skipping removal of flux root directory; not found at ${FLUX_ROOT}."
     fi
-    
-    banner "Uninstallation Complete"
-    log "${GREEN}Flux Capacitor has been uninstalled successfully!${RESET}"
 }
 
 # Confirm uninstallation if not in force mode
 if ! $FORCE_REMOVE; then
     show_ascii_banner
-    echo -e "${BOLD}${YELLOW}This will uninstall Flux Capacitor.${RESET}"
-    echo -e "  • Installation directory will be ${RED}completely removed${RESET}"
+    log "${BOLD}${YELLOW}This will uninstall Flux Capacitor.${RESET}"
+    log "  • Flux root directory will be ${RED}completely removed${RESET}"
     read -p "Are you absolutely sure you want to disrupt the space-time continuum? (y/N): " confirm
     
     if [[ "${confirm}" =~ ^[Yy]$ ]]; then
-        echo -e "${YELLOW}Your timeline will never be the same... proceeding anyway.${RESET}"
+        log "${YELLOW}Your timeline will never be the same... proceeding anyway.${RESET}"
         main
     else
-        echo -e "${GREEN}Phew! The universe is safe for now.${RESET}"
+        log "${GREEN}Phew! The universe is safe for now.${RESET}"
         exit ${EXIT_SUCCESS}
     fi
 else

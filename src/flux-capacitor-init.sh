@@ -25,9 +25,15 @@ if command -v realpath >/dev/null 2>&1; then
 fi
 
 # Source utils if available (non-critical)
-if [ -f "${SCRIPT_DIR}/utils.sh" ]; then
+if [ -f "${SCRIPT_DIR}/src/utils.sh" ]; then
     # shellcheck disable=SC1090,SC1091
-    . "${SCRIPT_DIR}/utils.sh"
+    . "${SCRIPT_DIR}/src/utils.sh"
+else
+    log() {
+        if [[ $FLUX_VERBOSE_MODE = "true" ]]; then
+            echo "$1"
+        fi
+    }
 fi
 
 # Default mode is init
@@ -88,8 +94,8 @@ detect_shell() {
     # Fall back to checking the parent process
     if command -v ps >/dev/null 2>&1; then
         PARENT_PID=$(ps -p $$ -o ppid=)
-        PARENT_CMD=$(ps -p "${PARENT_PID}" -o comm= 2>/dev/null || echo "unknown")
-        PARENT_BASE=$(basename "${PARENT_CMD}" 2>/dev/null || echo "unknown")
+        PARENT_CMD=$(ps -p "${PARENT_PID}" -o comm= 2>/dev/null || echo "unknown-shell")
+        PARENT_BASE=$(basename "${PARENT_CMD}" 2>/dev/null || echo "unknown-shell")
         
         case "${PARENT_BASE}" in
             bash|zsh|fish)
@@ -135,7 +141,7 @@ get_config_file() {
 # Only supporting bash, zsh, and fish (same as fzf)
 create_snippet() {
     SHELL_TYPE=$1
-    CONFIG_FILE=$("${REPO_DIR}/install/find-config.sh" 2>/dev/null || echo "${REPO_DIR}/config/flux.conf")
+    CONFIG_FILE=$("${REPO_DIR}/src/find-config.sh" 2>/dev/null || echo "${REPO_DIR}/config/flux.conf")
     
     # Source the config to get FLUX_CONFIG_DIR
     # shellcheck disable=SC1090
@@ -156,18 +162,18 @@ source "${CONFIG_FILE}"
 # Example: bind '\\C-g:flux-command'
 
 # Create flux alias
-if [ -f "${FLUX_INSTALLATION_DIR}/flux.sh" ]; then
-    alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
+if [ -f "${FLUX_ROOT}/src/flux.sh" ]; then
+    alias flux="${FLUX_ROOT}/src/flux.sh"
 fi
 
 # Load flux command completion
-if [ -f "${FLUX_INSTALLATION_DIR}/completion/flux-completion.bash" ]; then
-    source "${FLUX_INSTALLATION_DIR}/completion/flux-completion.bash"
+if [ -f "${FLUX_ROOT}/src/completion/flux-completion.bash" ]; then
+    source "${FLUX_ROOT}/src/completion/flux-completion.bash"
 fi
 
 # FZF initialization (if installed)
 if command -v fzf >/dev/null 2>&1; then
-    eval "$(fzf --bash)"
+    source <(fzf --bash)
 fi
 ${SNIPPET_END}
 EOF
@@ -182,13 +188,13 @@ ${SNIPPET_START}
 # Example: bindkey '^G' flux-command
 
 # Create flux alias
-if [ -f "${FLUX_INSTALLATION_DIR}/flux.sh" ]; then
-    alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
+if [ -f "${FLUX_ROOT}/src/flux.sh" ]; then
+    alias flux="${FLUX_ROOT}/src/flux.sh"
 fi
 
 # Load flux command completion
-if [ -f "${FLUX_INSTALLATION_DIR}/completion/flux-completion.zsh" ]; then
-    source "${FLUX_INSTALLATION_DIR}/completion/flux-completion.zsh"
+if [ -f "${FLUX_ROOT}/src/completion/flux-completion.zsh" ]; then
+    source "${FLUX_ROOT}/src/completion/flux-completion.zsh"
 fi
 
 # FZF initialization (if installed)
@@ -203,19 +209,19 @@ EOF
 ${SNIPPET_START}
 # Flux-capacitor configuration
 set -x FLUX_CONFIG_FILE "${CONFIG_FILE}"
-set -x FLUX_INSTALLATION_DIR "${SCRIPT_DIR}"
+set -x FLUX_ROOT "${FLUX_ROOT}"
 
 # Add keybindings here
 # Example: bind \\cg 'flux-command'
 
 # Create flux alias
-if test -f "${FLUX_INSTALLATION_DIR}/flux.sh"
-    alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
+if test -f "${FLUX_ROOT}/src/flux.sh"
+    alias flux="${FLUX_ROOT}/src/flux.sh"
 end
 
 # Load flux command completion
-if test -f "${FLUX_INSTALLATION_DIR}/completion/flux-completion.fish"
-    source "${FLUX_INSTALLATION_DIR}/completion/flux-completion.fish"
+if test -f "${FLUX_ROOT}/src/completion/flux-completion.fish"
+    source "${FLUX_ROOT}/src/completion/flux-completion.fish"
 end
 
 # FZF initialization (if installed)
@@ -253,16 +259,16 @@ add_snippet_to_config() {
     SNIPPET_END="# <<< flux-capacitor initialization <<<"
     
     if is_string_in_file "${SNIPPET_START}" "${CONFIG_FILE}"; then
-        echo "Flux-capacitor initialization snippet already exists in ${CONFIG_FILE}"
+        log "Flux-capacitor initialization snippet already exists in ${CONFIG_FILE}"
         return 0
     fi
     
-    echo "Adding flux-capacitor initialization snippet to ${CONFIG_FILE}"
+    log "Adding flux-capacitor initialization snippet to ${CONFIG_FILE}"
     
     # Add snippet to the end of the file
     create_snippet "${SHELL_TYPE}" >> "${CONFIG_FILE}"    
     
-    echo "Flux-capacitor initialization snippet added to ${CONFIG_FILE}"
+    log "Flux-capacitor initialization snippet added to ${CONFIG_FILE}"
 }
 
 # Remove snippet from shell config
@@ -272,21 +278,20 @@ remove_snippet_from_config() {
     
     # Check if file exists
     if [ ! -f "${CONFIG_FILE}" ]; then
-        echo "Shell config file ${CONFIG_FILE} not found"
+        log "Shell config file ${CONFIG_FILE} not found"
         return 0
     fi
     
     # Check if snippet is present
     SNIPPET_START="# >>> flux-capacitor initialization >>>"
     SNIPPET_END="# <<< flux-capacitor initialization <<<"
-    
     if ! is_string_in_file "${SNIPPET_START}" "${CONFIG_FILE}"; then
-        echo "No flux-capacitor initialization snippet found in ${CONFIG_FILE}"
+        log "No flux-capacitor initialization snippet found in ${CONFIG_FILE}"
         return 0
     fi
-    
-    echo "Removing flux-capacitor initialization snippet from ${CONFIG_FILE}"
-    
+
+    log "Removing flux-capacitor initialization snippet from ${CONFIG_FILE}"
+
     # Create a temporary file
     TEMP_FILE=$(mktemp)
     
@@ -298,8 +303,8 @@ remove_snippet_from_config() {
     
     # Remove temp file
     rm "${TEMP_FILE}"
-    
-    echo "Flux-capacitor initialization snippet removed from ${CONFIG_FILE}"
+
+    log "Flux-capacitor initialization snippet removed from ${CONFIG_FILE}"
 }
 
 # Main logic based on mode

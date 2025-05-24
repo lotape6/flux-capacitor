@@ -14,11 +14,11 @@ log() {
 
 # Path to the flux-capacitor-init.sh script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INIT_SCRIPT="${SCRIPT_DIR}/../install/flux-capacitor-init.sh"
+INIT_SCRIPT="${SCRIPT_DIR}/../src/flux-capacitor-init.sh"
 
 # Setup test environment
 TEST_HOME=$(mktemp -d)
-TEST_CONFIG_FILES=(".bashrc" ".zshrc" ".config/fish/config.fish" ".tcshrc" ".kshrc" ".profile")
+TEST_CONFIG_FILES=(".bashrc" ".zshrc" ".config/fish/config.fish")
 
 # Create test shell config files
 for config_file in "${TEST_CONFIG_FILES[@]}"; do
