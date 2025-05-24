@@ -6,6 +6,9 @@ set -e
 # Get the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# Source shared utilities
+source "${SCRIPT_DIR}/install/utils.sh"
+
 # Find the config file
 CONFIG_FILE="$(${SCRIPT_DIR}/install/find-config.sh)"
 
@@ -18,74 +21,11 @@ source "${CONFIG_FILE}"
 # Create logs directory if it doesn't exist
 mkdir -p "${LOGS_DIR}"
 
-# ANSI color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-BOLD='\033[1m'
-RESET='\033[0m'
-
-# Verbose mode flag
-VERBOSE=true
-
-# Display ASCII art banner
-show_ascii_banner() {
-    if $VERBOSE || ! $FORCE_REMOVE; then
-        echo -e "${BLUE}${BOLD}"
-        echo '   _______________________'
-        echo '  /                       \'
-        echo ' /   ___________________   \'
-        echo '|   |                   |   |'
-        echo '|   |    _     _        |   |'
-        echo '|   |   | |   | |       |   |'
-        echo '|   |   | |___| |       |   |'
-        echo '|   |   |  ___  |  ⚡   |   |'
-        echo '|   |   | |   | |       |   |'
-        echo '|   |   |_|   |_|       |   |'
-        echo '|   |___________________|   |'
-        echo ' \   F L U X - C A P      /'
-        echo '  \_______________________/'
-        echo -e "${RESET}"
-    fi
-}
-
-# Print standard log message
-log() {
-    local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    echo -e "${timestamp} $1" >> "${INSTALL_LOG}"
-    if $VERBOSE; then
-        echo -e "${timestamp} $1"
-    fi
-}
-
-# Print warning message (yellow)
-warn() {
-    local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    echo -e "${timestamp} ${YELLOW}WARNING:${RESET} $1" >> "${INSTALL_LOG}"
-    if $VERBOSE; then
-        echo -e "${timestamp} ${YELLOW}WARNING:${RESET} $1"
-    fi
-}
-
-# Print error message (red)
-error() {
-    local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    echo -e "${timestamp} ${RED}ERROR:${RESET} $1" >> "${INSTALL_LOG}"
-    # Always show errors, even without verbose flag
-    echo -e "${timestamp} ${RED}ERROR:${RESET} $1"
-}
-
-# Print banner (highlighted important message)
-banner() {
-    local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    echo -e "${timestamp} ${BOLD}${BLUE}$1${RESET}" >> "${INSTALL_LOG}"
-    if $VERBOSE; then
-        echo -e "\n${BLUE}${BOLD}===============================================${RESET}"
-        echo -e "${BLUE}${BOLD} $1 ${RESET}"
-        echo -e "${BLUE}${BOLD}===============================================${RESET}\n"
-    fi
-}
+# Define wrapper functions specific to install.sh
+log() { log_impl "$1" "${INSTALL_LOG}"; }
+warn() { warn_impl "$1" "${INSTALL_LOG}"; }
+error() { error_impl "$1" "${INSTALL_LOG}"; }
+banner() { banner_impl "$1" "${INSTALL_LOG}"; }
 
 # Display help message
 show_help() {
@@ -98,6 +38,8 @@ show_help() {
     echo "  -h           Show this help message"
     echo
 }
+
+
 
 # Parse command line arguments
 while getopts ":qfc:i:h" opt; do
