@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
 # Install minimal dependencies
-RUN apt-get update && apt-get install -y sudo
+RUN apt-get update && apt-get install -y sudo git curl wget
 
 WORKDIR /workspace
 COPY . .
@@ -11,4 +11,4 @@ RUN chmod +x install.sh uninstall.sh
 RUN chmod +x test/*.sh
 
 # Run the test script and ensure the image exits with the script's exit code
-CMD ["bash", "-c", "cd test && ./test_installation.sh"]
+CMD ["bash", "-c", "./test/run_all_tests.sh"]

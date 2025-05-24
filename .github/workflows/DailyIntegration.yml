@@ -1,4 +1,5 @@
 name: Basic Integration
+# WIP
 
 'on':
   schedule:
@@ -49,8 +50,7 @@ jobs:
         if: ${{ steps.check-commits.outputs.has-commits == 'true' && steps.check-files.outputs.should-run == 'true' }}
         run: |
           echo "Running tests due to recent commits..."
-          docker build -f test/Dockerfile.test -t mytools-test .
-          docker run --rm mytools-test
+          test/run_docker.sh
 
       - name: Save build status artifact 
       # run if the test previous step was run

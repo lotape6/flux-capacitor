@@ -30,8 +30,7 @@ jobs:
         if: steps.check-sh-files.outputs.has-sh-files == 'true'
         run: |
           echo "Shell files changed. Running Docker test..."
-          docker build -f test/Dockerfile.test -t mytools-test .
-          docker run --rm mytools-test
+          test/run_docker.sh
 
       - name: Skip message
         if: steps.check-files.outputs.should-run != 'true'

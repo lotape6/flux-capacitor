@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # uninstall.sh - Uninstalls flux-capacitor
 
-
 set -e
 
 # Get the directory of this script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source shared utilities
+source "${SCRIPT_DIR}/install/utils.sh"
 
 # Find the config file
 CONFIG_FILE="$(${SCRIPT_DIR}/install/find-config.sh)"
@@ -19,81 +21,21 @@ source "${CONFIG_FILE}"
 # Create logs directory if it doesn't exist
 mkdir -p "${LOGS_DIR}"
 
-# ANSI color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
-BOLD='\033[1m'
-RESET='\033[0m'
-
-# Display ASCII art banner
-show_ascii_banner() {
-    if $VERBOSE || ! $FORCE_REMOVE; then
-        echo -e "${BLUE}${BOLD}"
-        echo '   _______________________'
-        echo '  /                       \'
-        echo ' /   ___________________   \'
-        echo '|   |                   |   |'
-        echo '|   |    _     _        |   |'
-        echo '|   |   | |   | |       |   |'
-        echo '|   |   | |___| |       |   |'
-        echo '|   |   |  ___  |  ⚡   |   |'
-        echo '|   |   | |   | |       |   |'
-        echo '|   |   |_|   |_|       |   |'
-        echo '|   |___________________|   |'
-        echo ' \   F L U X - C A P      /'
-        echo '  \_______________________/'
-        echo -e "${RESET}"
-    fi
-}
 # Flags
-VERBOSE=true
 FORCE_REMOVE=false
 
-# Print standard log message
-log() {
-    local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    echo -e "${timestamp} $1" >> "${UNINSTALL_LOG}"
-    if $VERBOSE; then
-        echo -e "${timestamp} $1"
-    fi
-}
-
-# Print warning message (yellow)
-warn() {
-    local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    echo -e "${timestamp} ${YELLOW}WARNING:${RESET} $1" >> "${UNINSTALL_LOG}"
-    if $VERBOSE; then
-        echo -e "${timestamp} ${YELLOW}WARNING:${RESET} $1"
-    fi
-}
-
-# Print error message (red)
-error() {
-    local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    echo -e "${timestamp} ${RED}ERROR:${RESET} $1" >> "${UNINSTALL_LOG}"
-    # Always show errors, even without verbose flag
-    echo -e "${timestamp} ${RED}ERROR:${RESET} $1"
-}
-
-# Print banner (highlighted important message)
-banner() {
-    local timestamp="[$(date +'%Y-%m-%d %H:%M:%S')]"
-    echo -e "${timestamp} ${BOLD}${BLUE}$1${RESET}" >> "${UNINSTALL_LOG}"
-    if $VERBOSE; then
-        echo -e "\n${BLUE}${BOLD}===============================================${RESET}"
-        echo -e "${BLUE}${BOLD} $1 ${RESET}"
-        echo -e "${BLUE}${BOLD}===============================================${RESET}\n"
-    fi
-}
+# Define wrapper functions specific to uninstall.sh
+log() { log_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
+warn() { warn_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
+error() { error_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
+banner() { banner_impl "$1" "${UNINSTALL_LOG}" "${VERBOSE_MODE}"; }
 
 # Display help message
 show_help() {
     echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
     echo
     echo -e "${BOLD}Options:${RESET}"
-    echo "  -q           Disable verbose output"
+    echo "  -q           Disable VERBOSE_MODE output"
     echo "  -f           Force removal without prompts"
     echo "  -c <path>    Override default config directory (default: ${CONFIG_DIR})"
     echo "  -i <path>    Override default installation directory (default: ${INSTALLATION_DIR})"
@@ -101,11 +43,13 @@ show_help() {
     echo
 }
 
+
+
 # Parse command line arguments
 while getopts ":qfc:i:h" opt; do
     case ${opt} in
         q)
-            VERBOSE=false
+            VERBOSE_MODE=false
             ;;
         f)
             FORCE_REMOVE=true
@@ -156,7 +100,7 @@ remove_configs() {
             log "Backing up and removing configuration files..."
             
             # Create backup
-            BACKUP_DIR="${HOME}/.config/flux_backup_$(date +'%Y%m%d%H%M%S')"
+            BACKUP_DIR="${HOME}/.config/flux_backup_$(date +'%Y-%m-%d_%H:%M:%S')"
             mkdir -p "${BACKUP_DIR}"
             cp -r "${CONFIG_DIR}"/* "${BACKUP_DIR}" 2>/dev/null || true
             
@@ -177,8 +121,10 @@ remove_installation() {
         banner "Installation Directory"
         
         log "Removing installation files from ${BOLD}${INSTALLATION_DIR}${RESET}..."
-        rm -rf "${INSTALLATION_DIR}"
-        log "Installation files have been ${RED}removed${RESET}."
+        cp ${UNINSTALL_LOG} .
+        UNINSTALL_LOG="$(basename ${UNINSTALL_LOG})"
+        rm -rf "${INSTALLATION_DIR}" 
+        log "Installation files have been ${RED}removed${RESET}. Logs can be found at ${BOLD}${UNINSTALL_LOG}${RESET}."
     else
         log "No installation directory found at ${BOLD}${INSTALLATION_DIR}${RESET}. Skipping..."
     fi

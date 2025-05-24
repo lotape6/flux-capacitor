@@ -3,9 +3,9 @@
 # Install dependency using the appropriate package manager
 # Usage: install-dependency.sh [dependency]
 
-# Detect if we're running in verbose mode (inherited from parent script)
-# If VERBOSE is not set, default to false
-VERBOSE=${VERBOSE:-false}
+# Detect if we're running in VERBOSE_MODE mode (inherited from parent script)
+# If VERBOSE_MODE is not set, default to false
+VERBOSE_MODE=${VERBOSE_MODE:-false}
 
 # Get the dependency name from arguments
 DEPENDENCY=$1
@@ -24,7 +24,7 @@ fi
 PACKAGE_MANAGER=""
 if command -v apt &> /dev/null; then
   PACKAGE_MANAGER="apt"
-  CMD="sudo apt update && sudo apt install -y $DEPENDENCY"
+  CMD="sudo apt install -y $DEPENDENCY"
 elif command -v dnf &> /dev/null; then
   PACKAGE_MANAGER="dnf"
   CMD="sudo dnf install -y $DEPENDENCY"
@@ -42,8 +42,8 @@ else
   exit 1
 fi
 
-# Execute the command with or without verbose output
-if $VERBOSE; then
+# Execute the command with or without VERBOSE_MODE output
+if $VERBOSE_MODE; then
   echo "Using $PACKAGE_MANAGER to install $DEPENDENCY"
   eval $CMD
 else
