@@ -81,31 +81,40 @@ if command -v tmux >/dev/null 2>&1; then
         tmux set-environment -t "$session_name" FLUX_POST_CMD "$post_cmd"
     fi
     
-    # Create custom tmux commands for this session
+    # Configure hooks for pane creation and session handling
     
-    # Set default-command to execute cd and pre_cmd for each new pane/window
-    cmd_string="cd \"$target_dir\"; "
+    # Create a pane setup hook command that changes directory and runs pre_cmd
+    pane_setup_cmd="cd \"$target_dir\""
     if [ -n "$pre_cmd" ]; then
-        # Escape any double quotes in the pre_cmd
-        escaped_pre_cmd="${pre_cmd//\"/\\\"}"
-        cmd_string="$escaped_pre_cmd; $cmd_string"
+        # Escape single quotes in the pre_cmd for use with tmux's single quoted string
+        escaped_pre_cmd="${pre_cmd//\'/\'\\\'\'}"
+        pane_setup_cmd="$pane_setup_cmd; $escaped_pre_cmd"
     fi
-    cmd_string="${cmd_string}exec \$SHELL"
     
-    # Set the default-command for all panes in this session
-    tmux set-option -t "$session_name" default-command "$cmd_string"
+    # Set hooks to run commands when new panes are created
+    tmux set-hook -t "$session_name" after-split-window "send-keys -t '$session_name' '$pane_setup_cmd' C-m"
+    tmux set-hook -t "$session_name" after-new-window "send-keys -t '$session_name' '$pane_setup_cmd' C-m"
     
-    # Run the pre_cmd in the initial pane
+    # Set hook for session detachment if post-cmd exists
+    if [ -n "$post_cmd" ]; then
+        # Store post-cmd in a session environment variable to be used by the hook
+        escaped_post_cmd="${post_cmd//\'/\'\\\'\'}"
+        # Note: We don't execute post_cmd on detach because it should only run after the session truly ends
+        # The post_cmd will be executed after the attach-session call returns
+    fi
+    
+    # Run the cd command and pre_cmd in the initial pane
+    tmux send-keys -t "$session_name" "cd \"$target_dir\"" C-m
     if [ -n "$pre_cmd" ]; then
-        # No need to escape here as send-keys handles raw commands
         tmux send-keys -t "$session_name" "$pre_cmd" C-m
     fi
     
     # Attach to the session
     tmux switch-client -t "$session_name" 2>/dev/null || tmux attach-session -t "$session_name"
     
-    # Check if post_cmd is set and execute it after the session ends
+    # Set up post-command execution
     if [ -n "$post_cmd" ]; then
+        # Execute post command after the session ends
         eval "$post_cmd"
     fi
 else
