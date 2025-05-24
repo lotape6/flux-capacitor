@@ -165,6 +165,11 @@ if [ -f "${FLUX_INSTALLATION_DIR}/flux.sh" ]; then
     alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
 fi
 
+# Load flux command completion
+if [ -f "${FLUX_INSTALLATION_DIR}/completion/flux-completion.bash" ]; then
+    source "${FLUX_INSTALLATION_DIR}/completion/flux-completion.bash"
+fi
+
 # FZF initialization (if installed)
 if command -v fzf >/dev/null 2>&1; then
     eval "$(fzf --bash)"
@@ -189,6 +194,11 @@ fi
 # Create flux alias
 if [ -f "${FLUX_INSTALLATION_DIR}/flux.sh" ]; then
     alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
+fi
+
+# Load flux command completion
+if [ -f "${FLUX_INSTALLATION_DIR}/completion/flux-completion.zsh" ]; then
+    source "${FLUX_INSTALLATION_DIR}/completion/flux-completion.zsh"
 fi
 
 # FZF initialization (if installed)
@@ -216,6 +226,11 @@ end
 # Create flux alias
 if test -f "${FLUX_INSTALLATION_DIR}/flux.sh"
     alias flux="${FLUX_INSTALLATION_DIR}/flux.sh"
+end
+
+# Load flux command completion
+if test -f "${FLUX_INSTALLATION_DIR}/completion/flux-completion.fish"
+    source "${FLUX_INSTALLATION_DIR}/completion/flux-completion.fish"
 end
 
 # FZF initialization (if installed)

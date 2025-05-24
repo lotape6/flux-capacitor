@@ -28,6 +28,20 @@ If you have [fzf](https://github.com/junegunn/fzf) installed, Flux Capacitor wil
 
 This provides key bindings and fuzzy completion for your shell.
 
+## Command Completion
+
+Flux Capacitor provides command completion for the `flux` command and all its subcommands in every supported shell. The completion scripts are automatically loaded during shell initialization.
+
+- Bash completion supports completing commands and options
+- Zsh completion provides detailed help for each command and option
+- Fish completion integrates with the fish auto-suggestion system
+
+For more details, see [AUTOCOMPLETION.md](AUTOCOMPLETION.md).
+
+### Oh-My-Zsh Integration
+
+For zsh users with Oh-My-Zsh, Flux Capacitor provides a custom plugin that can be enabled by adding `flux` to your plugins list in `~/.zshrc`.
+
 ## Configuration
 
 The shell initialization adds the following environment variables:
