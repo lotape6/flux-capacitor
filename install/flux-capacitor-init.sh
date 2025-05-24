@@ -137,6 +137,10 @@ create_snippet() {
     SHELL_TYPE=$1
     CONFIG_FILE=$("${REPO_DIR}/install/find-config.sh" 2>/dev/null || echo "${REPO_DIR}/config/flux.conf")
     
+    # Source the config to get FLUX_CONFIG_DIR
+    # shellcheck disable=SC1090
+    . "$CONFIG_FILE" 2>/dev/null || true
+    
     # Common initialization snippet comment marker
     SNIPPET_START="# >>> flux-capacitor initialization >>>"
     SNIPPET_END="# <<< flux-capacitor initialization <<<"
@@ -151,13 +155,9 @@ source "${CONFIG_FILE}"
 # Add keybindings here
 # Example: bind '\\C-g:flux-command'
 
-# Load any custom functions
-if [ -d "${REPO_DIR}/functions" ]; then
-    for file in "${REPO_DIR}/functions/"*.sh; do
-        if [ -f "\$file" ]; then
-            . "\$file"
-        fi
-    done
+# Set up tmux configuration
+if [ -f "${FLUX_CONFIG_DIR}/.tmux.conf" ] && command -v tmux >/dev/null 2>&1; then
+    ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\${HOME}/.tmux.conf"
 fi
 
 # FZF initialization (if installed)
@@ -176,13 +176,9 @@ ${SNIPPET_START}
 # Add keybindings here
 # Example: bindkey '^G' flux-command
 
-# Load any custom functions
-if [ -d "${REPO_DIR}/functions" ]; then
-    for file in "${REPO_DIR}/functions/"*.sh; do
-        if [ -f "\$file" ]; then
-            . "\$file"
-        fi
-    done
+# Set up tmux configuration
+if [ -f "${FLUX_CONFIG_DIR}/.tmux.conf" ] && command -v tmux >/dev/null 2>&1; then
+    ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\${HOME}/.tmux.conf"
 fi
 
 # FZF initialization (if installed)
@@ -202,13 +198,9 @@ set -x FLUX_INSTALLATION_DIR "${SCRIPT_DIR}"
 # Add keybindings here
 # Example: bind \\cg 'flux-command'
 
-# Load any custom functions
-if test -d "${REPO_DIR}/functions"
-    for file in "${REPO_DIR}/functions/"*.fish
-        if test -f "\$file"
-            source "\$file"
-        end
-    end
+# Set up tmux configuration
+if test -f "${FLUX_CONFIG_DIR}/.tmux.conf"; and command -v tmux >/dev/null 2>&1
+    ln -sf "${FLUX_CONFIG_DIR}/.tmux.conf" "\$HOME/.tmux.conf"
 end
 
 # FZF initialization (if installed)
