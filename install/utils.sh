@@ -5,7 +5,7 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
-BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
@@ -16,7 +16,7 @@ FORCE_REMOVE=false # Only used in uninstall.sh
 # Display ASCII art banner
 show_ascii_banner() {
     if $VERBOSE; then
-        echo -e "${BLUE}${BOLD}"
+        echo -e "${PURPLE}${BOLD}"
         echo '   _______________________'
         echo '  /                       \'
         echo ' /   ___________________   \'
@@ -84,8 +84,8 @@ banner_impl() {
     
     echo -e "${timestamp} $1" >> "${log_file}"
     if $verbose; then
-        echo -e "\n${BLUE}${BOLD}===============================================${RESET}"
-        echo -e "${BLUE}${BOLD} $1 ${RESET}"
-        echo -e "${BLUE}${BOLD}===============================================${RESET}\n"
+        echo -e "\n${PURPLE}${BOLD}===============================================${RESET}"
+        echo -e "${PURPLE}${BOLD} $1 ${RESET}"
+        echo -e "${PURPLE}${BOLD}===============================================${RESET}\n"
     fi
 }
