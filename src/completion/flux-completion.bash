@@ -6,7 +6,7 @@ _flux_completions() {
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    commands="connect launch clean help"
+    commands="connect session-switch launch clean help"
     connect_options="-p --pre-cmd -P --post-cmd -n --session-name -e --env-file -f --force-new"
 
     # Handle subcommand completions
@@ -32,6 +32,15 @@ _flux_completions() {
                 COMPREPLY=( $(compgen -W "${connect_options}" -- "${cur}") )
             else
                 COMPREPLY=( $(compgen -d -- "${cur}") )
+            fi
+            return 0
+            ;;
+        session-switch)
+            # Session switch command has no file arguments, only help option
+            if [[ "${cur}" == -* ]]; then
+                COMPREPLY=( $(compgen -W "-h --help" -- "${cur}") )
+            else
+                COMPREPLY=()
             fi
             return 0
             ;;

@@ -7,6 +7,7 @@ _flux() {
     
     commands=(
         'connect:Create a new tmux session'
+        'session-switch:Interactive tmux session switcher'
         'launch:Check if a file is a valid YAML'
         'clean:Reset the tmux server'
         'help:Show help message'
@@ -39,6 +40,11 @@ _flux() {
                     _arguments \
                         ${connect_options[@]} \
                         '*:directory:_directories'
+                    ;;
+                session-switch)
+                    _arguments \
+                        '-h[Show help message]' \
+                        '--help[Show help message]'
                     ;;
                 launch)
                     if (( $+commands[fzf] )); then
@@ -113,6 +119,7 @@ fi
 
 # Aliases
 alias fcon='flux connect'
+alias fss='flux session-switch'
 alias flc='flux launch'
 alias fcl='flux clean'
 EOF
