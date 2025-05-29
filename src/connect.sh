@@ -65,8 +65,10 @@ fi
 
 # Check if target directory exists
 if [ ! -d "$target_dir" ]; then
-    echo "Error: Directory '$target_dir' does not exist"
-    exit 1
+    mkdir -p $target_dir || {
+        echo "Error: Target directory '$target_dir' does not exist and could not be created"
+        exit 1
+    }
 fi
 
 # Check if environment file exists (if specified)

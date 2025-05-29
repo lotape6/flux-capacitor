@@ -49,7 +49,7 @@ log "Test 1: Testing session reuse behavior (default)"
 cleanup
 
 # Test that sessions with simple names are created when force_new=false (default)
-SESSION_NAME1=$(cd /home/runner/work/flux-capacitor/flux-capacitor/src && bash -c '
+SESSION_NAME1=$(cd $REPO_DIR/src && bash -c '
     target_dir="/tmp/flux-test-reuse"
     session_name=""
     force_new=false
@@ -78,7 +78,7 @@ fi
 log "Test 2: Testing force new session behavior"
 
 # Test that sessions with unique names are created when force_new=true
-SESSION_NAME2=$(cd /home/runner/work/flux-capacitor/flux-capacitor/src && bash -c '
+SESSION_NAME2=$(cd $REPO_DIR/src && bash -c '
     target_dir="/tmp/flux-test-force"
     session_name=""
     force_new=true
