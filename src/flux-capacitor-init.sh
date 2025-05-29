@@ -161,6 +161,14 @@ source "${CONFIG_FILE}"
 # Add keybindings here
 # Example: bind '\\C-g:flux-command'
 
+# Session switcher keybinding (Alt+S)
+if [ -f "${FLUX_ROOT}/src/session-switch.sh" ]; then
+    flux_session_switch() {
+        "${FLUX_ROOT}/src/session-switch.sh"
+    }
+    bind -x '"\\es":"flux_session_switch"'
+fi
+
 # Create flux alias
 if [ -f "${FLUX_ROOT}/src/flux.sh" ]; then
     alias flux="${FLUX_ROOT}/src/flux.sh"
@@ -186,6 +194,15 @@ ${SNIPPET_START}
 
 # Add keybindings here
 # Example: bindkey '^G' flux-command
+
+# Session switcher keybinding (Alt+S)
+if [ -f "${FLUX_ROOT}/src/session-switch.sh" ]; then
+    flux_session_switch() {
+        "${FLUX_ROOT}/src/session-switch.sh"
+    }
+    zle -N flux_session_switch
+    bindkey '\es' flux_session_switch
+fi
 
 # Create flux alias
 if [ -f "${FLUX_ROOT}/src/flux.sh" ]; then
@@ -213,6 +230,11 @@ set -x FLUX_ROOT "${FLUX_ROOT}"
 
 # Add keybindings here
 # Example: bind \\cg 'flux-command'
+
+# Session switcher keybinding (Alt+S)
+if test -f "${FLUX_ROOT}/src/session-switch.sh"
+    bind \\es 'eval "${FLUX_ROOT}/src/session-switch.sh"; commandline -f repaint'
+end
 
 # Create flux alias
 if test -f "${FLUX_ROOT}/src/flux.sh"

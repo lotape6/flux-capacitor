@@ -15,10 +15,11 @@ show_help() {
     echo "Usage: flux <command> [options]"
     echo
     echo "Commands:"
-    echo "  connect     Create a new tmux session"
-    echo "  launch      Check if a file is a valid YAML"
-    echo "  clean       Reset the tmux server"
-    echo "  help        Show this help message"
+    echo "  connect        Create a new tmux session"
+    echo "  session-switch Interactive tmux session switcher"
+    echo "  launch         Check if a file is a valid YAML"
+    echo "  clean          Reset the tmux server"
+    echo "  help           Show this help message"
     echo
 }
 
@@ -35,6 +36,9 @@ shift  # Remove the first argument (the command)
 case "${command}" in
     connect)
         "${SCRIPT_DIR}/connect.sh" "$@"
+        ;;
+    session-switch)
+        "${SCRIPT_DIR}/session-switch.sh" "$@"
         ;;
     launch)
         "${SCRIPT_DIR}/launch.sh" "$@"

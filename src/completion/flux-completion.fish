@@ -2,6 +2,7 @@
 
 # Define command completions for flux
 complete -c flux -f -n "__fish_use_subcommand" -a "connect" -d "Create a new tmux session"
+complete -c flux -f -n "__fish_use_subcommand" -a "session-switch" -d "Interactive tmux session switcher"
 complete -c flux -f -n "__fish_use_subcommand" -a "launch" -d "Check if a file is a valid YAML"
 complete -c flux -f -n "__fish_use_subcommand" -a "clean" -d "Reset the tmux server"
 complete -c flux -f -n "__fish_use_subcommand" -a "help" -d "Show help message"
@@ -13,6 +14,9 @@ complete -c flux -f -n "__fish_seen_subcommand_from connect" -s n -l session-nam
 complete -c flux -f -n "__fish_seen_subcommand_from connect" -s e -l env-file -d "Environment file" -r -a "(__fish_complete_path)"
 complete -c flux -f -n "__fish_seen_subcommand_from connect" -s f -l force-new -d "Force new session"
 complete -c flux -n "__fish_seen_subcommand_from connect; and not __fish_is_switch" -a "(__fish_complete_directories)"
+
+# Completions for 'session-switch' subcommand
+complete -c flux -f -n "__fish_seen_subcommand_from session-switch" -s h -l help -d "Show help message"
 
 # Completions for 'launch' subcommand
 function __flux_yaml_files
