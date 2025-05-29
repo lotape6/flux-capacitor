@@ -7,7 +7,7 @@ _flux_completions() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     commands="connect launch clean help"
-    connect_options="-p --pre-cmd -P --post-cmd -n --session-name"
+    connect_options="-p --pre-cmd -P --post-cmd -n --session-name -e --env-file"
 
     # Handle subcommand completions
     if [[ ${COMP_CWORD} -eq 1 ]]; then
@@ -24,6 +24,9 @@ _flux_completions() {
                   "${prev}" == "-n" || "${prev}" == "--session-name" ]]; then
                 # In a real environment, we might suggest appropriate completions here
                 COMPREPLY=()
+            elif [[ "${prev}" == "-e" || "${prev}" == "--env-file" ]]; then
+                # Suggest files for environment file option
+                COMPREPLY=( $(compgen -f -- "${cur}") )
             # Otherwise, suggest options or directories
             elif [[ "${cur}" == -* ]]; then
                 COMPREPLY=( $(compgen -W "${connect_options}" -- "${cur}") )

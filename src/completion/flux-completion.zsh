@@ -19,6 +19,8 @@ _flux() {
         '--post-cmd:Post-command to run:_command_names -e'
         '-n:Session name:_directories'
         '--session-name:Session name:_directories'
+        '-e:Environment file:_files'
+        '--env-file:Environment file:_files'
     )
     
     _arguments -C \
