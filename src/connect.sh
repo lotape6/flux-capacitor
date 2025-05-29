@@ -97,20 +97,20 @@ if command -v tmux >/dev/null 2>&1; then
     # Check if we should reuse an existing session
     if [ "$force_new" = false ]; then
         # Look for existing sessions with the same target directory
-        existing_sessions=$(tmux list-sessions -f "#{session_name}: #{pane_current_path}" 2>/dev/null | grep ": $target_dir" | cut -d: -f1 || true)
+        existing_sessions=$(tmux list-sessions -F "#{session_name}: #{pane_current_path}" 2>/dev/null | grep ": $target_dir" | cut -d: -f1 || true)
         
         if [ -n "$existing_sessions" ]; then
             # If multiple sessions exist for this directory, use the first one
             existing_session=$(echo "$existing_sessions" | head -n1)
             echo "Attaching to existing session '$existing_session' for directory '$target_dir'"
-            tmux switch-client -t "$existing_session" 2>/dev/null || tmux attach-session -t "$existing_session"
+            tmux attach-session -t "$existing_session" || tmux switch-client -t "$existing_session" 2>/dev/null 
             exit 0
         fi
         
         # If no session found by directory, check if session with our chosen name exists
         if tmux has-session -t "$session_name" 2>/dev/null; then
             echo "Attaching to existing session '$session_name'"
-            tmux switch-client -t "$session_name" 2>/dev/null || tmux attach-session -t "$session_name"
+            tmux attach-session -t "$session_name" || tmux switch-client -t "$session_name" 2>/dev/null 
             exit 0
         fi
     fi
@@ -169,7 +169,7 @@ if command -v tmux >/dev/null 2>&1; then
     fi
     
     # Attach to the session
-    tmux switch-client -t "$session_name" 2>/dev/null || tmux attach-session -t "$session_name"
+    tmux attach-session -t "$session_name" || tmux switch-client -t "$session_name" 2>/dev/null
     
     # Set up post-command execution
     if [ -n "$post_cmd" ]; then
