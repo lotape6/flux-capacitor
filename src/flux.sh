@@ -38,7 +38,7 @@ case "${command}" in
         "${SCRIPT_DIR}/connect.sh" "$@"
         ;;
     session-switch)
-        "${SCRIPT_DIR}/session-switch.sh" "$@"
+        exec "${SCRIPT_DIR}/session-switch.sh" "$@"
         ;;
     launch)
         "${SCRIPT_DIR}/launch.sh" "$@"

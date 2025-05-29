@@ -129,6 +129,14 @@ remove_flux_root() {
     fi
 }
 
+unset_env_vars() {
+    # Unset environment variables related to flux-capacitor
+    unset FLUX_ROOT
+    unset FLUX_LOGS_DIR
+    FLUX_UNINSTALL_LOG = "/dev/null" # Reset log file to avoid confusion
+    unset FLUX_VERBOSE_MODE
+}
+
 # Main uninstallation process
 main() {
     banner "Flux Capacitor Uninstallation"

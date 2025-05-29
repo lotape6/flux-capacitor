@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # session-switch.sh - Interactive tmux session switcher using fzf
 #
 # This script provides an interactive way to switch between existing tmux sessions

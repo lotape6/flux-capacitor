@@ -139,8 +139,11 @@ install_tpm() {
 
 copy_files() {
     log "Copying project files to ${GREEN}${FLUX_ROOT}${RESET}..."
-    
     # Create the root directory if it doesn't exist
+    # Remove everything in FLUX_ROOT except the logs directory (and its contents)
+    if [ -d "${FLUX_ROOT}" ]; then
+        find "${FLUX_ROOT}" -mindepth 1 ! -path "${FLUX_LOGS_DIR}" ! -path "${FLUX_LOGS_DIR}/*" -exec rm -rf {} +
+    fi
     mkdir -p "${FLUX_ROOT}"
     
     # Copy all files from the script directory to the root directory
@@ -154,18 +157,17 @@ install_files() {
     banner "Copying Project Files"
     
     # Handle configuration files
-    if [ -d "${HOME}/.tmux.conf" ] && [ "$FORCE_INSTALL" == "false" ]; then
-        warn "Tmux configuration found in ${HOME}. Not copying."
+    if [ -d "${FLUX_ROOT}" ] && [ "$FORCE_INSTALL" == "false" ]; then
+        warn "Flux Capacitor root directory already exists at ${GREEN}${FLUX_ROOT}${RESET}."
         read -p "Do you want to overwrite it? (y/n) " choice
         if [[ "$choice" =~ ^[Yy]$ ]]; then
-            log "Overwriting tmux configuration..."
+            log "Overwriting flux-capacitor configuration..."
             copy_files
         else
-            log "Keeping existing tmux configuration."
+            log "Keeping existing flux-capacitor configuration."
         fi
     else
         log "Installing ${BOLD}flux-capacitor${RESET} in ${GREEN}${FLUX_ROOT}${RESET}..."
-        mkdir -p "${FLUX_ROOT}"
         copy_files
     fi
            
