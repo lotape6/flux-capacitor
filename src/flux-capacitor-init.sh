@@ -153,105 +153,46 @@ create_snippet() {
     
     case "${SHELL_TYPE}" in
         bash)
-            cat <<EOF
-${SNIPPET_START}
-# Flux-capacitor configuration
-source "${CONFIG_FILE}"
-
-# Add keybindings here
-# Example: bind '\\C-g:flux-command'
-
-# Session switcher keybinding (Alt+S)
-if [ -f "${FLUX_ROOT}/src/session-switch.sh" ]; then
-    flux_session_switch() {
-        "${FLUX_ROOT}/src/session-switch.sh"
-    }
-    bind -x '"\\es":"flux_session_switch"'
-fi
-
-# Create flux alias
-if [ -f "${FLUX_ROOT}/src/flux.sh" ]; then
-    alias flux="${FLUX_ROOT}/src/flux.sh"
-fi
-
-# Load flux command completion
-if [ -f "${FLUX_ROOT}/src/completion/flux-completion.bash" ]; then
-    source "${FLUX_ROOT}/src/completion/flux-completion.bash"
-fi
-
-# FZF initialization (if installed)
-if command -v fzf >/dev/null 2>&1; then
-    source <(fzf --bash)
-fi
-${SNIPPET_END}
-EOF
+            # Read from external bash init file
+            SHELL_CONFIG_FILE="${REPO_DIR}/config/shell-config/bash-init.sh"
+            if [ -f "${SHELL_CONFIG_FILE}" ]; then
+                echo "${SNIPPET_START}"
+                # Export variables for envsubst
+                export CONFIG_FILE FLUX_ROOT
+                envsubst < "${SHELL_CONFIG_FILE}"
+                echo "${SNIPPET_END}"
+            else
+                echo "Error: Shell config file not found: ${SHELL_CONFIG_FILE}" >&2
+                return 1
+            fi
             ;;
         zsh)
-            cat <<EOF
-${SNIPPET_START}
-# Flux-capacitor configuration
-. "${CONFIG_FILE}"
-
-# Add keybindings here
-# Example: bindkey '^G' flux-command
-
-# Session switcher keybinding (Alt+S)
-if [ -f "${FLUX_ROOT}/src/session-switch.sh" ]; then
-    flux_session_switch() {
-        "${FLUX_ROOT}/src/session-switch.sh"
-    }
-    zle -N flux_session_switch
-    bindkey '\es' flux_session_switch
-fi
-
-# Create flux alias
-if [ -f "${FLUX_ROOT}/src/flux.sh" ]; then
-    alias flux="${FLUX_ROOT}/src/flux.sh"
-fi
-
-# Load flux command completion
-if [ -f "${FLUX_ROOT}/src/completion/flux-completion.zsh" ]; then
-    source "${FLUX_ROOT}/src/completion/flux-completion.zsh"
-fi
-
-# FZF initialization (if installed)
-if command -v fzf >/dev/null 2>&1; then
-    source <(fzf --zsh)
-fi
-${SNIPPET_END}
-EOF
+            # Read from external zsh init file
+            SHELL_CONFIG_FILE="${REPO_DIR}/config/shell-config/zsh-init.zsh"
+            if [ -f "${SHELL_CONFIG_FILE}" ]; then
+                echo "${SNIPPET_START}"
+                # Export variables for envsubst
+                export CONFIG_FILE FLUX_ROOT
+                envsubst < "${SHELL_CONFIG_FILE}"
+                echo "${SNIPPET_END}"
+            else
+                echo "Error: Shell config file not found: ${SHELL_CONFIG_FILE}" >&2
+                return 1
+            fi
             ;;
         fish)
-            cat <<EOF
-${SNIPPET_START}
-# Flux-capacitor configuration
-set -x FLUX_CONFIG_FILE "${CONFIG_FILE}"
-set -x FLUX_ROOT "${FLUX_ROOT}"
-
-# Add keybindings here
-# Example: bind \\cg 'flux-command'
-
-# Session switcher keybinding (Alt+S)
-if test -f "${FLUX_ROOT}/src/session-switch.sh"
-    bind \\es 'eval "${FLUX_ROOT}/src/session-switch.sh"; commandline -f repaint'
-end
-
-# Create flux alias
-if test -f "${FLUX_ROOT}/src/flux.sh"
-    alias flux="${FLUX_ROOT}/src/flux.sh"
-end
-
-# Load flux command completion
-if test -f "${FLUX_ROOT}/src/completion/flux-completion.fish"
-    source "${FLUX_ROOT}/src/completion/flux-completion.fish"
-end
-
-# FZF initialization (if installed)
-if command -v fzf >/dev/null 2>&1
-    fzf --fish | source
-end
-${SNIPPET_END}
-EOF
+            # Read from external fish init file
+            SHELL_CONFIG_FILE="${REPO_DIR}/config/shell-config/fish-init.fish"
+            if [ -f "${SHELL_CONFIG_FILE}" ]; then
+                echo "${SNIPPET_START}"
+                # Export variables for envsubst
+                export CONFIG_FILE FLUX_ROOT
+                envsubst < "${SHELL_CONFIG_FILE}"
+                echo "${SNIPPET_END}"
+            else
+                echo "Error: Shell config file not found: ${SHELL_CONFIG_FILE}" >&2
+                return 1
+            fi
             ;;
         *)
             # Default to bash
