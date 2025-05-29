@@ -21,6 +21,8 @@ _flux() {
         '--session-name:Session name:_directories'
         '-e:Environment file:_files'
         '--env-file:Environment file:_files'
+        '-f:Force new session'
+        '--force-new:Force new session'
     )
     
     _arguments -C \

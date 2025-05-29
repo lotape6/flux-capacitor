@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test_connect_session_isolation.sh - Test that multiple connect commands create isolated sessions
+# Test_connect_session_isolation.sh - Test session reuse and isolation behaviors
 
 # Exit on any error
 set -e
@@ -41,53 +41,89 @@ cleanup() {
 # Cleanup on exit
 trap cleanup EXIT
 
-log "Testing session isolation for flux connect command..."
+log "Testing session reuse and isolation for flux connect command..."
 
-# Test 1: Check that session names are unique
-log "Test 1: Testing unique session name generation"
+# Test 1: Check that default behavior creates simple session names (for reuse)
+log "Test 1: Testing default session name generation (for reuse)"
 
 cleanup
 
-# Test the session name generation logic directly
-TEST_DIR="/tmp/flux-test-dir1"
-mkdir -p "$TEST_DIR"
-
-# Test that multiple calls generate different session names
+# Test that default behavior creates simple session names
 SESSION_NAME1=$(cd /home/runner/work/flux-capacitor/flux-capacitor/src && bash -c '
     target_dir="/tmp/flux-test-dir1"
     session_name=""
+    force_new=false
     if [ -z "$session_name" ]; then
         base_name=$(basename "$target_dir")
-        unique_suffix=$(date +%s)-$$
-        session_name="${base_name}-${unique_suffix}"
+        
+        if [ "$force_new" = true ]; then
+            unique_suffix=$(date +%s)-$$
+            session_name="${base_name}-${unique_suffix}"
+        else
+            session_name="$base_name"
+        fi
+    fi
+    echo "$session_name"
+')
+
+if [ "$SESSION_NAME1" = "flux-test-dir1" ]; then
+    log "✓ Default behavior creates simple session names: $SESSION_NAME1"
+else
+    error "✗ Default session name should be simple, got: $SESSION_NAME1"
+    exit 1
+fi
+
+# Test 2: Check that force-new creates unique session names
+log "Test 2: Testing force-new session name generation (for isolation)"
+
+# Test that multiple force-new calls generate different session names
+SESSION_NAME2=$(cd /home/runner/work/flux-capacitor/flux-capacitor/src && bash -c '
+    target_dir="/tmp/flux-test-dir1"
+    session_name=""
+    force_new=true
+    if [ -z "$session_name" ]; then
+        base_name=$(basename "$target_dir")
+        
+        if [ "$force_new" = true ]; then
+            unique_suffix=$(date +%s)-$$
+            session_name="${base_name}-${unique_suffix}"
+        else
+            session_name="$base_name"
+        fi
     fi
     echo "$session_name"
 ')
 
 sleep 1  # Ensure different timestamp
 
-SESSION_NAME2=$(cd /home/runner/work/flux-capacitor/flux-capacitor/src && bash -c '
+SESSION_NAME3=$(cd /home/runner/work/flux-capacitor/flux-capacitor/src && bash -c '
     target_dir="/tmp/flux-test-dir1"
     session_name=""
+    force_new=true
     if [ -z "$session_name" ]; then
         base_name=$(basename "$target_dir")
-        unique_suffix=$(date +%s)-$$
-        session_name="${base_name}-${unique_suffix}"
+        
+        if [ "$force_new" = true ]; then
+            unique_suffix=$(date +%s)-$$
+            session_name="${base_name}-${unique_suffix}"
+        else
+            session_name="$base_name"
+        fi
     fi
     echo "$session_name"
 ')
 
-if [ "$SESSION_NAME1" != "$SESSION_NAME2" ]; then
-    log "✓ Session names are unique: $SESSION_NAME1 vs $SESSION_NAME2"
+if [ "$SESSION_NAME2" != "$SESSION_NAME3" ]; then
+    log "✓ Force-new creates unique session names: $SESSION_NAME2 vs $SESSION_NAME3"
 else
-    error "✗ Session names are not unique: $SESSION_NAME1 vs $SESSION_NAME2"
+    error "✗ Force-new session names should be unique: $SESSION_NAME2 vs $SESSION_NAME3"
     exit 1
 fi
 
-# Test 2: Test session creation (without attachment to avoid terminal issues)
-log "Test 2: Testing session creation without conflicts"
+# Test 3: Test session creation with force-new (isolation behavior)
+log "Test 3: Testing session creation with force-new flag"
 
-# Create sessions using tmux directly with our naming scheme
+# Create sessions using tmux directly with our force-new naming scheme
 BASE_NAME="flux-test-dir1"
 TIME1=$(date +%s)
 SESSION1="${BASE_NAME}-${TIME1}-$$"
@@ -106,15 +142,15 @@ tmux new-session -d -s "$SESSION2" -c "/tmp/flux-test-dir1" 2>/dev/null || true
 SESSIONS_AFTER_SECOND=$(tmux list-sessions 2>/dev/null | wc -l || echo "0")
 
 if [ "$SESSIONS_AFTER_SECOND" -gt "$SESSIONS_AFTER_FIRST" ]; then
-    log "✓ Multiple sessions for same directory can be created ($SESSIONS_AFTER_FIRST -> $SESSIONS_AFTER_SECOND sessions)"
+    log "✓ Multiple force-new sessions for same directory can be created ($SESSIONS_AFTER_FIRST -> $SESSIONS_AFTER_SECOND sessions)"
 else
-    error "✗ Failed to create multiple sessions for same directory ($SESSIONS_AFTER_FIRST vs $SESSIONS_AFTER_SECOND sessions)"
+    error "✗ Failed to create multiple force-new sessions for same directory ($SESSIONS_AFTER_FIRST vs $SESSIONS_AFTER_SECOND sessions)"
     tmux list-sessions 2>/dev/null || echo "No sessions found"
     exit 1
 fi
 
-# Test 3: Environment variables file support
-log "Test 3: Testing environment variables file support"
+# Test 4: Environment variables file support (unchanged)
+log "Test 4: Testing environment variables file support"
 
 # Create a test environment file
 ENV_FILE="/tmp/test-env-vars"
@@ -148,5 +184,14 @@ else
     exit 1
 fi
 
-log "All implemented tests passed!"
+# Test 5: Testing force-new flag recognition
+log "Test 5: Testing --force-new flag is recognized"
+if "$CONNECT_SCRIPT" --force-new "/tmp/flux-test-dir1" 2>&1 | grep -q "Unknown option"; then
+    error "✗ --force-new flag is not recognized"
+    exit 1
+else
+    log "✓ --force-new flag is recognized"
+fi
+
+log "All tests passed!"
 exit 0

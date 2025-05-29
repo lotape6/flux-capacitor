@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # connect.sh - Create a new tmux session with the name of the topmost directory
 #
-# Usage: connect.sh [-p|--pre-cmd <some cmd>] [-P|--post-cmd <some-cmd>] [-n|--session-name <name>] [-e|--env-file <path>] <path to dir>
+# Usage: connect.sh [-p|--pre-cmd <some cmd>] [-P|--post-cmd <some-cmd>] [-n|--session-name <name>] [-e|--env-file <path>] [-f|--force-new] <path to dir>
 # 
 # This script creates a tmux session with the specified parameters:
 # - All new panes and windows will automatically change to the target directory
 # - The pre-cmd will run in all new panes and windows
 # - The post-cmd will run after the session ends
 # - Environment variables from env-file will be exported in all new panes
+# - The --force-new flag will create a new session regardless of existing sessions
 
 # Exit on error
 set -e
@@ -18,6 +19,7 @@ post_cmd=""
 session_name=""
 target_dir=""
 env_file=""
+force_new=false
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -38,9 +40,13 @@ while [[ $# -gt 0 ]]; do
             env_file="$2"
             shift 2
             ;;
+        -f|--force-new)
+            force_new=true
+            shift
+            ;;
         -*)
             echo "Error: Unknown option: $1"
-            echo "Usage: connect.sh [-p|--pre-cmd <some cmd>] [-P|--post-cmd <some-cmd>] [-n|--session-name <name>] [-e|--env-file <path>] <path to dir>"
+            echo "Usage: connect.sh [-p|--pre-cmd <some cmd>] [-P|--post-cmd <some-cmd>] [-n|--session-name <name>] [-e|--env-file <path>] [-f|--force-new] <path to dir>"
             exit 1
             ;;
         *)
@@ -53,7 +59,7 @@ done
 # Check if target directory is provided
 if [ -z "$target_dir" ]; then
     echo "Error: No target directory specified"
-    echo "Usage: connect.sh [-p|--pre-cmd <some cmd>] [-P|--post-cmd <some-cmd>] [-n|--session-name <name>] [-e|--env-file <path>] <path to dir>"
+    echo "Usage: connect.sh [-p|--pre-cmd <some cmd>] [-P|--post-cmd <some-cmd>] [-n|--session-name <name>] [-e|--env-file <path>] [-f|--force-new] <path to dir>"
     exit 1
 fi
 
@@ -72,16 +78,43 @@ fi
 # Convert target_dir to absolute path
 target_dir=$(cd "$target_dir" && pwd)
 
-# If session name is not provided, use the name of the topmost directory with unique suffix
+# If session name is not provided, use the name of the topmost directory
 if [ -z "$session_name" ]; then
     base_name=$(basename "$target_dir")
-    # Create unique session name using timestamp and process ID to avoid conflicts
-    unique_suffix=$(date +%s)-$$
-    session_name="${base_name}-${unique_suffix}"
+    
+    if [ "$force_new" = true ]; then
+        # Create unique session name using timestamp and process ID to avoid conflicts
+        unique_suffix=$(date +%s)-$$
+        session_name="${base_name}-${unique_suffix}"
+    else
+        # Use simple base name for potential reuse
+        session_name="$base_name"
+    fi
 fi
 
 # Create a new tmux session
 if command -v tmux >/dev/null 2>&1; then
+    # Check if we should reuse an existing session
+    if [ "$force_new" = false ]; then
+        # Look for existing sessions with the same target directory
+        existing_sessions=$(tmux list-sessions -f "#{session_name}: #{pane_current_path}" 2>/dev/null | grep ": $target_dir" | cut -d: -f1 || true)
+        
+        if [ -n "$existing_sessions" ]; then
+            # If multiple sessions exist for this directory, use the first one
+            existing_session=$(echo "$existing_sessions" | head -n1)
+            echo "Attaching to existing session '$existing_session' for directory '$target_dir'"
+            tmux switch-client -t "$existing_session" 2>/dev/null || tmux attach-session -t "$existing_session"
+            exit 0
+        fi
+        
+        # If no session found by directory, check if session with our chosen name exists
+        if tmux has-session -t "$session_name" 2>/dev/null; then
+            echo "Attaching to existing session '$session_name'"
+            tmux switch-client -t "$session_name" 2>/dev/null || tmux attach-session -t "$session_name"
+            exit 0
+        fi
+    fi
+    
     # Create a new tmux session with the unique session name
     tmux new-session -d -s "$session_name" -c "$target_dir" 2>/dev/null || true
     

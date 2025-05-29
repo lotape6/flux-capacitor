@@ -7,7 +7,7 @@ _flux_completions() {
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     commands="connect launch clean help"
-    connect_options="-p --pre-cmd -P --post-cmd -n --session-name -e --env-file"
+    connect_options="-p --pre-cmd -P --post-cmd -n --session-name -e --env-file -f --force-new"
 
     # Handle subcommand completions
     if [[ ${COMP_CWORD} -eq 1 ]]; then
