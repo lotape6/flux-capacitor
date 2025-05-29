@@ -164,7 +164,24 @@ source "${CONFIG_FILE}"
 # Session switcher keybinding (Alt+S)
 if [ -f "${FLUX_ROOT}/src/session-switch.sh" ]; then
     flux_session_switch() {
-        "${FLUX_ROOT}/src/session-switch.sh"
+        # If we're in tmux, the script can handle switching directly
+        if [ -n "${TMUX:-}" ]; then
+            "${FLUX_ROOT}/src/session-switch.sh"
+        else
+            # If we're outside tmux, we need to be more careful about terminal context
+            # Clear current line for clean output
+            printf '\r\033[K'
+            
+            # Try to run the script and handle potential terminal issues
+            if "${FLUX_ROOT}/src/session-switch.sh"; then
+                # If script succeeds, we're likely in tmux now
+                :
+            else
+                # If script fails, it might have printed helpful instructions
+                # Make sure the prompt is clean
+                echo
+            fi
+        fi
     }
     bind -x '"\\es":"flux_session_switch"'
 fi

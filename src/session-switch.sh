@@ -164,5 +164,20 @@ if [ -n "$current_session" ]; then
     tmux switch-client -t "$selected_session"
 else
     # If we're not in a tmux session, attach to it
-    tmux attach-session -t "$selected_session"
+    # Check if we have proper TTY access (important for keybinding contexts)
+    if [ -t 0 ] && [ -t 1 ] && [ -t 2 ]; then
+        # We have proper stdin/stdout/stderr TTYs, safe to exec
+        exec tmux attach-session -t "$selected_session"
+    else
+        # No proper TTY (likely from keybinding context)
+        # Try to attach without exec first, and handle the error gracefully
+        if ! tmux attach-session -t "$selected_session" 2>/dev/null; then
+            # If attach fails, provide helpful instructions
+            echo "Unable to attach directly due to terminal context."
+            echo "To attach to session '$selected_session', run:"
+            echo "  tmux attach-session -t '$selected_session'"
+            echo ""
+            echo "Or try running this command from a regular terminal prompt."
+        fi
+    fi
 fi
