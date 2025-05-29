@@ -137,29 +137,38 @@ install_tpm() {
     fi
 }
 
+copy_files() {
+    log "Copying project files to ${GREEN}${FLUX_ROOT}${RESET}..."
+    
+    # Create the root directory if it doesn't exist
+    mkdir -p "${FLUX_ROOT}"
+    
+    # Copy all files from the script directory to the root directory
+    cp -r "${SCRIPT_DIR}/"* "${FLUX_ROOT}/"
+    
+    log "Project files copied ${GREEN}successfully${RESET}."
+}
+
 # Copy configuration files
 install_files() {
     banner "Copying Project Files"
     
     # Handle configuration files
-    shopt -s dotglob nullglob
     if [ -d "${HOME}/.tmux.conf" ] && [ "$FORCE_INSTALL" == "false" ]; then
         warn "Tmux configuration found in ${HOME}. Not copying."
         read -p "Do you want to overwrite it? (y/n) " choice
         if [[ "$choice" =~ ^[Yy]$ ]]; then
             log "Overwriting tmux configuration..."
-            cp -r "${SCRIPT_DIR}/"* "${FLUX_ROOT}/"
+            copy_files
         else
             log "Keeping existing tmux configuration."
         fi
     else
         log "Installing ${BOLD}flux-capacitor${RESET} in ${GREEN}${FLUX_ROOT}${RESET}..."
         mkdir -p "${FLUX_ROOT}"
-        cp -r "${SCRIPT_DIR}/"* "${FLUX_ROOT}/"
+        copy_files
     fi
-        
-    shopt -u dotglob nullglob
-    
+           
     log "Project files copied ${GREEN}successfully${RESET}."
 }
 

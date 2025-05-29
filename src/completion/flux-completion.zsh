@@ -112,11 +112,6 @@ alias fcon='flux connect'
 alias flc='flux launch'
 alias fcl='flux clean'
 EOF
-    
-    # Tell the user how to enable the plugin
-    echo "Flux plugin installed for oh-my-zsh."
-    echo "To enable it, add 'flux' to the plugins array in your ~/.zshrc file:"
-    echo "plugins=(... flux ...)"
 fi
 
 # If not using the oh-my-zsh plugin, register the completion function

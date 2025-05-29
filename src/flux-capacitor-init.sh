@@ -30,7 +30,7 @@ if [ -f "${SCRIPT_DIR}/src/utils.sh" ]; then
     . "${SCRIPT_DIR}/src/utils.sh"
 else
     log() {
-        if [[ $FLUX_VERBOSE_MODE = "true" ]]; then
+        if [ "$FLUX_VERBOSE_MODE" = "true" ]; then
             echo "$1"
         fi
     }
