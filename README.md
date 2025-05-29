@@ -1,5 +1,5 @@
 # Flux Capacitor
-Yet another collection of shell tools and configurations to throw your mouse through the window.
+A learning project completely inspired by [sesh](https://github.com/joshmedeski/sesh) - Yet another collection of shell tools and configurations to throw your mouse through the window.
 
 <p align="center">
   <img src="resources/flux.gif" alt="animated" />
@@ -21,6 +21,7 @@ Yet another collection of shell tools and configurations to throw your mouse thr
   - [Uninstall](#uninstall)
 - [Overview](#overview)
   - [Features](#features)
+- [Acknowledgments](#acknowledgments)
 - [Configuration](#configuration)
   - [Basic Configuration](#basic-configuration)
   - [Advanced Options](#advanced-options)
@@ -100,6 +101,16 @@ Coming soon: Find files you didn't even know you had!
 Coming soon: Make your terminal so pretty you'll want to frame screenshots of it!
 </details>
 
+## Acknowledgments
+
+🚀 **This project is completely inspired by [sesh](https://github.com/joshmedeski/sesh)** 🚀
+
+Huge kudos to [@joshmedeski](https://github.com/joshmedeski), the creator of sesh, who already lives in the future! 🕰️ 
+
+The aim of this project is to get used to AI copilot agents by replicating sesh functionality and later extending it. However, if you're looking for a production-ready session manager, **we highly recommend installing and using the original [sesh](https://github.com/joshmedeski/sesh) instead** - it's the real deal that this project aspires to be.
+
+This Flux Capacitor is just our time machine to learn from the best! ⚡
+
 ## Configuration
 
 ### Basic Configuration
@@ -142,12 +153,13 @@ So go ahead, fork this repo faster than you can say "Great Scott!" and help us m
 
 ⚠️ **WARNING: USE AT YOUR OWN RISK!** ⚠️
 
-This project was created with the help of AI code agents as a learning exercise. While it might make your terminal experience more efficient, it comes with absolutely no warranty or guarantees.
+This project was created with the help of AI code agents as a learning exercise, completely inspired by the amazing [sesh](https://github.com/joshmedeski/sesh) project. While it might make your terminal experience more efficient, it comes with absolutely no warranty or guarantees.
 
 * This software is provided "as is" without warranty of any kind
 * The author is not responsible for any damage, data loss, or spontaneous dance parties caused by using this software
 * No time machines were harmed during the development of this project
 * Never trust nobody, especially this disclaimer
+* **For production use, please consider the original [sesh](https://github.com/joshmedeski/sesh) instead!**
 
 <p align="center">
   <img src="https://media.giphy.com/media/xT0xeJpnrWC4XWblEk/giphy.gif" alt="warning"/>
@@ -155,4 +167,5 @@ This project was created with the help of AI code agents as a learning exercise.
 
 
 ## References
+- **[sesh](https://github.com/joshmedeski/sesh)** - The original and superior session manager that inspired this project
 - [Modern Unix collection of alternative commands](https://github.com/ibraheemdev/modern-unix)
