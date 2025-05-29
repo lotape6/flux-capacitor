@@ -160,6 +160,7 @@ create_snippet() {
                 # Export variables for envsubst
                 export CONFIG_FILE FLUX_ROOT
                 envsubst < "${SHELL_CONFIG_FILE}"
+                echo ""
                 echo "${SNIPPET_END}"
             else
                 echo "Error: Shell config file not found: ${SHELL_CONFIG_FILE}" >&2
@@ -174,6 +175,7 @@ create_snippet() {
                 # Export variables for envsubst
                 export CONFIG_FILE FLUX_ROOT
                 envsubst < "${SHELL_CONFIG_FILE}"
+                echo ""
                 echo "${SNIPPET_END}"
             else
                 echo "Error: Shell config file not found: ${SHELL_CONFIG_FILE}" >&2
@@ -188,6 +190,7 @@ create_snippet() {
                 # Export variables for envsubst
                 export CONFIG_FILE FLUX_ROOT
                 envsubst < "${SHELL_CONFIG_FILE}"
+                echo ""
                 echo "${SNIPPET_END}"
             else
                 echo "Error: Shell config file not found: ${SHELL_CONFIG_FILE}" >&2
