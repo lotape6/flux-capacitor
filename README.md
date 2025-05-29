@@ -24,6 +24,7 @@ Yet another collection of shell tools and configurations to throw your mouse thr
 - [Configuration](#configuration)
   - [Basic Configuration](#basic-configuration)
   - [Advanced Options](#advanced-options)
+- [Cheatsheet](#cheatsheet)
 - [Contributing](#contributing)
 - [Disclaimer](#disclaimer)
 - [References](#references)
@@ -125,6 +126,29 @@ cp config/flux.conf ~/.config/flux/
 <p align="center">
   <img src="https://media.giphy.com/media/xsF1FSDbjguis/giphy.gif" alt="configuration"/>
 </p>
+
+## Cheatsheet
+
+Need a quick reference? We've got you covered! There's a beautiful LaTeX-based cheatsheet that covers all the flux-capacitor commands, options, and workflows.
+
+### 📄 Building the Cheatsheet
+
+```bash
+cd docs/cheatsheet
+make          # Build the PDF
+make preview  # Build and open the PDF
+make help     # See all available commands
+```
+
+The cheatsheet includes:
+- **Core Commands**: Complete reference for `flux connect`, `launch`, `clean`, `help`
+- **Advanced Usage**: Session management, environment loading, command execution  
+- **Shell Completion**: Bash, Zsh, and Fish completion features
+- **Configuration**: Config files and tmux integration
+- **Examples & Workflows**: Real-world usage patterns
+- **Installation**: Setup and prerequisites
+
+**Prerequisites**: You'll need `pdflatex` and LaTeX packages. See [`docs/cheatsheet/README.md`](docs/cheatsheet/README.md) for detailed setup instructions.
 
 ## Contributing
 
