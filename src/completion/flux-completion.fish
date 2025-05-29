@@ -10,6 +10,8 @@ complete -c flux -f -n "__fish_use_subcommand" -a "help" -d "Show help message"
 complete -c flux -f -n "__fish_seen_subcommand_from connect" -s p -l pre-cmd -d "Pre-command to run" -r
 complete -c flux -f -n "__fish_seen_subcommand_from connect" -s P -l post-cmd -d "Post-command to run" -r
 complete -c flux -f -n "__fish_seen_subcommand_from connect" -s n -l session-name -d "Session name" -r
+complete -c flux -f -n "__fish_seen_subcommand_from connect" -s e -l env-file -d "Environment file" -r -a "(__fish_complete_path)"
+complete -c flux -f -n "__fish_seen_subcommand_from connect" -s f -l force-new -d "Force new session"
 complete -c flux -n "__fish_seen_subcommand_from connect; and not __fish_is_switch" -a "(__fish_complete_directories)"
 
 # Completions for 'launch' subcommand
