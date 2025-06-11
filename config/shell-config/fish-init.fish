@@ -6,8 +6,9 @@ set -x FLUX_ROOT "${FLUX_ROOT}"
 # Example: bind \\cg 'flux-command'
 
 # Session switcher keybinding (Alt+S)
-if test -f "${FLUX_ROOT}/src/session-switch.sh"
-    bind \\es 'eval "${FLUX_ROOT}/src/session-switch.sh"; commandline -f repaint'
+if test -f "${FLUX_ROOT}/src/session-switch-functions.sh"
+    source "${FLUX_ROOT}/src/session-switch-functions.sh"
+    bind \\es 'switch_session; commandline -f repaint'
 end
 
 # Create flux alias
