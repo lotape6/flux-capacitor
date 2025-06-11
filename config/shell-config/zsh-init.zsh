@@ -5,12 +5,10 @@
 # Example: bindkey '^G' flux-command
 
 # Session switcher keybinding (Alt+S)
-if [ -f "${FLUX_ROOT}/src/session-switch.sh" ]; then
-    flux_session_switch() {
-        "${FLUX_ROOT}/src/session-switch.sh"
-    }
-    zle -N flux_session_switch
-    bindkey '\es' flux_session_switch
+if [ -f "${FLUX_ROOT}/src/session-switch-functions.sh" ]; then
+    source "${FLUX_ROOT}/src/session-switch-functions.sh"
+    zle -N switch_session
+    bindkey '\es' switch_session
 fi
 
 # Create flux alias

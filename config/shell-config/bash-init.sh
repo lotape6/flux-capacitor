@@ -5,11 +5,9 @@ source "${CONFIG_FILE}"
 # Example: bind '\C-g:flux-command'
 
 # Session switcher keybinding (Alt+S)
-if [ -f "${FLUX_ROOT}/src/session-switch.sh" ]; then
-    flux_session_switch() {
-        "${FLUX_ROOT}/src/session-switch.sh"
-    }
-    bind -x '"\es":"flux_session_switch"'
+if [ -f "${FLUX_ROOT}/src/session-switch-functions.sh" ]; then
+    source "${FLUX_ROOT}/src/session-switch-functions.sh"
+    bind -x '"\es":"switch_session"'
 fi
 
 # Create flux alias

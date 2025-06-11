@@ -131,13 +131,31 @@ log "Test 7: Testing error handling for missing tmux"
 temp_dir=$(mktemp -d)
 temp_script="$temp_dir/session-switch-test.sh"
 
-# Copy the script and modify PATH to exclude tmux
-cat > "$temp_script" << 'EOF'
+# Create a script that simulates missing tmux but keeps other commands available
+cat > "$temp_script" << EOF
 #!/usr/bin/env bash
-# Temporarily remove tmux from PATH
-export PATH="/tmp/no-tmux-path"
+# Get script directory
+SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+
+# Copy the functions file to the temp directory
+cp "${REPO_DIR}/src/session-switch-functions.sh" "\$SCRIPT_DIR/"
+
+# Source session switching functions
+source "\$SCRIPT_DIR/session-switch-functions.sh"
+
+# Override the command function to simulate tmux being missing
+command() {
+    if [ "\$1" = "-v" ] && [ "\$2" = "tmux" ]; then
+        return 1  # tmux not found
+    else
+        # Pass through other commands
+        /usr/bin/command "\$@"
+    fi
+}
+
+# Call the main switch_session function
+switch_session
 EOF
-cat "$SESSION_SWITCH_SCRIPT" >> "$temp_script"
 chmod +x "$temp_script"
 
 no_tmux_output=$("$temp_script" 2>&1 || true)
@@ -182,11 +200,28 @@ fi
 # Test 9: Test that keybindings are added to shell initialization
 log "Test 9: Testing shell initialization keybindings"
 
-init_script="$REPO_DIR/src/flux-capacitor-init.sh"
-if grep -q "flux_session_switch" "$init_script"; then
-    success "✓ Session switch keybindings found in initialization script"
+# Check if the session-switch-functions are referenced in the shell init files
+bash_init="$REPO_DIR/config/shell-config/bash-init.sh"
+if grep -q "switch_session" "$bash_init" && grep -q "session-switch-functions.sh" "$bash_init"; then
+    success "✓ Session switch functions found in bash initialization script"
 else
-    error "✗ Session switch keybindings not found in initialization script"
+    error "✗ Session switch functions not found in bash initialization script"
+    exit 1
+fi
+
+zsh_init="$REPO_DIR/config/shell-config/zsh-init.zsh"
+if grep -q "switch_session" "$zsh_init" && grep -q "session-switch-functions.sh" "$zsh_init"; then
+    success "✓ Session switch functions found in zsh initialization script"
+else
+    error "✗ Session switch functions not found in zsh initialization script"
+    exit 1
+fi
+
+fish_init="$REPO_DIR/config/shell-config/fish-init.fish"
+if grep -q "switch_session" "$fish_init" && grep -q "session-switch-functions.sh" "$fish_init"; then
+    success "✓ Session switch functions found in fish initialization script"
+else
+    error "✗ Session switch functions not found in fish initialization script"
     exit 1
 fi
 

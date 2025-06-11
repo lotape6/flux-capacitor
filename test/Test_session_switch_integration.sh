@@ -240,26 +240,27 @@ fi
 # Test 5: Test keybinding integration in shell init scripts
 log "Test 5: Testing keybinding syntax in shell initialization"
 
-init_script="$REPO_DIR/src/flux-capacitor-init.sh"
-
-# Test bash keybinding
-if grep -A 5 -B 1 "flux_session_switch" "$init_script" | grep -q 'bind -x.*flux_session_switch'; then
+# Test bash keybinding in bash-init.sh
+bash_init="$REPO_DIR/config/shell-config/bash-init.sh"
+if grep -q 'switch_session' "$bash_init" && grep -q 'bind -x.*switch_session' "$bash_init"; then
     success "✓ Bash keybinding correctly configured"
 else
     error "✗ Bash keybinding configuration issue"
     exit 1
 fi
 
-# Test zsh keybinding  
-if grep -A 5 -B 1 "zle -N flux_session_switch" "$init_script" | grep -q 'bindkey.*flux_session_switch'; then
+# Test zsh keybinding in zsh-init.zsh
+zsh_init="$REPO_DIR/config/shell-config/zsh-init.zsh"
+if grep -q 'zle -N switch_session' "$zsh_init" && grep -q 'bindkey.*switch_session' "$zsh_init"; then
     success "✓ Zsh keybinding correctly configured"
 else
     error "✗ Zsh keybinding configuration issue"
     exit 1
 fi
 
-# Test fish keybinding
-if grep -A 3 -B 1 "bind.*es" "$init_script" | grep -q 'session-switch.sh'; then
+# Test fish keybinding in fish-init.fish
+fish_init="$REPO_DIR/config/shell-config/fish-init.fish"
+if grep -q 'switch_session' "$fish_init" && grep -q 'bind.*switch_session' "$fish_init"; then
     success "✓ Fish keybinding correctly configured"
 else
     error "✗ Fish keybinding configuration issue"
