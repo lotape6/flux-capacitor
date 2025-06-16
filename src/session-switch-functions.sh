@@ -24,6 +24,17 @@ _check_fzf_available() {
     return 0
 }
 
+tmux_print(){
+    if [ -n $1 ]; then
+        # Show a temporary popup message for 2 seconds if supported (tmux >= 3.2)
+        if tmux display-popup -h 2>/dev/null | grep -q "display-popup"; then
+            tmux display-popup -E "echo $1; sleep 2"
+        else
+            tmux display-message "$1"
+        fi
+    fi
+}
+
 # Format existing sessions for display with emojis and fancy formatting
 format_existing_sessions() {
     local sessions="$1"
@@ -121,7 +132,7 @@ switch_session() {
     
     # Check if user cancelled selection
     if [ -z "$selected_line" ]; then
-        echo "Session switching cancelled."
+        tmux_print "Session switching cancelled."
         return 0
     fi
     
@@ -131,17 +142,16 @@ switch_session() {
     
     # Validate that the session still exists
     if ! tmux has-session -t "$selected_session" 2>/dev/null; then
-        echo "Error: Session '$selected_session' no longer exists"
+        tmux_print "Error: Session '$selected_session' no longer exists"
         return 1
     fi
     
     # Check if we're trying to switch to the current session
     if [ "$selected_session" = "$current_session" ]; then
-        echo "Already attached to session '$current_session'"
-        return 0
+        tmux_print "🌟 Already attached to session '$current_session'"
     fi
     
-    echo "Switching to session '$selected_session'..."
+    tmux_print "Switching to session $selected_session..."
     
     # Switch to the selected session
     if [ -n "$current_session" ]; then

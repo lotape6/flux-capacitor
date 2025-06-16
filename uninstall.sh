@@ -22,6 +22,24 @@ export SCRIPT_DIR
 source "${CONFIG_FILE}"
 
 
+# Define wrapper functions specific to uninstall.sh
+log() { log_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+warn() { warn_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+error() { error_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+banner() { banner_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
+
+# Display help message
+show_help() {
+    echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
+    echo
+    echo -e "${BOLD}Options:${RESET}"
+    echo "  -q           Disable verbose output"
+    echo "  -f           Force removal without prompts"
+    echo "  -r <path>    Override default root directory (default: ${FLUX_ROOT})"
+    echo "  -h           Show this help message"
+    echo
+}
+
 # Parse command line arguments
 while getopts ":qfr:h" opt; do
     case ${opt} in
@@ -67,23 +85,6 @@ else
     source "${SCRIPT_DIR}/config/err.codes"
 fi
 
-# Define wrapper functions specific to uninstall.sh
-log() { log_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-warn() { warn_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-error() { error_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-banner() { banner_impl "$1" "${FLUX_UNINSTALL_LOG}" "${FLUX_VERBOSE_MODE}"; }
-
-# Display help message
-show_help() {
-    echo -e "${BOLD}Usage:${RESET} $0 [OPTIONS]"
-    echo
-    echo -e "${BOLD}Options:${RESET}"
-    echo "  -q           Disable verbose output"
-    echo "  -f           Force removal without prompts"
-    echo "  -r <path>    Override default root directory (default: ${FLUX_ROOT})"
-    echo "  -h           Show this help message"
-    echo
-}
 
 
 # Remove flux root directory and all its contents

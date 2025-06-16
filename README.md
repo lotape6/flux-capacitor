@@ -169,3 +169,11 @@ This project was created with the help of AI code agents as a learning exercise,
 ## References
 - **[sesh](https://github.com/joshmedeski/sesh)** - The original and superior session manager that inspired this project
 - [Modern Unix collection of alternative commands](https://github.com/ibraheemdev/modern-unix)
+
+
+## ToDos
+
+- [ ] Add bell ring after command termination mechanism:
+  - [ ] Bell ring on after command execution
+  - [ ] Keybinding for togling mechanism
+- [ ] Add tmux-logging alike mechanism. 
