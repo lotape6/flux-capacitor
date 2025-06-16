@@ -47,9 +47,6 @@ git clone https://github.com/lotape6/flux-capacitor.git
 cd flux-capacitor
 ./install.sh  
 ```
-<p align="center">
-  <img src="https://media.giphy.com/media/3o7btNhMBytxAM6YBa/giphy.gif" alt="installing"/>
-</p>
 
 ## Post-Installation
 You can tune your flux-capacitor settings by modifying the configuration file.
@@ -67,9 +64,6 @@ nano ~/.config/flux/flux.conf
 ```bash
 ~/.local/share/flux/uninstall.sh 
 ```
-<p align="center">
-  <img src="https://media.giphy.com/media/3o7btNq2Y0x5v1j4gI/giphy.gif" alt="uninstalling"/>
-
 
 ## Overview
 
@@ -99,6 +93,28 @@ Coming soon: Find files you didn't even know you had!
   <img src="https://media.giphy.com/media/l3q2IYN87QjIg51kc/giphy.gif" alt="customization demo" width="500px"/>
 </p>
 Coming soon: Make your terminal so pretty you'll want to frame screenshots of it!
+</details>
+
+<details>
+<summary>🚀 Quick tmux session access</summary>
+
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `connect` | Create a new tmux session |
+| `session-switch` | Interactive tmux session switcher |
+| `launch` | Check if a file is a valid YAML |
+| `clean` | Reset the tmux server |
+| `help` | Show this help message |
+
+### Additional Features
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| completion | Command-line autocompletion | ❌ Not working |
+| key-bindings | Custom keyboard shortcuts | ❌ Not working |
+
 </details>
 
 ## Acknowledgments
