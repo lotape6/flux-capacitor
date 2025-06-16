@@ -1,0 +1,104 @@
+\usepackage[default]{raleway}
+\usepackage{fontawesome}
+\usepackage[T1]{fontenc}
+
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{lipsum}
+
+\usepackage{xcolor}
+\definecolor{customcolor}{HTML}{3d3c38}
+\definecolor{alert}{HTML}{CD5C5C}
+\definecolor{w3schools}{HTML}{4CAF50}
+\definecolor{subbox}{gray}{0.60}
+\definecolor{codecolor}{HTML}{FFC300}
+\definecolor{greenbash}{HTML}{8AE234}
+\definecolor{bg}{HTML}{76096f}
+\definecolor{termbg}{HTML}{2d0922}
+\definecolor{blues}{HTML}{719ece}
+\definecolor{yellow}{HTML}{aabb44}
+\definecolor{fluxblue}{HTML}{1E90FF}
+\definecolor{fluxgreen}{HTML}{32CD32}
+\colorlet{xx}{customcolor}
+
+%--------------------------Editor mode.
+
+% Bibliography functionality removed for simplicity
+
+%----------------------------------------
+%--------------------------------------------------------------------------------
+\usepackage{tcolorbox}
+
+\tcbuselibrary{most}
+
+\tcbset{tcbox width=auto,left=1mm,top=1mm,bottom=1mm,
+right=1mm,boxsep=1mm,middle=1pt}
+
+\newenvironment{mycolorbox}[2]{%
+\begin{tcolorbox}[grow to left by=-1em,grow to right by=-1em,capture=minipage,fonttitle=\large\bfseries, enhanced jigsaw,boxsep=1mm,colback=#1!30!white,on line,tcbox width=auto, toptitle=0mm,colframe=#1,opacityback=0.8,nobeforeafter,title=#2]%
+}{\end{tcolorbox}\\[0.2em]}
+
+\newenvironment{subbox}[2]{%
+\begin{tcolorbox}[capture=minipage,fonttitle=\normalsize\bfseries, enhanced jigsaw,boxsep=1mm,colback=#1!30!white,on line,tcbox width=auto,left=0.3em,top=1mm, toptitle=0mm,colframe=#1,opacityback=0.7,nobeforeafter,title=#2]\footnotesize %
+}{\normalsize\end{tcolorbox}\vspace{0.1em}}
+
+\newenvironment{multibox}[1]{%
+\begin{tcbraster}[raster columns=#1,raster equal height,nobeforeafter,raster column skip=1em,raster left skip=1em,raster right skip=1em]}{\end{tcbraster}}
+
+\newenvironment{textbox}[1]{\begin{mycolorbox}{customcolor}{#1}}{\end{mycolorbox}}
+
+%-------------------------------
+\newenvironment{simplecodebox}[1]{%
+\begin{tcolorbox}[colback=codecolor!5,colframe=codecolor!80!black,left=5mm,enhanced,title=#1, fonttitle=\bfseries]%
+\ttfamily\footnotesize%
+}{%
+\end{tcolorbox}%
+}
+
+%--------------------------------------------------------------------------------
+\newcommand{\punkti}{~\lbrack\dots\rbrack~}
+
+\renewenvironment{quote}
+               {\list{\faQuoteLeft\phantom{ }}{\rightmargin\leftmargin}%
+                \item\relax\scriptsize\ignorespaces}
+               {\unskip\unskip\phantom{xx}\faQuoteRight\endlist}
+               
+
+%--------------------------------------------------------------------------------
+\newcommand{\bgupper}[3]{\colorbox{#1}{\color{#2}\huge\bfseries\MakeUppercase{#3}}}
+\newcommand{\bg}[3]{\colorbox{#1}{\bfseries\color{#2}#3}}
+
+\newcommand{\mycommand}[2]{{\textbf{#1}}~\dotfill{}~{\scriptsize #2}}
+\newcommand{\sep}{{\scriptsize~\faCircle{ }~}}
+
+\newcommand{\bggreen}[1]{\medskip\bgupper{w3schools}{black}{#1}\\[0.5em]}
+\newcommand{\green}[1]{\smallskip\bg{w3schools}{white}{#1}\\}
+\newcommand{\red}[1]{\smallskip\bg{alert}{white}{#1}\\}
+\newcommand{\yellow}[1]{\smallskip\bg{yellow}{white}{#1}\\}
+\newcommand{\blue}[1]{\smallskip\bg{fluxblue}{white}{#1}\\}
+
+\newcommand*\keystroke[1]{%
+  \tikz[baseline=(key.base)]
+    \node[%
+      draw,
+      fill=white!8 ,
+      opacity=0.9,
+      drop shadow={shadow xshift=0.25ex,shadow yshift=-0.25ex,fill=black,opacity=0.70},
+      rectangle,
+      rounded corners=2pt,
+      inner sep=1pt,
+      line width=0.5pt,
+      font=\scriptsize\sffamily
+    ](key) {\hspace{0.4mm} \textbf{#1}\hspace{0.6mm}\strut}
+  ;
+}
+
+\usepackage{multicol}
+\setlength{\columnsep}{30pt}
+
+\setlength{\parindent}{0pt}
+\pagestyle{empty}
+
+\usepackage{csquotes}
+
+\newcommand{\loremipsum}{Lorem ipsum dolor sit amet.}

@@ -1,0 +1,376 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[landscape,margin=1cm]{geometry}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shadows,shapes.geometric,calc}
+
+\usepackage{tcolorbox}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{graphicx,wrapfig}
+
+\title{ }
+\date{}
+\input{flux-cheatsheet-template.tex}
+
+\makeatletter
+\newcommand{\globalcolor}[1]{%
+  \color{#1}\global\let\default@color\current@color
+}
+\makeatother
+
+\AtBeginDocument{\globalcolor{white}}
+
+% Add a subtle gradient background using TikZ
+\usepackage{eso-pic}
+\AddToShipoutPicture{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[inner color=fluxblue!3,outer color=fluxgreen!2] (current page.south west) rectangle (current page.north east);
+    % Add some decorative dots
+    \fill[fluxblue,opacity=0.1] (2,2) circle (0.5cm);
+    \fill[fluxgreen,opacity=0.1] (15,8) circle (0.3cm);
+    \fill[fluxblue,opacity=0.1] (25,3) circle (0.4cm);
+    \fill[fluxgreen,opacity=0.1] (8,15) circle (0.2cm);
+    \fill[fluxblue,opacity=0.1] (20,12) circle (0.3cm);
+  \end{tikzpicture}%
+}
+
+%--------------------------------------------------------------------------------
+
+\begin{document}
+
+\small
+\begin{multicols}{3}
+
+\thispagestyle{empty}
+\scriptsize
+
+\section{Core Commands}
+
+\begin{textbox}{\href{https://github.com/lotape6/flux-capacitor}{flux connect}}
+
+Create enhanced tmux sessions with automatic directory switching, environment loading, and custom command execution.
+
+\underline{\textbf{Basic Usage}}
+\begin{itemize}
+    \item \textbf{flux connect <directory>} - Create/attach to session
+    \item \textbf{flux connect .} - Create session for current directory
+    \item \textbf{flux connect \textasciitilde/projects/myapp} - Absolute path
+\end{itemize}
+
+\underline{\textbf{Options}}
+\begin{itemize}
+    \item \textbf{-n, --session-name <name>} - Custom session name
+    \item \textbf{-p, --pre-cmd <command>} - Run command in new panes
+    \item \textbf{-P, --post-cmd <command>} - Run after session ends
+    \item \textbf{-e, --env-file <path>} - Source environment file
+    \item \textbf{-f, --force-new} - Always create new session
+\end{itemize}
+
+\green{Pros}
+
+Automatic session reuse based on directory path\\
+
+Environment variables loaded in all new panes\\
+
+Consistent directory switching across all panes\\
+
+Smart session management with unique naming\\
+
+\yellow{Tips}
+
+Use \textbf{--pre-cmd} for activating virtual environments or loading modules\\
+
+Combine \textbf{--env-file} with project-specific .env files\\
+
+Use \textbf{--force-new} for multiple sessions in same directory\\
+
+\end{textbox}
+
+\begin{textbox}{flux launch}
+
+Validate YAML files with comprehensive error reporting.
+
+\underline{\textbf{Usage}}
+\begin{itemize}
+    \item \textbf{flux launch config.yml} - Validate YAML file
+    \item \textbf{flux launch deployment.yaml} - Check deployment file
+\end{itemize}
+
+\green{Pros}
+
+Python-based validation with PyYAML\\
+
+Fallback to extension checking if Python unavailable\\
+
+Clear error messages for debugging\\
+
+\yellow{Tips}
+
+Great for CI/CD pipeline validation\\
+
+Use with shell completion for quick file selection\\
+
+\end{textbox}
+
+\begin{textbox}{flux clean}
+
+Reset tmux server and clean up all sessions.
+
+\underline{\textbf{Usage}}
+\begin{itemize}
+    \item \textbf{flux clean} - Kill all tmux sessions and server
+\end{itemize}
+
+\red{Warning}
+
+This will terminate ALL active tmux sessions!\\
+
+Save your work before running this command\\
+
+\yellow{Tips}
+
+Use when tmux becomes unresponsive\\
+
+Good for starting fresh development sessions\\
+
+\end{textbox}
+
+\vfill\null
+\columnbreak
+
+\centering
+\vspace{6pt}
+by:\Large \color{greenbash}lotape6 \scriptsize
+
+\raggedright
+
+\centering
+
+\huge \color{fluxblue}Flux {\color{blues}Capacitor} \color{white} Cheatsheet \scriptsize 
+
+\raggedright
+\vspace{5mm}
+
+\section{Advanced Usage}
+
+\begin{textbox}{Session Management}
+
+\underline{\textbf{Session Reuse}}
+
+Flux intelligently reuses existing sessions:
+\begin{itemize}
+    \item Same directory = attach to existing session
+    \item Different session name = create new session
+    \item \textbf{--force-new} flag = always create unique session
+\end{itemize}
+
+\underline{\textbf{Environment Management}}
+
+\mycommand{-e .env}{Load project environment variables}
+
+\mycommand{-e config/dev.env}{Load development configuration}
+
+\mycommand{export VAR=value}{Variables available in all panes}
+
+\underline{\textbf{Command Execution}}
+
+\mycommand{-p "source venv/bin/activate"}{Python virtual environment}
+
+\mycommand{-p "eval \$(ssh-agent)"}{SSH agent setup}
+
+\mycommand{-P "deactivate"}{Cleanup after session}
+
+\end{textbox}
+
+\begin{textbox}{Shell Completion}
+
+Flux provides smart completion for multiple shells.
+
+\underline{\textbf{Available Completions}}
+\begin{itemize}
+    \item \textbf{Bash} - flux-completion.bash
+    \item \textbf{Zsh} - flux-completion.zsh  
+    \item \textbf{Fish} - flux-completion.fish
+\end{itemize}
+
+\underline{\textbf{Features}}
+\begin{itemize}
+    \item Command completion (\keystroke{Tab})
+    \item Directory suggestions for connect
+    \item YAML file suggestions for launch
+    \item Option flag completion
+    \item \textbf{fzf} integration when available
+\end{itemize}
+
+\green{Pros}
+
+Interactive file selection with preview\\
+
+Smart filtering based on file types\\
+
+Works with bat for syntax highlighting\\
+
+\yellow{Tips}
+
+Install \textbf{fzf} and \textbf{bat} for best experience\\
+
+Use \keystroke{Tab} \keystroke{Tab} to trigger file selector\\
+
+\end{textbox}
+
+\begin{textbox}{Configuration}
+
+\underline{\textbf{Configuration: \textasciitilde/.config/flux/flux.conf}}
+
+\mycommand{FLUX\_VERBOSE\_MODE=true}{Enable detailed logging}
+
+\mycommand{FLUX\_ROOT=\$\{HOME\}/.flux}{Root directory}
+
+\mycommand{FLUX\_LOGS\_DIR=\$\{FLUX\_ROOT\}/logs}{Log file location}
+
+\underline{\textbf{Tmux Integration}}
+
+Custom tmux configuration at \textbf{config/.tmux.conf}
+
+Session hooks for automatic directory switching
+
+Environment variable propagation to new panes
+
+\blue{Configuration}
+
+Modify \textasciitilde/.config/flux/flux.conf for global settings\\
+
+Each session stores its own environment variables\\
+
+\end{textbox}
+
+\vfill\null
+\columnbreak
+
+\section{Examples \& Workflows}
+
+\begin{textbox}{Common Workflows}
+
+\underline{\textbf{Development Setup}}
+
+\begin{simplecodebox}{Python Development}
+\# Navigate to project and activate environment\\
+flux connect \textasciitilde/projects/myapp $\backslash$\\
+\phantom{xx}-p "source venv/bin/activate" $\backslash$\\
+\phantom{xx}-e .env $\backslash$\\
+\phantom{xx}-n myapp-dev\\
+\\
+\# New panes will automatically:\\
+\# - cd to \textasciitilde/projects/myapp\\
+\# - source venv/bin/activate\\
+\# - load .env variables\\
+\end{simplecodebox}
+
+\underline{\textbf{DevOps Workflow}}
+
+\begin{simplecodebox}{Kubernetes Management}
+\# Setup for k8s cluster management\\
+flux connect \textasciitilde/k8s-configs $\backslash$\\
+\phantom{xx}-p "kubectl config use-context prod" $\backslash$\\
+\phantom{xx}-e k8s.env $\backslash$\\
+\phantom{xx}-n k8s-prod\\
+\\
+\# Validate deployment files\\
+flux launch deployment.yaml\\
+flux launch service.yaml\\
+\end{simplecodebox}
+
+\underline{\textbf{Multiple Environments}}
+
+\begin{simplecodebox}{Parallel Development}
+\# Development environment\\
+flux connect \textasciitilde/project -n dev $\backslash$\\
+\phantom{xx}-e .env.dev -p "npm run dev"\\
+\\
+\# Production debugging (force new)\\
+flux connect \textasciitilde/project -n prod $\backslash$\\
+\phantom{xx}-e .env.prod -f $\backslash$\\
+\phantom{xx}-p "npm run build"\\
+\end{simplecodebox}
+
+\end{textbox}
+
+\begin{textbox}{Keyboard Shortcuts}
+
+\underline{\textbf{Tmux Navigation (within sessions)}}
+
+\keystroke{Alt} + \keystroke{h} $\rightarrow$ horizontal split
+
+\keystroke{Alt} + \keystroke{v} $\rightarrow$ vertical split
+
+\keystroke{Alt} + \keystroke{Arrow Keys} $\rightarrow$ switch panes
+
+\keystroke{Alt} + \keystroke{Shift} + \keystroke{Arrow} $\rightarrow$ resize panes
+
+\keystroke{Alt} + \keystroke{1-9} $\rightarrow$ select windows 1-9
+
+\keystroke{Ctrl} + \keystroke{b} + \keystroke{r} $\rightarrow$ reload config
+
+\keystroke{Ctrl} + \keystroke{b} + \keystroke{d} $\rightarrow$ detach session
+
+\underline{\textbf{Shell Shortcuts}}
+
+\keystroke{Ctrl} + \keystroke{r} $\rightarrow$ search command history (with fzf)
+
+\keystroke{Ctrl} + \keystroke{t} $\rightarrow$ file finder (with fzf)
+
+\keystroke{Tab} $\rightarrow$ flux command completion
+
+\keystroke{Tab} \keystroke{Tab} $\rightarrow$ interactive file selection
+
+\end{textbox}
+
+\begin{textbox}{Installation \& Setup}
+
+\underline{\textbf{Quick Install}}
+
+\begin{simplecodebox}{Installation}
+git clone \\
+\phantom{xx}https://github.com/lotape6/flux-capacitor.git\\
+cd flux-capacitor\\
+./install.sh\\
+\end{simplecodebox}
+
+\underline{\textbf{Prerequisites}}
+\begin{itemize}
+    \item \textbf{tmux} - Session management
+    \item \textbf{fzf} - Fuzzy finding (optional)
+    \item \textbf{bat} - File preview (optional)  
+    \item \textbf{python3} - YAML validation
+\end{itemize}
+
+\green{Installation Complete}
+
+The install script automatically configures:\\
+
+Shell completion for bash/zsh/fish\\
+
+Tmux configuration and integration\\
+
+Environment setup and PATH configuration\\
+
+\yellow{Tips}
+
+Installation directory: \textbf{\$\{HOME\}/.flux}\\
+
+All configuration is handled automatically\\
+
+\red{Uninstall}
+
+\textbf{\$FLUX\_ROOT/uninstall.sh} (default: \textasciitilde/.flux/uninstall.sh)
+
+\end{textbox}
+
+\end{multicols}
+
+\end{document}
