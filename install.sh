@@ -97,24 +97,10 @@ check_dependencies() {
         fi
     done
     
-    # Check if tmux is missing - tmux is a critical dependency
-    tmux_missing=false
-    for dep in "${missing_deps[@]}"; do
-        if [ "$dep" == "tmux" ]; then
-            tmux_missing=true
-            break
-        fi
-    done
-    
-    if [ "$tmux_missing" = true ]; then
-        error "${RED}CRITICAL:${RESET} tmux is required but not installed. Please install tmux before running this script."
-        error "${RED}Installation cannot continue without tmux.${RESET}"
-        exit ${EXIT_DEPENDENCY_MISSING}
-    fi
     
     if [ ${#missing_deps[@]} -gt 0 ]; then
         warn "Some optional dependencies are not installed: ${missing_deps[*]}"
-        log "Installing missing dependencies..."
+        log "Trying to install missing optional dependencies..."
         
         # Use the install-dependency.sh script for each dependency
         for dep in "${missing_deps[@]}"; do
@@ -134,6 +120,18 @@ check_dependencies() {
         log "All dependencies are ${GREEN}installed${RESET}."
     fi
     
+    # Check if tmux is missing - tmux is a critical dependency
+    if ! command -v tmux >/dev/null 2>&1 || ! tmux -V >/dev/null 2>&1; then
+        error "${RED}CRITICAL:${RESET} tmux is required but not installed or not working properly."
+        error "Please ensure tmux is installed and accessible in your PATH."
+        error "${RED}Installation cannot continue without tmux.${RESET}"
+        tmux_err_output=$(tmux -V 2>&1 || true)
+        if [ -n "$tmux_err_output" ]; then
+            error "tmux error output: $tmux_err_output"
+        fi
+        exit "${EXIT_DEPENDENCY_MISSING}"
+    fi
+
 }
 
 # Install Tmux Plugin Manager
