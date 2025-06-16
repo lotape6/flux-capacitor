@@ -36,8 +36,6 @@ Flux Capacitor provides command completion for the `flux` command and all its su
 - Zsh completion provides detailed help for each command and option
 - Fish completion integrates with the fish auto-suggestion system
 
-For more details, see [AUTOCOMPLETION.md](AUTOCOMPLETION.md).
-
 ### Oh-My-Zsh Integration
 
 For zsh users with Oh-My-Zsh, Flux Capacitor provides a custom plugin that can be enabled by adding `flux` to your plugins list in `~/.zshrc`.
