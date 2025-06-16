@@ -96,6 +96,22 @@ check_dependencies() {
             missing_deps+=("$dep")
         fi
     done
+    
+    # Check if tmux is missing - tmux is a critical dependency
+    tmux_missing=false
+    for dep in "${missing_deps[@]}"; do
+        if [ "$dep" == "tmux" ]; then
+            tmux_missing=true
+            break
+        fi
+    done
+    
+    if [ "$tmux_missing" = true ]; then
+        error "${RED}CRITICAL:${RESET} tmux is required but not installed. Please install tmux before running this script."
+        error "${RED}Installation cannot continue without tmux.${RESET}"
+        exit ${EXIT_DEPENDENCY_MISSING}
+    fi
+    
     if [ ${#missing_deps[@]} -gt 0 ]; then
         warn "Some optional dependencies are not installed: ${missing_deps[*]}"
         log "Installing missing dependencies..."
@@ -111,10 +127,12 @@ check_dependencies() {
                 "${SCRIPT_DIR}/src/install-dependency.sh" "$dep"
             fi
         done
+        
+        # Only print success message if all dependencies were handled
+        warn "Some dependencies may still be missing. Please verify manually if needed."
+    else
+        log "All dependencies are ${GREEN}installed${RESET}."
     fi
-    
-    
-    log "All dependencies are ${GREEN}installed${RESET}."
     
 }
 
