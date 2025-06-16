@@ -6,7 +6,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{tikz}
-\usetikzlibrary{shadows}
+\usetikzlibrary{shadows,shapes.geometric,calc}
 
 \usepackage{tcolorbox}
 \usepackage{graphicx}
@@ -24,6 +24,21 @@
 \makeatother
 
 \AtBeginDocument{\globalcolor{white}}
+
+% Add a subtle gradient background using TikZ
+\usepackage{eso-pic}
+\AddToShipoutPicture{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[inner color=fluxblue!3,outer color=fluxgreen!2] (current page.south west) rectangle (current page.north east);
+    % Add some decorative dots
+    \fill[fluxblue,opacity=0.1] (2,2) circle (0.5cm);
+    \fill[fluxgreen,opacity=0.1] (15,8) circle (0.3cm);
+    \fill[fluxblue,opacity=0.1] (25,3) circle (0.4cm);
+    \fill[fluxgreen,opacity=0.1] (8,15) circle (0.2cm);
+    \fill[fluxblue,opacity=0.1] (20,12) circle (0.3cm);
+  \end{tikzpicture}%
+}
+
 %--------------------------------------------------------------------------------
 
 \begin{document}
@@ -210,7 +225,7 @@ Use \keystroke{Tab} \keystroke{Tab} to trigger file selector\\
 
 \begin{textbox}{Configuration}
 
-\underline{\textbf{Main Config: \textasciitilde/.config/flux/flux.conf}}
+\underline{\textbf{Configuration: \textasciitilde/.config/flux/flux.conf}}
 
 \mycommand{FLUX\_VERBOSE\_MODE=true}{Enable detailed logging}
 
@@ -245,9 +260,9 @@ Each session stores its own environment variables\\
 
 \begin{simplecodebox}{Python Development}
 \# Navigate to project and activate environment\\
-flux connect \textasciitilde/projects/myapp \\
-\phantom{xx}-p "source venv/bin/activate" \\
-\phantom{xx}-e .env \\
+flux connect \textasciitilde/projects/myapp $\backslash$\\
+\phantom{xx}-p "source venv/bin/activate" $\backslash$\\
+\phantom{xx}-e .env $\backslash$\\
 \phantom{xx}-n myapp-dev\\
 \\
 \# New panes will automatically:\\
@@ -260,9 +275,9 @@ flux connect \textasciitilde/projects/myapp \\
 
 \begin{simplecodebox}{Kubernetes Management}
 \# Setup for k8s cluster management\\
-flux connect \textasciitilde/k8s-configs \\
-\phantom{xx}-p "kubectl config use-context prod" \\
-\phantom{xx}-e k8s.env \\
+flux connect \textasciitilde/k8s-configs $\backslash$\\
+\phantom{xx}-p "kubectl config use-context prod" $\backslash$\\
+\phantom{xx}-e k8s.env $\backslash$\\
 \phantom{xx}-n k8s-prod\\
 \\
 \# Validate deployment files\\
@@ -274,12 +289,12 @@ flux launch service.yaml\\
 
 \begin{simplecodebox}{Parallel Development}
 \# Development environment\\
-flux connect \textasciitilde/project -n dev \\
+flux connect \textasciitilde/project -n dev $\backslash$\\
 \phantom{xx}-e .env.dev -p "npm run dev"\\
 \\
 \# Production debugging (force new)\\
-flux connect \textasciitilde/project -n prod \\
-\phantom{xx}-e .env.prod -f \\
+flux connect \textasciitilde/project -n prod $\backslash$\\
+\phantom{xx}-e .env.prod -f $\backslash$\\
 \phantom{xx}-p "npm run build"\\
 \end{simplecodebox}
 
@@ -289,13 +304,17 @@ flux connect \textasciitilde/project -n prod \\
 
 \underline{\textbf{Tmux Navigation (within sessions)}}
 
-\keystroke{Ctrl} + \keystroke{b} + \keystroke{c} $\rightarrow$ new window
+\keystroke{Alt} + \keystroke{h} $\rightarrow$ horizontal split
 
-\keystroke{Ctrl} + \keystroke{b} + \keystroke{\%} $\rightarrow$ vertical split
+\keystroke{Alt} + \keystroke{v} $\rightarrow$ vertical split
 
-\keystroke{Ctrl} + \keystroke{b} + \keystroke{"} $\rightarrow$ horizontal split
+\keystroke{Alt} + \keystroke{Arrow Keys} $\rightarrow$ switch panes
 
-\keystroke{Ctrl} + \keystroke{b} + \keystroke{o} $\rightarrow$ switch panes
+\keystroke{Alt} + \keystroke{Shift} + \keystroke{Arrow} $\rightarrow$ resize panes
+
+\keystroke{Alt} + \keystroke{1-9} $\rightarrow$ select windows 1-9
+
+\keystroke{Ctrl} + \keystroke{b} + \keystroke{r} $\rightarrow$ reload config
 
 \keystroke{Ctrl} + \keystroke{b} + \keystroke{d} $\rightarrow$ detach session
 
@@ -316,7 +335,8 @@ flux connect \textasciitilde/project -n prod \\
 \underline{\textbf{Quick Install}}
 
 \begin{simplecodebox}{Installation}
-git clone https://github.com/lotape6/flux-capacitor.git\\
+git clone \\
+\phantom{xx}https://github.com/lotape6/flux-capacitor.git\\
 cd flux-capacitor\\
 ./install.sh\\
 \end{simplecodebox}
@@ -329,23 +349,25 @@ cd flux-capacitor\\
     \item \textbf{python3} - YAML validation
 \end{itemize}
 
-\underline{\textbf{Post Installation}}
+\green{Installation Complete}
 
-Enable shell completion:
-\begin{simplecodebox}{Shell Setup}
-\# Add to \textasciitilde/.bashrc or \textasciitilde/.zshrc\\
-source \textasciitilde/.local/share/flux/completion/flux-completion.bash\\
-\end{simplecodebox}
+The install script automatically configures:\\
 
-Configure tmux integration:
-\begin{simplecodebox}{Tmux Setup}
-\# Link custom tmux config\\
-ln -s \textasciitilde/.local/share/flux/config/.tmux.conf \textasciitilde/.tmux.conf\\
-\end{simplecodebox}
+Shell completion for bash/zsh/fish\\
+
+Tmux configuration and integration\\
+
+Environment setup and PATH configuration\\
+
+\yellow{Tips}
+
+Installation directory: \textbf{\$\{HOME\}/.flux}\\
+
+All configuration is handled automatically\\
 
 \red{Uninstall}
 
-\textbf{\textasciitilde/.local/share/flux/uninstall.sh}
+\textbf{\$FLUX\_ROOT/uninstall.sh} (default: \textasciitilde/.flux/uninstall.sh)
 
 \end{textbox}
 
