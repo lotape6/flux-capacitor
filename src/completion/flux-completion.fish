@@ -4,7 +4,9 @@
 complete -c flux -f -n "__fish_use_subcommand" -a "connect" -d "Create a new tmux session"
 complete -c flux -f -n "__fish_use_subcommand" -a "session-switch" -d "Interactive tmux session switcher"
 complete -c flux -f -n "__fish_use_subcommand" -a "launch" -d "Check if a file is a valid YAML"
-complete -c flux -f -n "__fish_use_subcommand" -a "clean" -d "Reset the tmux server"
+complete -c flux -f -n "__fish_use_subcommand" -a "save" -d "Save current tmux session layout to a .flux.yml file"
+complete -c flux -f -n "__fish_use_subcommand" -a "restore" -d "Restore a tmux session from a .flux.yml file"
+complete -c flux -f -n "__fish_use_subcommand" -a "clean" -d "Kill all sessions and reset the tmux server"
 complete -c flux -f -n "__fish_use_subcommand" -a "help" -d "Show help message"
 
 # Completions for 'connect' subcommand
@@ -34,3 +36,11 @@ end
 complete -c flux -f -n "__fish_seen_subcommand_from launch; and not __fish_is_switch" -a "(__flux_yaml_files)"
 
 # No additional completions for 'clean' and 'help' as they don't take arguments
+# Completions for 'save' subcommand
+complete -c flux -f -n "__fish_seen_subcommand_from save" -s o -l output -d "Output file path" -r -a "(__fish_complete_path)"
+complete -c flux -f -n "__fish_seen_subcommand_from save" -s h -l help -d "Show help message"
+
+# Completions for 'restore' subcommand
+complete -c flux -f -n "__fish_seen_subcommand_from restore" -s f -l force -d "Force new session"
+complete -c flux -f -n "__fish_seen_subcommand_from restore" -s h -l help -d "Show help message"
+complete -c flux -f -n "__fish_seen_subcommand_from restore; and not __fish_is_switch" -a "(__flux_yaml_files)"

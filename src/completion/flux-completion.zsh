@@ -9,7 +9,9 @@ _flux() {
         'connect:Create a new tmux session'
         'session-switch:Interactive tmux session switcher'
         'launch:Check if a file is a valid YAML'
-        'clean:Reset the tmux server'
+        'save:Save current tmux session layout to a .flux.yml file'
+        'restore:Restore a tmux session from a .flux.yml file'
+        'clean:Kill all sessions and reset the tmux server'
         'help:Show help message'
     )
     
@@ -54,6 +56,12 @@ _flux() {
                         # Regular file completion with filter for yaml files
                         _arguments '*:yaml file:_flux_yaml_files'
                     fi
+                    ;;
+                save)
+                    _arguments '-o[Output path]:file:_files' '--output[Output path]:file:_files' '-h[Help]' '--help[Help]'
+                    ;;
+                restore)
+                    _arguments '-f[Force]' '--force[Force]' '-h[Help]' '--help[Help]' '*:config file:_files'
                     ;;
                 clean)
                     _message "No arguments for clean command"

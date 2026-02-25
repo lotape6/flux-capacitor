@@ -15,10 +15,12 @@ show_help() {
     echo "Usage: flux <command> [options]"
     echo
     echo "Commands:"
-    echo "  connect        Create a new tmux session"
+    echo "  connect        Create or attach to a tmux session"
     echo "  session-switch Interactive tmux session switcher"
-    echo "  launch         Check if a file is a valid YAML"
-    echo "  clean          Reset the tmux server"
+    echo "  launch         Launch a tmux session from a .flux.yml config file"
+    echo "  save           Save current session layout to a .flux.yml file"
+    echo "  restore        Restore a session from a .flux.yml file (alias: launch)"
+    echo "  clean          Kill all sessions and reset the tmux server"
     echo "  help           Show this help message"
     echo
 }
@@ -42,6 +44,12 @@ case "${command}" in
         ;;
     launch)
         "${SCRIPT_DIR}/launch.sh" "$@"
+        ;;
+    save)
+        "${SCRIPT_DIR}/save.sh" "$@"
+        ;;
+    restore)
+        "${SCRIPT_DIR}/restore.sh" "$@"
         ;;
     clean)
         "${SCRIPT_DIR}/clean.sh" "$@"
