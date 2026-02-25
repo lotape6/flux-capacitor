@@ -110,9 +110,12 @@ fi
 # Test 6: Test behavior when fzf is not available (if fzf is not installed)
 log "Test 6: Testing error handling for missing dependencies"
 
-# Check if fzf is available
+# Check if fzf is available in standard PATH (not user-local paths)
 if ! command -v fzf >/dev/null 2>&1; then
+    # fzf not in PATH — create a session so the fzf check is reached
+    tmux new-session -d -s "test-fzf-check" 2>/dev/null || true
     no_fzf_output=$("$SESSION_SWITCH_SCRIPT" 2>&1 || true)
+    tmux kill-session -t "test-fzf-check" 2>/dev/null || true
     if [[ "$no_fzf_output" =~ "fzf is not installed" ]]; then
         success "✓ Correctly reports missing fzf dependency"
     else
