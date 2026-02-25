@@ -15,7 +15,7 @@ readonly EXIT_NO_PERMISSION=3
 readonly EXIT_DEPENDENCY_MISSING=4
 
 # Installation and configuration errors
-readonly EXIT_INVALID_OPTION=2  # Same as EXIT_MISUSE for invalid command line options
+readonly EXIT_INVALID_OPTION=23  # Invalid command line option
 readonly EXIT_CONFIG_ERROR=5
 readonly EXIT_INSTALL_ERROR=6
 

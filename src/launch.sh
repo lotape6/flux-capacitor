@@ -33,7 +33,7 @@ fi
 # We can do this by trying to parse it with a YAML parser
 # For basic validation, we can use Python if available
 if command -v python3 >/dev/null 2>&1; then
-    if python3 -c "import yaml; yaml.safe_load(open('$file_path', 'r'))" 2>/dev/null; then
+    if python3 -c "import yaml, sys; yaml.safe_load(sys.stdin)" < "$file_path" 2>/dev/null; then
         echo "File '$file_path' is a valid YAML file"
         exit 0
     else
@@ -41,7 +41,7 @@ if command -v python3 >/dev/null 2>&1; then
         exit 1
     fi
 elif command -v python >/dev/null 2>&1; then
-    if python -c "import yaml; yaml.safe_load(open('$file_path', 'r'))" 2>/dev/null; then
+    if python -c "import yaml, sys; yaml.safe_load(sys.stdin)" < "$file_path" 2>/dev/null; then
         echo "File '$file_path' is a valid YAML file"
         exit 0
     else

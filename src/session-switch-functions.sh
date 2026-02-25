@@ -25,10 +25,13 @@ _check_fzf_available() {
 }
 
 tmux_print(){
-    if [ -n $1 ]; then
+    if [ -n "${1:-}" ]; then
         # Show a temporary popup message for 2 seconds if supported (tmux >= 3.2)
-        if tmux display-popup -h 2>/dev/null | grep -q "display-popup"; then
-            tmux display-popup -E "echo $1; sleep 2"
+        local tmux_major tmux_minor
+        tmux_major=$(tmux -V 2>/dev/null | grep -oE '[0-9]+' | head -1)
+        tmux_minor=$(tmux -V 2>/dev/null | grep -oE '[0-9]+' | sed -n '2p')
+        if [ "${tmux_major:-0}" -gt 3 ] || { [ "${tmux_major:-0}" -eq 3 ] && [ "${tmux_minor:-0}" -ge 2 ]; }; then
+            tmux display-popup -E "echo '$1'; sleep 2"
         else
             tmux display-message "$1"
         fi
@@ -36,18 +39,18 @@ tmux_print(){
 }
 
 # Format existing sessions for display with emojis and fancy formatting
+# Output format: SESSION_NAME<TAB>DISPLAY_LINE
 format_existing_sessions() {
     local sessions="$1"
     local current_session="$2"
-    local session_line
     local session_name
     local session_windows
     local session_attached
     local session_path
     local emoji
     local status_emoji
-    local formatted_line
-    
+    local display_line
+
     echo "$sessions" | while IFS=':' read -r session_name session_windows session_attached session_path; do
         # Choose emoji based on session characteristics
         if [ "$session_attached" -gt 0 ]; then
@@ -59,7 +62,7 @@ format_existing_sessions() {
         else
             status_emoji="💤"      # Detached session
         fi
-        
+
         # Choose session emoji based on session name patterns
         case "$session_name" in
             *dev*|*develop*) emoji="🛠️ " ;;
@@ -71,25 +74,29 @@ format_existing_sessions() {
             *flux*) emoji="⚡" ;;
             *) emoji="📂" ;;
         esac
-        
-        # Format the display line
-        formatted_line="${status_emoji} ${emoji} ${session_name} (${session_windows} windows) 📍 ${session_path}"
-        echo "${formatted_line}"
+
+        # Format the display line — tab-separated: name<TAB>display
+        display_line="${status_emoji} ${emoji} ${session_name} (${session_windows} windows) 📍 ${session_path}"
+        printf '%s\t%s\n' "${session_name}" "${display_line}"
     done
 }
 
 # Select a session using fzf
+# Input lines are tab-separated: SESSION_NAME<TAB>DISPLAY
+# Returns the full tab-separated line of the selection
 select_session() {
     local formatted_sessions="$1"
-    
+
     echo "$formatted_sessions" | fzf \
         --height=40% \
         --reverse \
         --border \
+        --with-nth=2 \
+        --delimiter='\t' \
         --prompt="🔄 Select session to switch to: " \
         --header="🎯 Use Alt+S to switch sessions | ESC to cancel" \
         --preview-window="right:50%" \
-        --preview="echo 'Session Details:'; echo; tmux list-windows -t \$(echo {} | sed 's/^[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*//; s/ (.*//') 2>/dev/null || echo 'No details available'" \
+        --preview="tmux list-windows -t {1} -F '  #{window_index}: #{window_name} #{?window_active,(active),} — #{pane_current_path}' 2>/dev/null || echo 'No details available'" \
         --bind="alt-s:accept" \
         --color="header:italic:cyan,prompt:bold:blue,pointer:red,marker:yellow" \
         2>/dev/null || true
@@ -136,9 +143,9 @@ switch_session() {
         return 0
     fi
     
-    # Extract session name from selected line
+    # Extract session name from tab-delimited line (field 1)
     local selected_session
-    selected_session=$(echo "$selected_line" | sed 's/^[^[:space:]]*[[:space:]]*[^[:space:]]*[[:space:]]*//; s/ (.*//')
+    selected_session=$(echo "$selected_line" | cut -f1)
     
     # Validate that the session still exists
     if ! tmux has-session -t "$selected_session" 2>/dev/null; then

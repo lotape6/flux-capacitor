@@ -141,6 +141,7 @@ get_config_file() {
 # Only supporting bash, zsh, and fish (same as fzf)
 create_snippet() {
     SHELL_TYPE=$1
+    local CONFIG_FILE
     CONFIG_FILE=$("${REPO_DIR}/src/find-config.sh" 2>/dev/null || echo "${REPO_DIR}/config/flux.conf")
     
     # Source the config to get FLUX_CONFIG_DIR
