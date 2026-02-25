@@ -80,16 +80,34 @@ fi
 # Convert target_dir to absolute path
 target_dir=$(cd "$target_dir" && pwd)
 
-# If session name is not provided, use the name of the topmost directory
+# Derive a clean session name from a directory path.
+# Uses git repo root name if available; strips common suffixes.
+get_session_name() {
+    local dir="$1"
+    local base
+    if git -C "$dir" rev-parse --show-toplevel >/dev/null 2>&1; then
+        base=$(basename "$(git -C "$dir" rev-parse --show-toplevel)")
+    else
+        base=$(basename "$dir")
+    fi
+    # Strip common noisy suffixes
+    base="${base%-main}"
+    base="${base%-master}"
+    base="${base%-dev}"
+    base="${base%.git}"
+    echo "$base"
+}
+
+# If session name is not provided, derive from directory
 if [ -z "$session_name" ]; then
-    base_name=$(basename "$target_dir")
-    
+    base_name=$(get_session_name "$target_dir")
+
     if [ "$force_new" = true ]; then
         # Create unique session name using timestamp and process ID to avoid conflicts
         unique_suffix=$(date +%s)-$$
         session_name="${base_name}-${unique_suffix}"
     else
-        # Use simple base name for potential reuse
+        # Use derived base name for potential reuse
         session_name="$base_name"
     fi
 fi
