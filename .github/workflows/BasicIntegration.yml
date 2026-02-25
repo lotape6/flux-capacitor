@@ -5,12 +5,11 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   test-installation:
     runs-on: ubuntu-latest
-    # Only run on PR or push events
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -27,12 +26,11 @@ jobs:
           echo "has-sh-files=$HAS_SH_FILES" >> $GITHUB_OUTPUT
 
       - name: Build and run Docker test
-        if: steps.check-sh-files.outputs.has-sh-files == 'true'
+        if: steps.check-sh-files.outputs.has-sh-files == 'true' || github.event_name == 'workflow_dispatch'
         run: |
           echo "Shell files changed. Running Docker test..."
           test/run_docker.sh
 
       - name: Skip message
-        if: steps.check-files.outputs.should-run != 'true'
+        if: steps.check-sh-files.outputs.has-sh-files != 'true' && github.event_name != 'workflow_dispatch'
         run: echo "No relevant file changes detected. Skipping test-installation."
-        

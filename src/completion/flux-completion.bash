@@ -6,7 +6,7 @@ _flux_completions() {
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    commands="connect session-switch launch save restore clean help"
+    commands="connect session-switch launch save restore list kill rename clean help"
     connect_options="-p --pre-cmd -P --post-cmd -n --session-name -e --env-file -f --force-new"
 
     # Handle subcommand completions
@@ -69,11 +69,35 @@ _flux_completions() {
             return 0
             ;;
         save)
-            _arguments "-o[Output path]:file:_files" "-h[Help]" "--output[Output path]:file:_files" "--help[Help]"
+            _arguments "-o[Output path]:file:_files" "--output[Output path]:file:_files" "-h[Help]" "--help[Help]"
             return 0
             ;;
         restore)
-            _arguments "*:config file:_files -g '*.yml *.yaml'" "-f[Force]" "--force[Force]" "-h[Help]" "--help[Help]"
+            _arguments "*:config file:_files" "-f[Force]" "--force[Force]" "-h[Help]" "--help[Help]"
+            return 0
+            ;;
+        list)
+            COMPREPLY=( $(compgen -W "-j --json -h --help" -- "${cur}") )
+            return 0
+            ;;
+        kill)
+            if [[ "${cur}" == -* ]]; then
+                COMPREPLY=( $(compgen -W "-a --all -y --yes -h --help" -- "${cur}") )
+            else
+                local session_names
+                session_names=$(tmux list-sessions -F "#{session_name}" 2>/dev/null || true)
+                COMPREPLY=( $(compgen -W "${session_names}" -- "${cur}") )
+            fi
+            return 0
+            ;;
+        rename)
+            if [[ "${cur}" == -* ]]; then
+                COMPREPLY=( $(compgen -W "-h --help" -- "${cur}") )
+            else
+                local session_names
+                session_names=$(tmux list-sessions -F "#{session_name}" 2>/dev/null || true)
+                COMPREPLY=( $(compgen -W "${session_names}" -- "${cur}") )
+            fi
             return 0
             ;;
         *)
