@@ -58,16 +58,27 @@ fi
 # Test 2: Install mode
 log "Test 2: Testing install mode..." 1
 
-# Run the script in install mode
-HOME="${TEST_HOME}" "${INIT_SCRIPT}" -i
+# Run the script in install mode with bash as the shell to ensure predictable config file
+SHELL=/bin/bash HOME="${TEST_HOME}" "${INIT_SCRIPT}" -i
 
-# Check if the snippet was added to the shell config file
-# We'll check for .bashrc as it's the default for most systems
-if grep -q "flux-capacitor initialization" "${TEST_HOME}/.bashrc"; then
-    log "✓ Install mode successfully added snippet to shell config" 2
+# Check if the snippet was added — check all possible config files
+SNIPPET_FOUND=false
+START_TAG="# >>> flux-capacitor initialization >>>"
+for config_file in "${TEST_HOME}/.bashrc" "${TEST_HOME}/.zshrc" "${TEST_HOME}/.config/fish/config.fish"; do
+    if [ -f "${config_file}" ] && grep -q "flux-capacitor initialization" "${config_file}"; then
+        SNIPPET_FOUND=true
+        DETECTED_CONFIG="${config_file}"
+        break
+    fi
+done
+
+if $SNIPPET_FOUND; then
+    log "✓ Install mode successfully added snippet to shell config (${DETECTED_CONFIG##*/})" 2
 else
-    log "✗ Install mode failed to add snippet to shell config" 2
-    cat "${TEST_HOME}/.bashrc"
+    log "✗ Install mode failed to add snippet to any shell config" 2
+    for config_file in "${TEST_HOME}/.bashrc" "${TEST_HOME}/.zshrc"; do
+        echo "--- ${config_file} ---"; cat "${config_file}" 2>/dev/null || echo "(empty)"
+    done
     exit 1
 fi
 
@@ -75,12 +86,12 @@ fi
 log "Test 3: Testing uninstall mode..." 1
 
 # Run the script in uninstall mode
-HOME="${TEST_HOME}" "${INIT_SCRIPT}" -u
+SHELL=/bin/bash HOME="${TEST_HOME}" "${INIT_SCRIPT}" -u
 
-# Check if the snippet was removed from the shell config file
-if grep -q "flux-capacitor initialization" "${TEST_HOME}/.bashrc"; then
+# Check if the snippet was removed
+if grep -q "flux-capacitor initialization" "${DETECTED_CONFIG}" 2>/dev/null; then
     log "✗ Uninstall mode failed to remove snippet from shell config" 2
-    cat "${TEST_HOME}/.bashrc"
+    cat "${DETECTED_CONFIG}"
     exit 1
 else
     log "✓ Uninstall mode successfully removed snippet from shell config" 2
@@ -90,28 +101,27 @@ fi
 log "Test 4: Testing idempotent install and uninstall..." 1
 
 # Run install twice
-HOME="${TEST_HOME}" "${INIT_SCRIPT}" -i
-HOME="${TEST_HOME}" "${INIT_SCRIPT}" -i
+SHELL=/bin/bash HOME="${TEST_HOME}" "${INIT_SCRIPT}" -i
+SHELL=/bin/bash HOME="${TEST_HOME}" "${INIT_SCRIPT}" -i
 
 # Check that only one snippet was added
-START_TAG="# >>> flux-capacitor initialization >>>"
-SNIPPET_COUNT=$(grep -c "${START_TAG}" "${TEST_HOME}/.bashrc")
+SNIPPET_COUNT=$(grep -c "${START_TAG}" "${DETECTED_CONFIG}")
 if [ "${SNIPPET_COUNT}" -eq 1 ]; then
     log "✓ Install mode is idempotent" 2
 else
     log "✗ Install mode added multiple snippets when run twice" 2
-    cat "${TEST_HOME}/.bashrc"
+    cat "${DETECTED_CONFIG}"
     exit 1
 fi
 
 # Run uninstall twice
-HOME="${TEST_HOME}" "${INIT_SCRIPT}" -u
-HOME="${TEST_HOME}" "${INIT_SCRIPT}" -u
+SHELL=/bin/bash HOME="${TEST_HOME}" "${INIT_SCRIPT}" -u
+SHELL=/bin/bash HOME="${TEST_HOME}" "${INIT_SCRIPT}" -u
 
 # Check that snippet is completely removed
-if grep -q "flux-capacitor initialization" "${TEST_HOME}/.bashrc"; then
+if grep -q "flux-capacitor initialization" "${DETECTED_CONFIG}" 2>/dev/null; then
     log "✗ Multiple uninstall operations left snippets in place" 2
-    cat "${TEST_HOME}/.bashrc"
+    cat "${DETECTED_CONFIG}"
     exit 1
 else
     log "✓ Uninstall mode is idempotent" 2
