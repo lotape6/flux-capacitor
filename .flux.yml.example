@@ -1,0 +1,28 @@
+# .flux.yml — Flux Capacitor session config
+# Copy to .flux.yml in your project root and customize.
+# Run with: flux launch
+
+# Session name (defaults to root directory name if omitted)
+session: myproject
+
+# Root directory for the session (defaults to current directory)
+root: ~/projects/myproject
+
+# Windows to create. Each window can have:
+#   name: window tab label (required)
+#   dir:  working directory (defaults to root)
+#   cmd:  command to run on open (optional)
+windows:
+  - name: editor
+    cmd: nvim .
+
+  - name: server
+    dir: ~/projects/myproject/backend
+    cmd: npm run dev
+
+  - name: db
+    dir: ~/projects/myproject
+    cmd: docker compose up db
+
+  - name: shell
+    # No cmd — just opens a shell in root dir

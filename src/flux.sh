@@ -43,6 +43,7 @@ case "${command}" in
         "${SCRIPT_DIR}/session-switch.sh" "$@"
         ;;
     launch)
+        # Launch a tmux session from a .flux.yml config file
         "${SCRIPT_DIR}/launch.sh" "$@"
         ;;
     save)
