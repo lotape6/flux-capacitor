@@ -15,10 +15,13 @@ show_help() {
     echo "Usage: flux <command> [options]"
     echo
     echo "Commands:"
-    echo "  connect        Create a new tmux session"
+    echo "  connect        Create or attach to a tmux session"
     echo "  session-switch Interactive tmux session switcher"
-    echo "  launch         Check if a file is a valid YAML"
-    echo "  clean          Reset the tmux server"
+    echo "  launch         Launch a tmux session from a .flux.yml config file"
+    echo "  list           List all active tmux sessions"
+    echo "  kill           Kill a tmux session"
+    echo "  rename         Rename a tmux session"
+    echo "  clean          Kill all sessions and reset the tmux server"
     echo "  help           Show this help message"
     echo
 }
@@ -43,11 +46,24 @@ case "${command}" in
     launch)
         "${SCRIPT_DIR}/launch.sh" "$@"
         ;;
+    list)
+        "${SCRIPT_DIR}/list.sh" "$@"
+        ;;
+    kill)
+        "${SCRIPT_DIR}/kill.sh" "$@"
+        ;;
+    rename)
+        "${SCRIPT_DIR}/rename.sh" "$@"
+        ;;
     clean)
         "${SCRIPT_DIR}/clean.sh" "$@"
         ;;
     help)
-        show_help
+        if [ -n "${1:-}" ]; then
+            "${SCRIPT_DIR}/${1}.sh" --help 2>/dev/null || echo "No help available for '$1'"
+        else
+            show_help
+        fi
         ;;
     *)
         echo "Error: Unknown command '${command}'"

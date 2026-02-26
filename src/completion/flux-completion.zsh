@@ -6,10 +6,13 @@ _flux() {
     local -a commands connect_options
     
     commands=(
-        'connect:Create a new tmux session'
+        'connect:Create or attach to a tmux session'
         'session-switch:Interactive tmux session switcher'
-        'launch:Check if a file is a valid YAML'
-        'clean:Reset the tmux server'
+        'launch:Launch a tmux session from a .flux.yml config file'
+        'list:List all active tmux sessions'
+        'kill:Kill a tmux session'
+        'rename:Rename a tmux session'
+        'clean:Kill all sessions and reset the tmux server'
         'help:Show help message'
     )
     
@@ -55,11 +58,29 @@ _flux() {
                         _arguments '*:yaml file:_flux_yaml_files'
                     fi
                     ;;
+                list)
+                    _arguments \
+                        '-j[Output as JSON]' \
+                        '--json[Output as JSON]' \
+                        '-h[Show help]' '--help[Show help]'
+                    ;;
+                kill)
+                    _arguments \
+                        '-a[Kill all sessions]' '--all[Kill all sessions]' \
+                        '-y[Skip confirmation]' '--yes[Skip confirmation]' \
+                        '-h[Show help]' '--help[Show help]' \
+                        '*:session name:($(tmux list-sessions -F "#{session_name}" 2>/dev/null))'
+                    ;;
+                rename)
+                    _arguments \
+                        '-h[Show help]' '--help[Show help]' \
+                        '*:session name:($(tmux list-sessions -F "#{session_name}" 2>/dev/null))'
+                    ;;
                 clean)
                     _message "No arguments for clean command"
                     ;;
                 help)
-                    _message "No arguments for help command"
+                    _describe 'command' commands
                     ;;
             esac
             ;;
