@@ -17,7 +17,7 @@ show_help() {
     echo "Commands:"
     echo "  connect        Create a new tmux session"
     echo "  session-switch Interactive tmux session switcher"
-    echo "  launch         Check if a file is a valid YAML"
+    echo "  launch         Launch a tmux session from a .flux.yml config file"
     echo "  clean          Reset the tmux server"
     echo "  help           Show this help message"
     echo
@@ -41,6 +41,7 @@ case "${command}" in
         "${SCRIPT_DIR}/session-switch.sh" "$@"
         ;;
     launch)
+        # Launch a tmux session from a .flux.yml config file
         "${SCRIPT_DIR}/launch.sh" "$@"
         ;;
     clean)
