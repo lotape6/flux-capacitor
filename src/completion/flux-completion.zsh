@@ -154,7 +154,5 @@ alias fcl='flux clean'
 EOF
 fi
 
-# If not using the oh-my-zsh plugin, register the completion function
-if [[ ! -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/flux" ]]; then
-    _flux "$@"
-fi
+# Register the completion function
+compdef _flux flux
