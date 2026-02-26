@@ -6,7 +6,7 @@ _flux_completions() {
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    commands="connect session-switch launch clean help"
+    commands="connect session-switch launch save restore clean help"
     connect_options="-p --pre-cmd -P --post-cmd -n --session-name -e --env-file -f --force-new"
 
     # Handle subcommand completions
@@ -66,6 +66,14 @@ _flux_completions() {
                     COMPREPLY=( $(compgen -W "${yaml_files}" -- "${cur}") )
                 fi
             fi
+            return 0
+            ;;
+        save)
+            _arguments "-o[Output path]:file:_files" "-h[Help]" "--output[Output path]:file:_files" "--help[Help]"
+            return 0
+            ;;
+        restore)
+            _arguments "*:config file:_files -g '*.yml *.yaml'" "-f[Force]" "--force[Force]" "-h[Help]" "--help[Help]"
             return 0
             ;;
         *)
