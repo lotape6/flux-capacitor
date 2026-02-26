@@ -104,23 +104,24 @@ select_session() {
 
 # Main session switching function
 switch_session() {
-    # Check dependencies
+    # Check tmux first (always required)
     if ! _check_tmux_available; then
         return 1
     fi
-    
-    if ! _check_fzf_available; then
-        return 1
-    fi
-    
-    # Get list of tmux sessions
+
+    # Get list of sessions before checking fzf — if empty, fzf isn't needed
     local sessions
     sessions=$(tmux list-sessions -F "#{session_name}:#{session_windows}:#{session_attached}:#{pane_current_path}" 2>/dev/null || true)
-    
+
     if [ -z "$sessions" ]; then
         echo "No tmux sessions found."
         echo "Create a new session with: flux connect <directory>"
         return 0
+    fi
+
+    # Only require fzf if there are sessions to switch between
+    if ! _check_fzf_available; then
+        return 1
     fi
     
     # Check if we're currently inside a tmux session

@@ -8,10 +8,9 @@ _flux() {
     commands=(
         'connect:Create or attach to a tmux session'
         'session-switch:Interactive tmux session switcher'
-        'launch:Check if a file is a valid YAML'
+        'launch:Launch a tmux session from a .flux.yml config file'
         'save:Save current tmux session layout to a .flux.yml file'
         'restore:Restore a tmux session from a .flux.yml file'
-        'launch:Launch a tmux session from a .flux.yml config file'
         'list:List all active tmux sessions'
         'kill:Kill a tmux session'
         'rename:Rename a tmux session'
@@ -66,6 +65,7 @@ _flux() {
                     ;;
                 restore)
                     _arguments '-f[Force]' '--force[Force]' '-h[Help]' '--help[Help]' '*:config file:_files'
+                    ;;
                 list)
                     _arguments \
                         '-j[Output as JSON]' \
