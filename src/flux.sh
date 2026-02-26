@@ -20,6 +20,9 @@ show_help() {
     echo "  launch         Launch a tmux session from a .flux.yml config file"
     echo "  save           Save current session layout to a .flux.yml file"
     echo "  restore        Restore a session from a .flux.yml file (alias: launch)"
+    echo "  list           List all active tmux sessions"
+    echo "  kill           Kill a tmux session"
+    echo "  rename         Rename a tmux session"
     echo "  clean          Kill all sessions and reset the tmux server"
     echo "  help           Show this help message"
     echo
@@ -52,11 +55,24 @@ case "${command}" in
     restore)
         "${SCRIPT_DIR}/restore.sh" "$@"
         ;;
+    list)
+        "${SCRIPT_DIR}/list.sh" "$@"
+        ;;
+    kill)
+        "${SCRIPT_DIR}/kill.sh" "$@"
+        ;;
+    rename)
+        "${SCRIPT_DIR}/rename.sh" "$@"
+        ;;
     clean)
         "${SCRIPT_DIR}/clean.sh" "$@"
         ;;
     help)
-        show_help
+        if [ -n "${1:-}" ]; then
+            "${SCRIPT_DIR}/${1}.sh" --help 2>/dev/null || echo "No help available for '$1'"
+        else
+            show_help
+        fi
         ;;
     *)
         echo "Error: Unknown command '${command}'"
