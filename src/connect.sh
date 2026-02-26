@@ -158,9 +158,6 @@ if command -v tmux >/dev/null 2>&1; then
         # The post_cmd will be executed after the attach-session call returns
     fi
     
-    # Set hooks for window switching to ensure consistent directory
-    tmux set-hook -t "$session_name" window-pane-changed "if-shell -F \"#{pane_start_command}\" 'send-keys -t \"$session_name\" \"cd \\\"$target_dir\\\"\" C-m'"
-    
     # Run the cd command, source env file, and pre_cmd in the initial pane
     tmux send-keys -t "$session_name" "cd \"$target_dir\"" C-m
     if [ -n "$env_file" ]; then

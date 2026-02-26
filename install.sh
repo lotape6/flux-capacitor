@@ -89,9 +89,15 @@ show_help() {
 check_dependencies() {
     log "Checking dependencies..."
     
+    # Initialize missing deps array
+    missing_deps=()
+
     # Check for additional dependencies
     for dep in git curl tmux fzf bat delta; do
-        dep_path="$(whereis "$dep" | cut -d : -f 2- | tr -s ' ')"
+        dep_path="$(command -v "$dep" 2>/dev/null || \
+                    ls "$HOME/.local/bin/$dep" 2>/dev/null || \
+                    ls "$HOME/.fzf/bin/$dep" 2>/dev/null || \
+                    ls "$HOME/.cargo/bin/$dep" 2>/dev/null || true)"
         if [ -z "$dep_path" ]; then
             missing_deps+=("$dep")
         fi
