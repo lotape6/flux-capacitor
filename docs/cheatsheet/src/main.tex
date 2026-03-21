@@ -91,29 +91,64 @@ Use \textbf{--force-new} for multiple sessions in same directory\\
 
 \end{textbox}
 
-\begin{textbox}{flux launch}
+\begin{textbox}{flux launch / restore}
 
-Validate YAML files with comprehensive error reporting.
+Launch a tmux session from a \textbf{.flux.yml} config file. \textbf{restore} is an alias.
 
 \underline{\textbf{Usage}}
 \begin{itemize}
-    \item \textbf{flux launch config.yml} - Validate YAML file
-    \item \textbf{flux launch deployment.yaml} - Check deployment file
+    \item \textbf{flux launch} - auto-find .flux.yml in cwd
+    \item \textbf{flux launch myproject.yml} - use specific file
+    \item \textbf{flux launch -v config.yml} - validate only, no tmux
+    \item \textbf{flux launch -f config.yml} - force new session
+\end{itemize}
+
+\underline{\textbf{Config format (.flux.yml)}}
+\begin{itemize}
+    \item \textbf{session:} name of the tmux session
+    \item \textbf{root:} base directory (tilde expanded)
+    \item \textbf{windows:} list of \{name, dir, cmd\}
 \end{itemize}
 
 \green{Pros}
 
-Python-based validation with PyYAML\\
+Reproducible multi-window environments from a single file\\
 
-Fallback to extension checking if Python unavailable\\
-
-Clear error messages for debugging\\
+Auto-detects .flux.yml or flux.yml in current directory\\
 
 \yellow{Tips}
 
-Great for CI/CD pipeline validation\\
+Use \textbf{flux save} to generate a .flux.yml from a live session\\
 
-Use with shell completion for quick file selection\\
+Use \textbf{-v} to validate config in CI without starting tmux\\
+
+\end{textbox}
+
+\begin{textbox}{flux save / list / kill / rename}
+
+\underline{\textbf{flux save [session-name]}}
+
+Serialize a live session layout to a .flux.yml file.
+
+\mycommand{flux save}{save current session to ./.flux.yml}
+\mycommand{flux save myproj}{save 'myproj' session}
+\mycommand{flux save -o cfg.yml}{save to specific path}
+
+\underline{\textbf{flux list}}
+
+\mycommand{flux list}{list all active tmux sessions}
+
+\underline{\textbf{flux kill [session-name]}}
+
+\mycommand{flux kill}{fzf picker or kill current session}
+\mycommand{flux kill myproj}{kill named session}
+\mycommand{flux kill -a}{kill all sessions (like flux clean)}
+\mycommand{flux kill -y}{skip confirmation}
+
+\underline{\textbf{flux rename [old] \textless new\textgreater}}
+
+\mycommand{flux rename newname}{rename current session}
+\mycommand{flux rename old new}{rename specific session}
 
 \end{textbox}
 
@@ -274,15 +309,15 @@ flux connect \textasciitilde/projects/myapp $\backslash$\\
 \underline{\textbf{DevOps Workflow}}
 
 \begin{simplecodebox}{Kubernetes Management}
-\# Setup for k8s cluster management\\
-flux connect \textasciitilde/k8s-configs $\backslash$\\
-\phantom{xx}-p "kubectl config use-context prod" $\backslash$\\
-\phantom{xx}-e k8s.env $\backslash$\\
-\phantom{xx}-n k8s-prod\\
+\# Save current k8s workspace to a config file\\
+flux save k8s-prod -o k8s.flux.yml\\
 \\
-\# Validate deployment files\\
-flux launch deployment.yaml\\
-flux launch service.yaml\\
+\# Later: restore it from the saved config\\
+flux launch k8s.flux.yml\\
+\\
+\# Switch between sessions quickly\\
+flux list\\
+flux session-switch\\
 \end{simplecodebox}
 
 \underline{\textbf{Multiple Environments}}
