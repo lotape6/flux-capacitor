@@ -1,0 +1,6 @@
+- path: test/Test_clean.sh
+  granularity: file
+- path: test/Test_flux.sh
+  granularity: file
+- path: test/Test_launch.sh
+  granularity: file
