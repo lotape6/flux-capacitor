@@ -1,0 +1,4 @@
+- path: docs/cheatsheet/
+  granularity: directory
+- path: test/Test_cheatsheet_build.sh
+  granularity: file
